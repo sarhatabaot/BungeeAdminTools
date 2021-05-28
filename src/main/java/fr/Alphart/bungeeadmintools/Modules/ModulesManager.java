@@ -42,7 +42,7 @@ public class ModulesManager {
 		if (helpMessage == null) {
 			sb.append("&2---- &1Bungee&fAdmin&cTools&2 - HELP ----\n");
 			for (final Entry<IModule, Integer> entry : modules.entrySet()) {
-				if (entry.getValue() == IModule.ON_STATE) {
+				if (entry.getValue().equals(IModule.ON_STATE)) {
 					sb.append("- &B/");
 					sb.append(entry.getKey().getName());
 					sb.append(" help&2 : Show the help relative to the ");
@@ -133,6 +133,7 @@ public class ModulesManager {
 				return true;
 			}
 		} catch (final InvalidModuleException e) {
+
 		}
 		return false;
 	}
@@ -185,7 +186,7 @@ public class ModulesManager {
 	
 	public IModule getModule(final String name) throws InvalidModuleException {
 		final IModule module = modulesNames.get(name);
-		if (module != null && modules.get(module) == IModule.ON_STATE) {
+		if (module != null && modules.get(module).equals(IModule.ON_STATE)) {
 			return module;
 		}
 		throw new InvalidModuleException("Module not found or invalid");
