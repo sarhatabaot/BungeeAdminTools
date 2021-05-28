@@ -25,6 +25,7 @@ import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.utils.FormatUtils;
 import fr.alphart.bungeeadmintools.utils.Utils;
 
+@Deprecated
 public class BanCommand extends CommandHandler {
 	private static Ban ban;
 

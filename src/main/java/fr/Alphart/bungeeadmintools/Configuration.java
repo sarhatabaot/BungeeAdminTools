@@ -10,6 +10,8 @@ import net.cubespace.Yamler.Config.Path;
 import net.cubespace.Yamler.Config.YamlConfig;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -42,6 +44,9 @@ public class Configuration extends YamlConfig {
 	private boolean redisSupport = false;
 	@Comment("The debug mode enables verbose logging. All the logged message will be in the debug.log file in BAT folder")
 	private boolean debugMode = false;
+
+	@Comment("Whitelist of ips not to ip ban. Usually put your server ip here.")
+	private List<String> whitelistedIp = new ArrayList<>();
 	
 	
 	@Comment("Set to true to use MySQL. Otherwise SQL Lite will be used")

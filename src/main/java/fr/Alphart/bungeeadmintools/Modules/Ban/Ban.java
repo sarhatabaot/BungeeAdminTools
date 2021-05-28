@@ -199,6 +199,10 @@ public class Ban implements IModule, Listener {
 		return isBan(player.getName(), server) || isBan(ip, server);
 	}
 
+	public boolean isBan(final ProxiedPlayer player) {
+		return isBan(player,GLOBAL_SERVER);
+	}
+
 	/**
 	 * Check if this entity (player or ip) is banned
 	 * 
@@ -245,6 +249,10 @@ public class Ban implements IModule, Listener {
 			DataSourceHandler.close(statement, resultSet);
 		}
 		return false;
+	}
+
+	public String banIp(final String ip, final String server, final String staff, final long expirationTimestamp, final String reason) {
+		return ban(ip,server,staff,expirationTimestamp,reason);
 	}
 
 	/**

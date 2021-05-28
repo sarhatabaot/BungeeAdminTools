@@ -6,31 +6,30 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PermissionManager {
-    private static final String PERM_PREFIX = "bat.";
 
     public enum Action {
-        BAN("ban"),
-        BANIP("banip"),
-        TEMPBAN("tempban"),
-        TEMPBANIP("tempbanip"),
-        UNBAN("unban"),
-        UNBANIP("unbanip"),
-        BAN_BROADCAST("ban.broadcast"),
+        BAN("bat.ban"),
+        BANIP("bat.banip"),
+        TEMPBAN("bat.tempban"),
+        TEMPBANIP("bat.tempbanip"),
+        UNBAN("bat.unban"),
+        UNBANIP("bat.unbanip"),
+        BAN_BROADCAST("bat.ban.broadcast"),
 
-        MUTE("mute"),
-        MUTEIP("muteip"),
-        TEMPMUTE("tempmute"),
-        TEMPMUTEIP("tempmuteip"),
-        UNMUTE("unmute"),
-        UNMUTEIP("unmuteip"),
-        MUTE_BROADCAST("mute.broadcast"),
+        MUTE("bat.mute"),
+        MUTEIP("bat.muteip"),
+        TEMPMUTE("bat.tempmute"),
+        TEMPMUTEIP("bat.tempmuteip"),
+        UNMUTE("bat.unmute"),
+        UNMUTEIP("bat.unmuteip"),
+        MUTE_BROADCAST("bat.mute.broadcast"),
 
-        KICK("kick"),
-        WARN("warn"),
-        WARN_BROADCAST("warn.broadcast"),
-        KICK_BROADCAST("kick.broadcast"),
+        KICK("bat.kick"),
+        WARN("bat.warn"),
+        WARN_BROADCAST("bat.warn.broadcast"),
+        KICK_BROADCAST("bat.kick.broadcast"),
 
-        LOOKUP("lookup");
+        LOOKUP("bat.lookup");
 
         String permission;
 
@@ -39,7 +38,7 @@ public class PermissionManager {
         }
 
         public String getPermission() {
-            return PERM_PREFIX + permission;
+            return permission;
         }
 
         @Override
@@ -73,11 +72,11 @@ public class PermissionManager {
      * @return true if he can otherwise false
      */
     public static boolean canExecuteAction(final Action action, final CommandSender executor, final String server) {
-        if (executor.hasPermission("bat.admin") || executor.hasPermission(PERM_PREFIX + "grantall.global")) {
+        if (executor.hasPermission("bat.admin") || executor.hasPermission("bat." + "grantall.global")) {
             return true;
         }
         // If the user has global perm, check if he has some perm which negates this
-        if (executor.hasPermission(PERM_PREFIX + "grantall." + server) ||
+        if (executor.hasPermission("bat." + "grantall." + server) ||
                 ((executor.hasPermission(action.getPermission() + ".global") && // If it's for global server (or any which is the same, don't need to check the permission)
                         !(server.equals(IModule.GLOBAL_SERVER) || server.equals(IModule.ANY_SERVER))))) {
 
@@ -106,6 +105,13 @@ public class PermissionManager {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(target);
         if (player != null) {
             return (!player.hasPermission("bat.admin") && !player.hasPermission(action.getPermission() + ".exempt"));
+        }
+        return true;
+    }
+
+    public static boolean isExemptFrom(final Action action, final ProxiedPlayer target) {
+        if (target != null) {
+            return (!target.hasPermission("bat.admin") && !target.hasPermission(action.getPermission() + ".exempt"));
         }
         return true;
     }
