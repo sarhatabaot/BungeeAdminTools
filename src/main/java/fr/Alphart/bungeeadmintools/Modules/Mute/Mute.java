@@ -1,6 +1,6 @@
 package fr.alphart.bungeeadmintools.modules.mute;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 import java.sql.Connection;
@@ -179,10 +179,10 @@ public class Mute implements IModule, Listener {
 			DataSourceHandler.close(statement, resultSet);
 		}
 		if(expiration != null){
-			mutedPlayers.get(pName).setMuteMessage(I18n._("isMuteTemp",
+			mutedPlayers.get(pName).setMuteMessage(I18n.formatWithColor("isMuteTemp",
 					new String[]{ reason , "{expiration}", Core.defaultDF.format(begin), staff }), expiration);
 		}else{
-			mutedPlayers.get(pName).setMuteMessage(I18n._("isMute",
+			mutedPlayers.get(pName).setMuteMessage(I18n.formatWithColor("isMute",
 					new String[]{ reason, Core.defaultDF.format(begin), staff }), null);
 		}
 	}
@@ -335,10 +335,10 @@ public class Mute implements IModule, Listener {
 				}
 
 				if (expirationTimestamp > 0) {
-					return I18n._("muteTempBroadcast", new String[] { ip, FormatUtils.getDuration(expirationTimestamp),
+					return I18n.formatWithColor("muteTempBroadcast", new String[] { ip, FormatUtils.getDuration(expirationTimestamp),
 							staff, server, reason });
 				} else {
-					return I18n._("muteBroadcast", new String[] { ip, staff, server, reason });
+					return I18n.formatWithColor("muteBroadcast", new String[] { ip, staff, server, reason });
 				}
 			}
 
@@ -367,10 +367,10 @@ public class Mute implements IModule, Listener {
 				    	BAT.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.__("wasMutedNotif", new String[] { reason })));
 					}
 			    	if (expirationTimestamp > 0) {
-						return I18n._("muteTempBroadcast", new String[] { pName, FormatUtils.getDuration(expirationTimestamp),
+						return I18n.formatWithColor("muteTempBroadcast", new String[] { pName, FormatUtils.getDuration(expirationTimestamp),
 							staff, server, reason });
 					} else {
-						return I18n._("muteBroadcast", new String[] { pName, staff, server, reason });
+						return I18n.formatWithColor("muteBroadcast", new String[] { pName, staff, server, reason });
 					}
 
 			}
@@ -396,7 +396,7 @@ public class Mute implements IModule, Listener {
 	public String muteIP(final ProxiedPlayer player, final String server, final String staff,
 			final long expirationTimestamp, final String reason) {
 		mute(Utils.getPlayerIP(player), server, staff, expirationTimestamp, reason);
-		return I18n._("muteBroadcast", new String[] { player.getName() + "'s IP", staff, server, reason });
+		return I18n.formatWithColor("muteBroadcast", new String[] { player.getName() + "'s IP", staff, server, reason });
 	}
 
 	/**
@@ -435,7 +435,7 @@ public class Mute implements IModule, Listener {
 				statement.executeUpdate();
 				statement.close();
 
-				return I18n._("unmuteBroadcast", new String[] { ip, staff, server, reason });
+				return I18n.formatWithColor("unmuteBroadcast", new String[] { ip, staff, server, reason });
 			}
 
 			// Otherwise it's a player
@@ -474,7 +474,7 @@ public class Mute implements IModule, Listener {
 				    	}
 				}
 
-				return I18n._("unmuteBroadcast", new String[] { pName, staff, server, reason });
+				return I18n.formatWithColor("unmuteBroadcast", new String[] { pName, staff, server, reason });
 			}
 		} catch (final SQLException e) {
 			return DataSourceHandler.handleException(e);
@@ -502,7 +502,7 @@ public class Mute implements IModule, Listener {
 		} else {
 			unMute(Core.getPlayerIP(entity), server, staff, reason);
 			updateMuteData(entity);
-			return I18n._("unmuteBroadcast", new String[] { entity + "'s IP", staff, server, reason });
+			return I18n.formatWithColor("unmuteBroadcast", new String[] { entity + "'s IP", staff, server, reason });
 		}
 	}
 

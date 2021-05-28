@@ -1,6 +1,6 @@
 package fr.alphart.bungeeadmintools.modules;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 import java.lang.annotation.ElementType;
@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.core.CommandQueue;
 import fr.alphart.bungeeadmintools.modules.core.Core;
 import fr.alphart.bungeeadmintools.modules.core.CoreCommand;
@@ -116,14 +117,14 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
 				}else{
 					sender.sendMessage(__("invalidArgsUsage", new String[] { "&e/" + getFormatUsage() }));
 				}
-			} else if (_("noPerm").equals(exception.getMessage())) {
+			} else if (formatWithColor("noPerm").equals(exception.getMessage())) {
 				sender.sendMessage(__("noPerm"));
 			} else {
 				sender.sendMessage(__("invalidArgs", new String[] { exception.getMessage() }));
 			}
 		}
 		else if(exception instanceof UUIDNotFoundException){
-			sender.sendMessage(__("invalidArgs", new String[] { _("cannotGetUUID", new String[] { ((UUIDNotFoundException)exception).getInvolvedPlayer() }) }));
+			sender.sendMessage(__("invalidArgs", new String[] { I18n.formatWithColor("cannotGetUUID", new String[] { ((UUIDNotFoundException)exception).getInvolvedPlayer() }) }));
 		}
 		else if(exception instanceof MissingResourceException){
 			sender.sendMessage(BAT.__("&cAn error occured with the translation. Key involved : &a" + ((MissingResourceException)exception).getKey()));

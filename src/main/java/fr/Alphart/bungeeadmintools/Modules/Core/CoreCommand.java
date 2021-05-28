@@ -1,7 +1,7 @@
 package fr.alphart.bungeeadmintools.modules.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 
@@ -27,9 +27,6 @@ import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
 import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
 import fr.alphart.bungeeadmintools.modules.comment.CommentEntry;
-import fr.alphart.bungeeadmintools.modules.core.CommandQueue;
-import fr.alphart.bungeeadmintools.modules.core.LookupFormatter;
-import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import fr.alphart.bungeeadmintools.modules.core.importer.BanHammerImporter;
 import fr.alphart.bungeeadmintools.modules.core.importer.BungeeSuiteImporter;
 import fr.alphart.bungeeadmintools.modules.core.importer.GeSuiteImporter;
@@ -256,7 +253,7 @@ public class CoreCommand extends BATCommand {
 				throws IllegalArgumentException {
 			final String entity = args[0];
 			if (Utils.validIP(entity)) {
-				checkArgument(sender.hasPermission("bat.admin") || sender.hasPermission(PermissionManager.Action.LOOKUP.getPermission() + ".ip"), _("noPerm"));
+				checkArgument(sender.hasPermission("bat.admin") || sender.hasPermission(PermissionManager.Action.LOOKUP.getPermission() + ".ip"), formatWithColor("noPerm"));
 				if(args.length == 1){
 					for (final BaseComponent[] msg : lookupFormatter.getSummaryLookupIP(entity)) {
 						sender.sendMessage(msg);

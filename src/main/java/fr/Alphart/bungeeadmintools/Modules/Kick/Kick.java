@@ -104,7 +104,7 @@ public class Kick implements IModule {
 	public String kick(final ProxiedPlayer player, final String staff, final String reason) {
 		player.connect(ProxyServer.getInstance().getServerInfo(
 				player.getPendingConnection().getListener().getDefaultServer()));
-		player.sendMessage(TextComponent.fromLegacyText(I18n._("wasKickedNotif", new String[] { reason })));
+		player.sendMessage(TextComponent.fromLegacyText(I18n.formatWithColor("wasKickedNotif", new String[] { reason })));
 		return kickSQL(player.getUniqueId(), player.getServer().getInfo().getName(), staff, reason);
 	}
 	public String kickSQL(final UUID pUUID, final String server, final String staff, final String reason) {
@@ -122,7 +122,7 @@ public class Kick implements IModule {
 			statement.executeUpdate();
 			statement.close();
 
-			return I18n._("kickBroadcast", new String[] { Core.getPlayerName(pUUID.toString().replace("-", "")), staff, server, reason });
+			return I18n.formatWithColor("kickBroadcast", new String[] { Core.getPlayerName(pUUID.toString().replace("-", "")), staff, server, reason });
 		} catch (final SQLException e) {
 			return DataSourceHandler.handleException(e);
 		} finally {
@@ -138,7 +138,7 @@ public class Kick implements IModule {
 	 */
 	public String gKick(final ProxiedPlayer player, final String staff, final String reason) {
 		final String message = gKickSQL(player.getUniqueId(), staff, reason);
-		player.disconnect(TextComponent.fromLegacyText(I18n._("wasKickedNotif", new String[] { reason })));
+		player.disconnect(TextComponent.fromLegacyText(I18n.formatWithColor("wasKickedNotif", new String[] { reason })));
 		return message;
 	}
 	public String gKickSQL(final UUID pUUID, final String staff, final String reason) {
@@ -157,9 +157,9 @@ public class Kick implements IModule {
 			statement.close();
 
 			if (BAT.getInstance().getRedis().isRedisEnabled()) {
-			    	return I18n._("gKickBroadcast", new String[] { RedisBungee.getApi().getNameFromUuid(pUUID), staff, reason });
+			    	return I18n.formatWithColor("gKickBroadcast", new String[] { RedisBungee.getApi().getNameFromUuid(pUUID), staff, reason });
 			} else {
-				return I18n._("gKickBroadcast", new String[] { BAT.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
+				return I18n.formatWithColor("gKickBroadcast", new String[] { BAT.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
 			}
 		} catch (final SQLException e) {
 			return DataSourceHandler.handleException(e);

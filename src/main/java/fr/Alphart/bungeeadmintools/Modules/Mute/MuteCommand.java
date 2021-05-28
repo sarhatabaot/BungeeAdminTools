@@ -1,9 +1,10 @@
 package fr.alphart.bungeeadmintools.modules.mute;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 
 import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.CommandHandler;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -120,10 +121,10 @@ public class MuteCommand extends CommandHandler {
 			}
 		} else {
 			if (args.length == 1) {
-				checkArgument(sender instanceof ProxiedPlayer, _("specifyServer"));
+				checkArgument(sender instanceof ProxiedPlayer, formatWithColor("specifyServer"));
 				server = ((ProxiedPlayer) sender).getServer().getInfo().getName();
 			} else {
-				checkArgument(Utils.isServer(args[1]), _("invalidServer"));
+				checkArgument(Utils.isServer(args[1]), formatWithColor("invalidServer"));
 				server = args[1];
 				reason = (args.length > 2) ? Utils.getFinalArg(args, 2) : IModule.NO_REASON;
 			}
@@ -131,18 +132,18 @@ public class MuteCommand extends CommandHandler {
                 
         checkArgument(
                     !reason.equalsIgnoreCase(IModule.NO_REASON) || !BAT.getInstance().getConfiguration().isMustGiveReason(),
-                    _("noReasonInCommand"));
+                    formatWithColor("noReasonInCommand"));
 
 		// Check if the target isn't an ip and the player is offline
 		if (!Utils.validIP(target) && player == null) {
 			ip = Core.getPlayerIP(target);
 			if (ipMute) {
-				checkArgument(!"0.0.0.0".equals(ip), _("ipUnknownPlayer"));
+				checkArgument(!"0.0.0.0".equals(ip), formatWithColor("ipUnknownPlayer"));
 			} else {
 				// If ip = 0.0.0.0, it means the player never connects
 				if ("0.0.0.0".equals(ip) && !confirmedCmd) {
 					command.mustConfirmCommand(sender, command.getName() + " " + Joiner.on(' ').join(args),
-							_("operationUnknownPlayer", new String[] { target }));
+							I18n.formatWithColor("operationUnknownPlayer", new String[] { target }));
 					return;
 				}
 				// Set the ip to null to avoid checking if the ip is banned
@@ -152,13 +153,13 @@ public class MuteCommand extends CommandHandler {
 
 		if (!global) {
 			checkArgument(PermissionManager.canExecuteAction((ipMute) ? PermissionManager.Action.MUTEIP : PermissionManager.Action.MUTE, sender, server),
-					_("noPerm"));
+					formatWithColor("noPerm"));
 		}
 		target = (ip == null) ? target : ip;
 
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), _("isExempt"));
+		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
 
-		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), _("alreadyMute"));
+		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), formatWithColor("alreadyMute"));
 
 		if (ipMute && !BAT.getInstance().getRedis().isRedisEnabled() && player != null) {
 			returnedMsg = mute.muteIP(player, server, staff, 0, reason);
@@ -253,10 +254,10 @@ public class MuteCommand extends CommandHandler {
 			}
 		} else {
 			if (args.length == 2) {
-				checkArgument(sender instanceof ProxiedPlayer, _("specifyServer"));
+				checkArgument(sender instanceof ProxiedPlayer, formatWithColor("specifyServer"));
 				server = ((ProxiedPlayer) sender).getServer().getInfo().getName();
 			} else {
-				checkArgument(Utils.isServer(args[2]), _("invalidServer"));
+				checkArgument(Utils.isServer(args[2]), formatWithColor("invalidServer"));
 				server = args[2];
 				reason = (args.length > 3) ? Utils.getFinalArg(args, 3) : IModule.NO_REASON;
 			}
@@ -264,18 +265,18 @@ public class MuteCommand extends CommandHandler {
 
         checkArgument(
                     !reason.equalsIgnoreCase(IModule.NO_REASON) || !BAT.getInstance().getConfiguration().isMustGiveReason(),
-                    _("noReasonInCommand"));
+                    formatWithColor("noReasonInCommand"));
                 
 		// Check if the target isn't an ip and the player is offline
 		if (!Utils.validIP(target) && player == null) {
 			ip = Core.getPlayerIP(target);
 			if (ipMute) {
-				checkArgument(!"0.0.0.0".equals(ip), _("ipUnknownPlayer"));
+				checkArgument(!"0.0.0.0".equals(ip), formatWithColor("ipUnknownPlayer"));
 			} else {
 				// If ip = 0.0.0.0, it means the player never connects
 				if ("0.0.0.0".equals(ip) && !confirmedCmd) {
 					command.mustConfirmCommand(sender, command.getName() + " " + Joiner.on(' ').join(args),
-							_("operationUnknownPlayer", new String[] { target }));
+							I18n.formatWithColor("operationUnknownPlayer", new String[] { target }));
 					return;
 				}
 				// Set the ip to null to avoid checking if the ip is banned
@@ -286,13 +287,13 @@ public class MuteCommand extends CommandHandler {
 		if (!global) {
 			checkArgument(
 					PermissionManager.canExecuteAction((ipMute) ? PermissionManager.Action.TEMPMUTEIP : PermissionManager.Action.TEMPMUTE, sender, server),
-					_("noPerm"));
+					formatWithColor("noPerm"));
 		}
 		target = (ip == null) ? target : ip;
 
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), _("isExempt"));
+		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
 
-		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), _("alreadyMute"));
+		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), formatWithColor("alreadyMute"));
 
 		if (ipMute && !BAT.getInstance().getRedis().isRedisEnabled() && player != null) {
 			returnedMsg = mute.muteIP(player, server, staff, expirationTimestamp, reason);
@@ -378,10 +379,10 @@ public class MuteCommand extends CommandHandler {
 			}
 		} else {
 			if (args.length == 1) {
-				checkArgument(sender instanceof ProxiedPlayer, _("specifyServer"));
+				checkArgument(sender instanceof ProxiedPlayer, formatWithColor("specifyServer"));
 				server = ((ProxiedPlayer) sender).getServer().getInfo().getName();
 			} else {
-				checkArgument(Utils.isServer(args[1]), _("invalidServer"));
+				checkArgument(Utils.isServer(args[1]), formatWithColor("invalidServer"));
 				server = args[1];
 				reason = (args.length > 2) ? Utils.getFinalArg(args, 2) : IModule.NO_REASON;
 			}
@@ -389,18 +390,18 @@ public class MuteCommand extends CommandHandler {
                 
         checkArgument(
                     !reason.equalsIgnoreCase(IModule.NO_REASON) || !BAT.getInstance().getConfiguration().isMustGiveReason(),
-                    _("noReasonInCommand"));
+                    formatWithColor("noReasonInCommand"));
 
 		// Check if the target isn't an ip and the player is offline
 		if (!Utils.validIP(target) && ipUnmute) {
 			ip = Core.getPlayerIP(target);
-			checkArgument(!"0.0.0.0".equals(ip), _("ipUnknownPlayer"));
+			checkArgument(!"0.0.0.0".equals(ip), formatWithColor("ipUnknownPlayer"));
 		}
 
 		if (!global) {
 			checkArgument(
 					PermissionManager.canExecuteAction((ipUnmute) ? PermissionManager.Action.UNMUTEIP : PermissionManager.Action.UNMUTE, sender, server),
-					_("noPerm"));
+					formatWithColor("noPerm"));
 		}
 		target = (ip == null) ? target : ip;
 
@@ -408,8 +409,8 @@ public class MuteCommand extends CommandHandler {
 
 		checkArgument(
 				mute.isMute((ip == null) ? target : ip, server, true),
-				(IModule.ANY_SERVER.equals(server) ? _("notMutedAny", formatArgs) : ((ipUnmute) ? _("notMutedIP",
-						formatArgs) : _("notMuted", formatArgs))));
+				(IModule.ANY_SERVER.equals(server) ? I18n.formatWithColor("notMutedAny", formatArgs) : ((ipUnmute) ? I18n.formatWithColor("notMutedIP",
+						formatArgs) : I18n.formatWithColor("notMuted", formatArgs))));
 
 		if (ipUnmute) {
 			returnedMsg = mute.unMuteIP(target, server, staff, reason);

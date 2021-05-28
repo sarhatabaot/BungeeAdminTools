@@ -1,11 +1,12 @@
 package fr.alphart.bungeeadmintools.modules.comment;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 
 import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.CommandHandler;
 import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
@@ -54,11 +55,11 @@ public class CommentCommand extends CommandHandler {
 			}
 			if(!confirmedCmd && Core.getPlayerIP(args[0]).equals("0.0.0.0")){
 				mustConfirmCommand(sender, "bat " + getName() + " " + Joiner.on(' ').join(args),
-						_("operationUnknownPlayer", new String[] {args[0]}));
+						I18n.formatWithColor("operationUnknownPlayer", new String[] {args[0]}));
 				return;
 			}
 			
-			checkArgument(comment.hasLastcommentCooledDown(args[0]), _("cooldownUnfinished"));
+			checkArgument(comment.hasLastcommentCooledDown(args[0]), formatWithColor("cooldownUnfinished"));
 			comment.insertComment(args[0], Utils.getFinalArg(args, 1), CommentEntry.Type.NOTE, sender.getName());
 			sender.sendMessage(__("commentAdded"));
 		}
@@ -86,22 +87,22 @@ public class CommentCommand extends CommandHandler {
 			if(target == null){
 				if(!confirmedCmd && Core.getPlayerIP(args[0]).equals("0.0.0.0")){
 					mustConfirmCommand(sender, getName() + " " + Joiner.on(' ').join(args),
-							_("operationUnknownPlayer", new String[] {args[0]}));
+							I18n.formatWithColor("operationUnknownPlayer", new String[] {args[0]}));
 					return;
 				}
 			}
 			
 			if(sender instanceof ProxiedPlayer){
 				checkArgument(PermissionManager.canExecuteAction(PermissionManager.Action.WARN , sender, ((ProxiedPlayer)sender).getServer().getInfo().getName()),
-						_("noPerm"));
+						formatWithColor("noPerm"));
 			}
-	          checkArgument(comment.hasLastcommentCooledDown(args[0]), _("cooldownUnfinished"));
+	          checkArgument(comment.hasLastcommentCooledDown(args[0]), formatWithColor("cooldownUnfinished"));
 			comment.insertComment(args[0], reason, CommentEntry.Type.WARNING, sender.getName());
 			if(target != null){
 			  target.sendMessage(__("wasWarnedNotif", new String[] {reason}));
 			}
 			  
-			BAT.broadcast(_("warnBroadcast", new String[]{args[0], sender.getName(), reason}), PermissionManager.Action.WARN_BROADCAST.getPermission());
+			BAT.broadcast(I18n.formatWithColor("warnBroadcast", new String[]{args[0], sender.getName(), reason}), PermissionManager.Action.WARN_BROADCAST.getPermission());
 			return;
 		}
 	}
