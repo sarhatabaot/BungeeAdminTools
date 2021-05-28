@@ -1,8 +1,9 @@
-package fr.Alphart.bungeeadmintools.Modules.Core;
+package fr.alphart.bungeeadmintools.modules.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.Alphart.bungeeadmintools.I18n.I18n._;
-import static fr.Alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.__;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
@@ -16,13 +17,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.BanHammerImporter;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.BungeeSuiteImporter;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.GeSuiteImporter;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.Importer;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.MinecraftPreUUIDImporter;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.MinecraftUUIDImporter;
-import fr.Alphart.bungeeadmintools.Modules.Core.Importer.SQLiteMigrater;
+
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.modules.BATCommand;
+import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
+import fr.alphart.bungeeadmintools.modules.ModulesManager;
+import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
+import fr.alphart.bungeeadmintools.modules.comment.CommentEntry;
+import fr.alphart.bungeeadmintools.modules.core.CommandQueue;
+import fr.alphart.bungeeadmintools.modules.core.LookupFormatter;
+import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
+import fr.alphart.bungeeadmintools.modules.core.importer.BanHammerImporter;
+import fr.alphart.bungeeadmintools.modules.core.importer.BungeeSuiteImporter;
+import fr.alphart.bungeeadmintools.modules.core.importer.GeSuiteImporter;
+import fr.alphart.bungeeadmintools.modules.core.importer.Importer;
+import fr.alphart.bungeeadmintools.modules.core.importer.MinecraftPreUUIDImporter;
+import fr.alphart.bungeeadmintools.modules.core.importer.MinecraftUUIDImporter;
+import fr.alphart.bungeeadmintools.modules.core.importer.SQLiteMigrater;
+import fr.alphart.bungeeadmintools.modules.kick.KickEntry;
+import fr.alphart.bungeeadmintools.modules.mute.MuteEntry;
+import fr.alphart.bungeeadmintools.utils.CallbackUtils;
+import fr.alphart.bungeeadmintools.utils.FormatUtils;
+import fr.alphart.bungeeadmintools.utils.Utils;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.ChatColor;
@@ -34,23 +53,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.I18n.I18n;
-import fr.Alphart.bungeeadmintools.Modules.BATCommand;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.Modules.InvalidModuleException;
-import fr.Alphart.bungeeadmintools.Modules.ModulesManager;
-import fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry;
-import fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry;
-import fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry;
-import fr.Alphart.bungeeadmintools.Modules.Mute.MuteEntry;
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.Callback;
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.ProgressCallback;
-import fr.Alphart.bungeeadmintools.Utils.FormatUtils;
-import fr.Alphart.bungeeadmintools.Utils.Utils;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
 
-public class CoreCommand extends BATCommand{
+public class CoreCommand extends BATCommand {
 	private final BaseComponent[] CREDIT;
 	private final BaseComponent[] HELP_MSG;
 	private final Map<List<String>, BATCommand> subCmd;
@@ -186,7 +190,7 @@ public class CoreCommand extends BATCommand{
 		@Override
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
-			sender.sendMessage(BAT.__("The loaded modules are :&a"));
+			sender.sendMessage(__("The loaded modules are :&a"));
 			for (final IModule module : BAT.getInstance().getModules().getLoadedModules()) {
 				if (module instanceof Core) {
 					continue;
@@ -206,7 +210,7 @@ public class CoreCommand extends BATCommand{
 			// It means that no module were loaded otherwise there would be
 			// something remaining in the StringBuilder
 			if (sb.length() == 0) {
-				sender.sendMessage(BAT.__("&cThere aren't any loaded modules!"));
+				sender.sendMessage(__("&cThere aren't any loaded modules!"));
 			} else {
 				sb.setLength(0); // Clean the sb
 			}
@@ -221,7 +225,7 @@ public class CoreCommand extends BATCommand{
 		@Override
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
-			sender.sendMessage(BAT.__("Starting reload ..."));
+			sender.sendMessage(__("Starting reload ..."));
 			try {
 				BAT.getInstance().getConfiguration().reload();
 			} catch (InvalidConfigurationException e) {
@@ -231,7 +235,7 @@ public class CoreCommand extends BATCommand{
 			I18n.reload();
 			BAT.getInstance().getModules().unloadModules();
 			BAT.getInstance().getModules().loadModules();		
-			sender.sendMessage(BAT.__("Reload successfully executed ..."));
+			sender.sendMessage(__("Reload successfully executed ..."));
 		}
 	}
 	
@@ -286,7 +290,7 @@ public class CoreCommand extends BATCommand{
 							message = lookupFormatter.formatBanLookup(entity, bans, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__((!Utils.validIP(entity))
+							message.add(__((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been banned."
 										: "&eThe IP &a" + entity + "&e has never been banned."));
 						}
@@ -297,7 +301,7 @@ public class CoreCommand extends BATCommand{
 							message = lookupFormatter.formatMuteLookup(entity, mutes, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__((!Utils.validIP(entity))
+							message.add(__((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been muted."
 										: "&eThe IP &a" + entity + "&e has never been muted."));
 						}
@@ -308,7 +312,7 @@ public class CoreCommand extends BATCommand{
 							message = lookupFormatter.formatKickLookup(entity, kicks, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__((!Utils.validIP(entity))
+							message.add(__((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been kicked."
 										: "&eThe IP &a" + entity + "&e has never been kicked."));
 						}
@@ -319,7 +323,7 @@ public class CoreCommand extends BATCommand{
 							message = lookupFormatter.commentRowLookup(entity, comments, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__((!Utils.validIP(entity))
+							message.add(__((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has no comment about him."
 										: "&eThe IP &a" + entity + "&e has no comment."));
 						}
@@ -378,7 +382,7 @@ public class CoreCommand extends BATCommand{
 							message = LookupCmd.getLookupFormatter().formatBanLookup(entity, bans, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__("&b" + entity + "&e has never performed any operation concerning ban."));
+							message.add(__("&b" + entity + "&e has never performed any operation concerning ban."));
 						}
 						break;
 					case "mute":
@@ -387,7 +391,7 @@ public class CoreCommand extends BATCommand{
 							message = LookupCmd.getLookupFormatter().formatMuteLookup(entity, mutes, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__("&b" + entity + "&e has never performed any operation concerning mute."));
+							message.add(__("&b" + entity + "&e has never performed any operation concerning mute."));
 						}
 						break;
 					case "kick":
@@ -396,7 +400,7 @@ public class CoreCommand extends BATCommand{
 							message = LookupCmd.getLookupFormatter().formatKickLookup(entity, kicks, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__("&b" + entity + "&e has never performed any operation concerning kick."));
+							message.add(__("&b" + entity + "&e has never performed any operation concerning kick."));
 						}
 						break;
 					case "comment":
@@ -405,7 +409,7 @@ public class CoreCommand extends BATCommand{
 							message = LookupCmd.getLookupFormatter().commentRowLookup(entity, comments, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(BAT.__("&b" + entity + "&e has never performed any operation concerning comment."));
+							message.add(__("&b" + entity + "&e has never performed any operation concerning comment."));
 						}
 						break;
 					default:
@@ -461,41 +465,41 @@ public class CoreCommand extends BATCommand{
 			
 			final Importer importer = importers.get(source);
 			if(importer != null){
-			    sender.sendMessage(BAT.__("BAT will be disabled during the import ..."));
+			    sender.sendMessage(__("BAT will be disabled during the import ..."));
 			    BAT.getInstance().getModules().unloadModules();
 			    
-                importer.startImport(new ProgressCallback<Importer.ImportStatus>() {
+                importer.startImport(new CallbackUtils.ProgressCallback<Importer.ImportStatus>() {
                     @Override
                     public void done(Importer.ImportStatus result, Throwable throwable) {
                         if(throwable != null){
                             if(throwable instanceof RuntimeException){
-                                sender.sendMessage(BAT.__("An error (" + throwable.getMessage()
+                                sender.sendMessage(__("An error (" + throwable.getMessage()
                                         + ") has occured during the import. Please check the logs"));
                                 throwable.printStackTrace();
                             }else{
-                                sender.sendMessage(BAT.__("An error has occured during the import. Please check the logs"));
+                                sender.sendMessage(__("An error has occured during the import. Please check the logs"));
                                 BAT.getInstance().getLogger().severe("An error has occured during the import of data from " + source 
                                         + ". Please report this :");
                                 throwable.printStackTrace();
                             }
                         }else{
-                            sender.sendMessage(BAT.__("Congratulations, the migration is finished. &a" 
+                            sender.sendMessage(__("Congratulations, the migration is finished. &a"
                                     + result.getConvertedEntries() + " entries&e were converted successfully."));
                         }
                         BAT.getInstance().getModules().loadModules();
-                        sender.sendMessage(BAT.__("BAT is now reenabled ..."));
+                        sender.sendMessage(__("BAT is now reenabled ..."));
                     }
                     
                     @Override
                     public void onProgress(Importer.ImportStatus progressStatus) {
-                        sender.sendMessage(BAT.__("&a" + new DecimalFormat("0.00").format(progressStatus.getProgressionPercent()) 
+                        sender.sendMessage(__("&a" + new DecimalFormat("0.00").format(progressStatus.getProgressionPercent())
                                 + "%&e entries converted !&a" + (progressStatus.getRemainingEntries()) 
                                 + "&e remaining entries on a total of &6" + progressStatus.getTotalEntries()));
                     }
                     
                     @Override
                     public void onMinorError(String errorMessage) {
-                        sender.sendMessage(BAT.__(errorMessage));
+                        sender.sendMessage(__(errorMessage));
                     }
                 }, Utils.getFinalArg(args, 1));
 			}else{
@@ -515,11 +519,11 @@ public class CoreCommand extends BATCommand{
 				throw new IllegalArgumentException("You can't backup an SQLite database with this command. "
 						+ "To save an SQLite database just copy and paste the file 'bat_database.db'.");
 			}
-			sender.sendMessage(BAT.__("Starting backup of BAT datas ..."));
-			BAT.getInstance().getDsHandler().generateMysqlBackup(new Callback<String>() {
+			sender.sendMessage(__("Starting backup of BAT datas ..."));
+			BAT.getInstance().getDsHandler().generateMysqlBackup(new CallbackUtils.Callback<String>() {
 				@Override
 				public void done(final String result, Throwable throwable) {
-					sender.sendMessage(BAT.__(result));
+					sender.sendMessage(__(result));
 				}
 			});
 		}

@@ -27,7 +27,7 @@ public interface IModule {
 	 * 
 	 * @return configuration section of this module
 	 */
-	public fr.Alphart.bungeeadmintools.Modules.ModuleConfiguration getConfig();
+	public ModuleConfiguration getConfig();
 
 	/**
 	 * Unload the module
@@ -48,5 +48,5 @@ public interface IModule {
 	 * 
 	 * @return list of commands
 	 */
-	public List<fr.Alphart.bungeeadmintools.Modules.BATCommand> getCommands();
+	public List<BATCommand> getCommands();
 }

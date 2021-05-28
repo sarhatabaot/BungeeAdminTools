@@ -1,4 +1,4 @@
-package fr.Alphart.bungeeadmintools.Modules.Core.Importer;
+package fr.alphart.bungeeadmintools.modules.core.importer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,19 +15,19 @@ import java.util.Set;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.utils.CallbackUtils;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.ProgressCallback;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
 
-public class MinecraftUUIDImporter extends Importer{
+public class MinecraftUUIDImporter extends Importer {
     private static final DateFormat dfMc = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
     private final File bannedPlayersFile = new File(BAT.getInstance().getDataFolder(), "banned-players.json");
     private final File bannedIpsFile = new File(BAT.getInstance().getDataFolder(), "banned-ips.json");
     
     @Override
-    protected void importData(ProgressCallback<ImportStatus> progressionCallback, final String... additionalsArgs) throws Exception {
+    protected void importData(CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, final String... additionalsArgs) throws Exception {
         try (Connection conn = BAT.getConnection()) {
             // Check if either the banned-players.txt or the banned-ips.txt file exists
             if(!bannedPlayersFile.exists() 

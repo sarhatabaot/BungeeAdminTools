@@ -14,9 +14,11 @@ import java.util.MissingResourceException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.CommandQueue;
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.Core.CoreCommand;
+
+import fr.alphart.bungeeadmintools.modules.core.CommandQueue;
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.core.CoreCommand;
+import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -29,7 +31,6 @@ import com.google.common.base.Preconditions;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 import fr.alphart.bungeeadmintools.BAT;
-import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 
 public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command implements TabExecutor {
 	private static final Pattern pattern = Pattern.compile("<.*?>");

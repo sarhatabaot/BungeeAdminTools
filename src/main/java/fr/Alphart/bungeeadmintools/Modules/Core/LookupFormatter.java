@@ -12,8 +12,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
+import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
+import fr.alphart.bungeeadmintools.modules.comment.CommentEntry;
 import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.kick.KickEntry;
+import fr.alphart.bungeeadmintools.modules.mute.MuteEntry;
 import fr.alphart.bungeeadmintools.utils.FormatUtils;
 import fr.alphart.bungeeadmintools.utils.MojangAPIProvider;
 import fr.alphart.bungeeadmintools.utils.Utils;
@@ -26,12 +31,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
-
-import fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry;
-import fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry;
-import fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry.Type;
-import fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry;
-import fr.Alphart.bungeeadmintools.Modules.Mute.MuteEntry;
+import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 
 public class LookupFormatter {
@@ -48,7 +49,7 @@ public class LookupFormatter {
 
     public List<BaseComponent[]> getSummaryLookupPlayer(final String pName, final boolean displayIP) {
         // Gather players data related to each modules
-        final fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry pDetails = new fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry(pName);
+        final EntityEntry pDetails = new EntityEntry(pName);
 
         if (!pDetails.exist()) {
             final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
@@ -56,7 +57,7 @@ public class LookupFormatter {
             return returnedMsg;
         }
 
-        final fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry ipDetails = new fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry(Core.getPlayerIP(pName));
+        final EntityEntry ipDetails = new EntityEntry(Core.getPlayerIP(pName));
         boolean isBan = false;
         boolean isBanIP = false;
         int bansNumber = 0;
@@ -134,10 +135,10 @@ public class LookupFormatter {
                 ? Joiner.on(joinChar).join(muteIPServers).toLowerCase()
                 : _("none");
 
-        final String first_login = pDetails.getFirstLogin() != fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry.noDateFound
+        final String first_login = pDetails.getFirstLogin() != EntityEntry.noDateFound
                 ? Core.defaultDF.format(new Date(pDetails.getFirstLogin().getTime()))
                 : _("unknownDate");
-        final String last_login = pDetails.getLastLogin() != fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry.noDateFound
+        final String last_login = pDetails.getLastLogin() != EntityEntry.noDateFound
                 ? Core.defaultDF.format(new Date(pDetails.getLastLogin().getTime()))
                 : _("unknownDate");
         final String last_ip = !"0.0.0.0".equals(pDetails.getLastIP())
@@ -175,7 +176,7 @@ public class LookupFormatter {
             int i = 0;
             for(final CommentEntry comm : pDetails.getComments()){
                 last_comments += _("commentRow", new String[]{String.valueOf(comm.getID()), 
-                        (comm.getType() == Type.NOTE) ? "&eComment" : "&cWarning", comm.getContent(),
+                        (comm.getType() == CommentEntry.Type.NOTE) ? "&eComment" : "&cWarning", comm.getContent(),
                         comm.getFormattedDate(), comm.getAuthor()});
                 i++;
                 if(i == 3){
@@ -205,9 +206,9 @@ public class LookupFormatter {
         
         return finalMessage;
     }
-    
+
     public List<BaseComponent[]> getSummaryLookupIP(final String ip) {
-        final fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry ipDetails = new fr.Alphart.bungeeadmintools.Modules.Core.EntityEntry(ip);
+        final EntityEntry ipDetails = new EntityEntry(ip);
         if (!ipDetails.exist()) {
             final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
             returnedMsg.add(__("unknownIp"));
@@ -313,7 +314,7 @@ public class LookupFormatter {
             }
             if(modules.isLoaded("comment")){
                 for(final CommentEntry mute : modules.getCommentModule().getManagedComments(staff)){
-                    if(mute.getType() == Type.NOTE){
+                    if(mute.getType() == CommentEntry.Type.NOTE){
                         comments_number++;
                     }
                     else{
@@ -601,12 +602,12 @@ public class LookupFormatter {
             msg.append("\n");
             if(staffLookup){
                 msg.append(_("commentStaffRow", new String[]{String.valueOf(comm.getID()), 
-                        (comm.getType() == Type.NOTE) ? "&eComment" : "&cWarning", 
+                        (comm.getType() == CommentEntry.Type.NOTE) ? "&eComment" : "&cWarning",
                         comm.getEntity(), comm.getContent(), comm.getFormattedDate()}));
             }
             else{
                 msg.append(_("commentRow", new String[]{String.valueOf(comm.getID()), 
-                    (comm.getType() == Type.NOTE) ? "&eComment" : "&cWarning", comm.getContent(),
+                    (comm.getType() == CommentEntry.Type.NOTE) ? "&eComment" : "&cWarning", comm.getContent(),
                     comm.getFormattedDate(), comm.getAuthor()}));
             }
         }

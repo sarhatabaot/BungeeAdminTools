@@ -1,4 +1,4 @@
-package fr.Alphart.bungeeadmintools.Modules.Core.Importer;
+package fr.alphart.bungeeadmintools.modules.core.importer;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -9,17 +9,19 @@ import java.util.Arrays;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.ProgressCallback;
-import fr.Alphart.bungeeadmintools.Utils.UUIDNotFoundException;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
 
-public class GeSuiteImporter extends Importer{
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.modules.core.importer.Importer;
+import fr.alphart.bungeeadmintools.utils.CallbackUtils;
+import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+
+public class GeSuiteImporter extends Importer {
 
     @Override
-    protected void importData(final ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception {
+    protected void importData(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception {
         ResultSet res = null;
         try (Connection conn = BAT.getConnection()) {
             // Check if the bungee suite tables are here

@@ -1,10 +1,10 @@
-package fr.Alphart.bungeeadmintools.Modules.Comment;
+package fr.alphart.bungeeadmintools.modules.comment;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import fr.Alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BAT;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

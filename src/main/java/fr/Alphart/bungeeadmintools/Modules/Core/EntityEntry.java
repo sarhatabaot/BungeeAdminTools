@@ -11,15 +11,18 @@ import java.util.List;
 import fr.alphart.bungeeadmintools.BAT;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
+import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
+import fr.alphart.bungeeadmintools.modules.comment.CommentEntry;
+import fr.alphart.bungeeadmintools.modules.kick.KickEntry;
+import fr.alphart.bungeeadmintools.modules.mute.MuteEntry;
 import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry;
-import fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry;
-import fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry;
-import fr.Alphart.bungeeadmintools.Modules.Mute.MuteEntry;
+
+
 
 /**
  * Summit all type of informations available with the plugin about an specific

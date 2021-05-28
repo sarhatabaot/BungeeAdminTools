@@ -1,4 +1,4 @@
-package fr.Alphart.bungeeadmintools.Modules.Ban;
+package fr.alphart.bungeeadmintools.modules.ban;
 
 import java.sql.Timestamp;
 

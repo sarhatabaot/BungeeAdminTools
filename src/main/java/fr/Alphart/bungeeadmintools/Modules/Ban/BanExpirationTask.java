@@ -1,9 +1,10 @@
-package fr.Alphart.bungeeadmintools.Modules.Ban;
+package fr.alphart.bungeeadmintools.modules.ban;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
+
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.modules.IModule;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

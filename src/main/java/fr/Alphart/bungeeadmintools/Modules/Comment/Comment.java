@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
 
 import fr.alphart.bungeeadmintools.BAT;
 import fr.alphart.bungeeadmintools.I18n.I18n;
@@ -23,6 +22,7 @@ import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
+import fr.alphart.bungeeadmintools.modules.core.Core;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 
 public class Comment implements IModule {
 	private final String name = "comment";
-	private fr.Alphart.bungeeadmintools.Modules.Comment.CommentCommand commandHandler;
+	private CommentCommand commandHandler;
 	private final CommentConfig config;
 
 	public Comment(){
@@ -83,7 +83,7 @@ public class Comment implements IModule {
 		}
 
 		// Register commands
-		commandHandler = new fr.Alphart.bungeeadmintools.Modules.Comment.CommentCommand(this);
+		commandHandler = new CommentCommand(this);
 		commandHandler.loadCmds();
 		
 		return true;
@@ -115,7 +115,7 @@ public class Comment implements IModule {
                             final List<String> patterns = Arrays.asList(triggerSection.getString(triggerName + ".pattern"));
                             final List<String> cmds = triggerSection.getStringList(triggerName + ".commands");
                             final int triggerNumber = triggerSection.getInt(triggerName + ".triggerNumber");
-                            triggers.put(triggerName, new fr.Alphart.bungeeadmintools.Modules.Comment.Trigger(triggerNumber, patterns, cmds));
+                            triggers.put(triggerName, new Trigger(triggerNumber, patterns, cmds));
                         }
                         save();
                     } catch (final Exception migrationException) {
@@ -133,10 +133,10 @@ public class Comment implements IModule {
 			"  commands: list of commands that should be executed when it triggers, you can use {player} variable",
 			"  triggerNumber: the number at which this triggers"})
 		@Getter
-		private Map<String, fr.Alphart.bungeeadmintools.Modules.Comment.Trigger> triggers = new HashMap<String, fr.Alphart.bungeeadmintools.Modules.Comment.Trigger>(){
+		private Map<String, Trigger> triggers = new HashMap<String, Trigger>(){
 			private static final long serialVersionUID = 1L;
 		{
-			put("example", new fr.Alphart.bungeeadmintools.Modules.Comment.Trigger());
+			put("example", new Trigger());
 		}};
 		
 		@Getter
@@ -149,8 +149,8 @@ public class Comment implements IModule {
 	 * @param entity | can be an ip or a player name
 	 * @return
 	 */
-	public List<fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry> getComments(final String entity){
-		List<fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry> notes = Lists.newArrayList();
+	public List<CommentEntry> getComments(final String entity){
+		List<CommentEntry> notes = Lists.newArrayList();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -170,8 +170,8 @@ public class Comment implements IModule {
 				}else{
 					date = resultSet.getTimestamp("date").getTime();
 				}
-				notes.add(new fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry(resultSet.getInt("id"), entity, resultSet.getString("note"),
-						resultSet.getString("staff"), fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry.Type.valueOf(resultSet.getString("type")),
+				notes.add(new CommentEntry(resultSet.getInt("id"), entity, resultSet.getString("note"),
+						resultSet.getString("staff"), CommentEntry.Type.valueOf(resultSet.getString("type")),
 						date));
 			}
 		} catch (final SQLException e) {
@@ -182,8 +182,8 @@ public class Comment implements IModule {
 		return notes;
 	}
 	
-	public List<fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry> getManagedComments(final String staff){
-		List<fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry> notes = Lists.newArrayList();
+	public List<CommentEntry> getManagedComments(final String staff){
+		List<CommentEntry> notes = Lists.newArrayList();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -204,8 +204,8 @@ public class Comment implements IModule {
 				if(entity ==  null){
 					entity = "UUID:" + resultSet.getString("entity");
 				}
-				notes.add(new fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry(resultSet.getInt("id"), entity, resultSet.getString("note"),
-						staff, fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry.Type.valueOf(resultSet.getString("type")),
+				notes.add(new CommentEntry(resultSet.getInt("id"), entity, resultSet.getString("note"),
+						staff, CommentEntry.Type.valueOf(resultSet.getString("type")),
 						date));
 			}
 		} catch (final SQLException e) {
@@ -216,7 +216,7 @@ public class Comment implements IModule {
 		return notes;
 	}
 
-	public void insertComment(final String entity, final String comment, final fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry.Type type, final String author){
+	public void insertComment(final String entity, final String comment, final CommentEntry.Type type, final String author){
 		PreparedStatement statement = null;
 		try (Connection conn = BAT.getConnection()) {
 			statement = conn.prepareStatement(SQLQueries.Comments.insertEntry);
@@ -228,7 +228,7 @@ public class Comment implements IModule {
 			statement.close();
 			
 			// Handle the trigger system
-			for(final fr.Alphart.bungeeadmintools.Modules.Comment.Trigger trigger : config.getTriggers().values()){
+			for(final Trigger trigger : config.getTriggers().values()){
 			    for(final String pattern : trigger.getPattern()){
 		             if(pattern.isEmpty() || comment.contains(pattern)){
 		                    statement = conn.prepareStatement((pattern.isEmpty()) 

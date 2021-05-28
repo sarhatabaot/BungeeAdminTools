@@ -129,7 +129,7 @@ public class Core implements IModule, Listener {
 
 		// Register commands
 		cmds = new ArrayList<>();
-		cmds.add(new fr.Alphart.bungeeadmintools.Modules.Core.CoreCommand(this)); // Most of the job is done in the constructor of CoreCommand
+		cmds.add(new CoreCommand(this)); // Most of the job is done in the constructor of CoreCommand
 		
 		// Try to hook into BungeePerms
 		if(ProxyServer.getInstance().getPluginManager().getPlugin("BungeePerms") != null){
@@ -302,14 +302,14 @@ public class Core implements IModule, Listener {
 	
 	public void initMetrics() throws IOException{
         Metrics metrics = new Metrics(BAT.getInstance());
-        final Graph locale = metrics.createGraph("Locale");
+        final Metrics.Graph locale = metrics.createGraph("Locale");
         locale.addPlotter(new Metrics.Plotter(BAT.getInstance().getConfiguration().getLocale().getLanguage()) {
             @Override
             public int getValue() {
                 return 1;
             }
         });
-        final Graph RDBMS = metrics.createGraph("RDBMS");
+        final Metrics.Graph RDBMS = metrics.createGraph("RDBMS");
         RDBMS.addPlotter(new Metrics.Plotter("MySQL") {
             @Override
             public int getValue() {

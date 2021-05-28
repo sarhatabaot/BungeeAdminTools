@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 
 import fr.alphart.bungeeadmintools.modules.ban.Ban;
 
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.kick.Kick;
+import fr.alphart.bungeeadmintools.modules.mute.Mute;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

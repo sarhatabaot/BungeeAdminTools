@@ -1,4 +1,4 @@
-package fr.Alphart.bungeeadmintools.Modules.Mute;
+package fr.alphart.bungeeadmintools.modules.mute;
 
 import java.sql.Timestamp;
 

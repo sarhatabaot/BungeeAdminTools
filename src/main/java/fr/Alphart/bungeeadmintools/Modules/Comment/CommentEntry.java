@@ -1,9 +1,10 @@
-package fr.Alphart.bungeeadmintools.Modules.Comment;
+package fr.alphart.bungeeadmintools.modules.comment;
+
+import fr.alphart.bungeeadmintools.modules.core.Core;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
 
 public class CommentEntry {
 	private Calendar localTime = Calendar.getInstance(TimeZone.getDefault());

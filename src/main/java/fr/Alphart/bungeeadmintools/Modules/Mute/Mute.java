@@ -1,7 +1,7 @@
-package fr.Alphart.bungeeadmintools.Modules.Mute;
+package fr.alphart.bungeeadmintools.modules.mute;
 
-import static fr.Alphart.bungeeadmintools.I18n.I18n._;
-import static fr.Alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,18 +17,18 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.I18n.I18n;
-import fr.Alphart.bungeeadmintools.Modules.BATCommand;
-import fr.Alphart.bungeeadmintools.Modules.CommandHandler;
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.Modules.ModuleConfiguration;
-import fr.Alphart.bungeeadmintools.Utils.FormatUtils;
-import fr.Alphart.bungeeadmintools.Utils.UUIDNotFoundException;
-import fr.Alphart.bungeeadmintools.Utils.Utils;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.modules.BATCommand;
+import fr.alphart.bungeeadmintools.modules.CommandHandler;
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
+import fr.alphart.bungeeadmintools.utils.FormatUtils;
+import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+import fr.alphart.bungeeadmintools.utils.Utils;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.Comment;
 import net.md_5.bungee.api.ProxyServer;
@@ -102,10 +102,10 @@ public class Mute implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new MuteCommand(this);
+		commandHandler = new fr.alphart.bungeeadmintools.modules.mute.MuteCommand(this);
 		commandHandler.loadCmds();
 
-		mutedPlayers = new ConcurrentHashMap<String, PlayerMuteData>();
+		mutedPlayers = new ConcurrentHashMap<>();
 
 		final MuteTask muteTask = new MuteTask(this);
 		task = ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), muteTask, 0, 10, TimeUnit.SECONDS);
@@ -515,7 +515,7 @@ public class Mute implements IModule, Listener {
 	 * @return List of MuteEntry of the entity
 	 */
 	public List<MuteEntry> getMuteData(final String entity) {
-		final List<MuteEntry> muteList = new ArrayList<MuteEntry>();
+		final List<MuteEntry> muteList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -733,7 +733,7 @@ public class Mute implements IModule, Listener {
 	}
 	
 	public List<MuteEntry> getManagedMute(final String staff){
-		final List<MuteEntry> muteList = new ArrayList<MuteEntry>();
+		final List<MuteEntry> muteList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {

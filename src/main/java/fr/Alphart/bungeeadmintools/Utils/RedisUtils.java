@@ -2,7 +2,8 @@ package fr.alphart.bungeeadmintools.utils;
 
 import java.util.UUID;
 
-import fr.Alphart.bungeeadmintools.Modules.InvalidModuleException;
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -12,7 +13,7 @@ import net.md_5.bungee.event.EventHandler;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 
-import fr.Alphart.bungeeadmintools.BAT;
+
 
 public class RedisUtils implements Listener {
     

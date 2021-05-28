@@ -1,24 +1,26 @@
-package fr.Alphart.bungeeadmintools.Modules.Comment;
+package fr.alphart.bungeeadmintools.modules.comment;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.Alphart.bungeeadmintools.I18n.I18n._;
-import static fr.Alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n.__;
 
-import fr.Alphart.bungeeadmintools.Modules.BATCommand;
-import fr.Alphart.bungeeadmintools.Modules.CommandHandler;
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.Core.PermissionManager;
-import fr.Alphart.bungeeadmintools.Modules.InvalidModuleException;
+
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.modules.BATCommand;
+import fr.alphart.bungeeadmintools.modules.CommandHandler;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
+import fr.alphart.bungeeadmintools.utils.FormatUtils;
+import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import com.google.common.base.Joiner;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Modules.Comment.CommentEntry.Type;
-import fr.Alphart.bungeeadmintools.Utils.FormatUtils;
-import fr.Alphart.bungeeadmintools.Utils.Utils;
+
+
 
 public class CommentCommand extends CommandHandler {
 	private static Comment comment;
@@ -57,7 +59,7 @@ public class CommentCommand extends CommandHandler {
 			}
 			
 			checkArgument(comment.hasLastcommentCooledDown(args[0]), _("cooldownUnfinished"));
-			comment.insertComment(args[0], Utils.getFinalArg(args, 1), Type.NOTE, sender.getName());
+			comment.insertComment(args[0], Utils.getFinalArg(args, 1), CommentEntry.Type.NOTE, sender.getName());
 			sender.sendMessage(__("commentAdded"));
 		}
 	}
@@ -94,7 +96,7 @@ public class CommentCommand extends CommandHandler {
 						_("noPerm"));
 			}
 	          checkArgument(comment.hasLastcommentCooledDown(args[0]), _("cooldownUnfinished"));
-			comment.insertComment(args[0], reason, Type.WARNING, sender.getName());
+			comment.insertComment(args[0], reason, CommentEntry.Type.WARNING, sender.getName());
 			if(target != null){
 			  target.sendMessage(__("wasWarnedNotif", new String[] {reason}));
 			}

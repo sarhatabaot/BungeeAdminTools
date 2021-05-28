@@ -5,8 +5,9 @@ import static fr.alphart.bungeeadmintools.I18n.I18n._;
 
 import java.util.UUID;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.Core.PermissionManager;
+
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

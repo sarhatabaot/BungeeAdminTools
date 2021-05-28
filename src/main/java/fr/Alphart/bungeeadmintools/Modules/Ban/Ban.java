@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.ModuleConfiguration;
+
+import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
+import fr.alphart.bungeeadmintools.modules.core.Core;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -87,11 +88,11 @@ public class Ban implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new fr.alphart.bungeeadmintools.Modules.Ban.BanCommand(this);
+		commandHandler = new BanCommand(this);
 		commandHandler.loadCmds();
 
 		// Launch tempban task
-		final fr.Alphart.bungeeadmintools.Modules.Ban.BanExpirationTask banExpirationTask = new fr.Alphart.bungeeadmintools.Modules.Ban.BanExpirationTask(this);
+		final BanExpirationTask banExpirationTask = new BanExpirationTask(this);
 		task = ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), banExpirationTask, 0, 10, TimeUnit.SECONDS);
 
 		// Check if the online players are banned (if the module has been reloaded)
@@ -467,8 +468,8 @@ public class Ban implements IModule, Listener {
 	 * @param entity
 	 * @return List of BanEntry of the player
 	 */
-	public List<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry> getBanData(final String entity) {
-		final List<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry> banList = new ArrayList<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry>();
+	public List<BanEntry> getBanData(final String entity) {
+		final List<BanEntry> banList = new ArrayList<BanEntry>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -519,7 +520,7 @@ public class Ban implements IModule, Listener {
 					unbanReason = NO_REASON;
 				}
 				final String unbanStaff = resultSet.getString("ban_unbanstaff");
-				banList.add(new fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry(entity, server, reason, staff, beginDate, endDate, unbanDate, unbanReason, unbanStaff, active));
+				banList.add(new BanEntry(entity, server, reason, staff, beginDate, endDate, unbanDate, unbanReason, unbanStaff, active));
 			}
 		} catch (final SQLException e) {
 			DataSourceHandler.handleException(e);
@@ -529,8 +530,8 @@ public class Ban implements IModule, Listener {
 		return banList;
 	}
 
-	public List<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry> getManagedBan(final String staff){
-		final List<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry> banList = new ArrayList<fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry>();
+	public List<BanEntry> getManagedBan(final String staff){
+		final List<BanEntry> banList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -577,7 +578,7 @@ public class Ban implements IModule, Listener {
 					unbanReason = NO_REASON;
 				}
 				final String unbanStaff = resultSet.getString("ban_unbanstaff");
-				banList.add(new fr.Alphart.bungeeadmintools.Modules.Ban.BanEntry(entity, server, reason, staff, beginDate, endDate, unbanDate, unbanReason, unbanStaff, active));
+				banList.add(new BanEntry(entity, server, reason, staff, beginDate, endDate, unbanDate, unbanReason, unbanStaff, active));
 			}
 		} catch (final SQLException e) {
 			DataSourceHandler.handleException(e);

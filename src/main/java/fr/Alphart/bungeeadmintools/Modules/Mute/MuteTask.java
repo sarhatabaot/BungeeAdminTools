@@ -1,12 +1,13 @@
-package fr.Alphart.bungeeadmintools.Modules.Mute;
+package fr.alphart.bungeeadmintools.modules.mute;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
+
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

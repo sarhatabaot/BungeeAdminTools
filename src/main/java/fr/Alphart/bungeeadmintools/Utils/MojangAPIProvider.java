@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
+import fr.alphart.bungeeadmintools.modules.core.Core;
 import net.md_5.bungee.api.ProxyServer;
 
 import com.google.common.collect.Lists;

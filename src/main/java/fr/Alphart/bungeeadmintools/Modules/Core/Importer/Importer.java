@@ -1,10 +1,14 @@
-package fr.Alphart.bungeeadmintools.Modules.Core.Importer;
+package fr.alphart.bungeeadmintools.modules.core.importer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
+import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.utils.CallbackUtils;
+import fr.alphart.bungeeadmintools.utils.MojangAPIProvider;
+import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -14,10 +18,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.ProgressCallback;
-import fr.Alphart.bungeeadmintools.Utils.MojangAPIProvider;
-import fr.Alphart.bungeeadmintools.Utils.UUIDNotFoundException;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
+
 
 public abstract class Importer {
     protected Gson gson = new Gson();
@@ -40,9 +41,9 @@ public abstract class Importer {
             });
     protected ImportStatus status;
     
-    protected abstract void importData(final ProgressCallback<ImportStatus> progressionCallback, final String... additionnalsArgs) throws Exception;
+    protected abstract void importData(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, final String... additionnalsArgs) throws Exception;
     
-    public void startImport(final ProgressCallback<ImportStatus> progressionCallback, final String... additionnalsArgs){
+    public void startImport(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, final String... additionnalsArgs){
         try {
             importData(progressionCallback, additionnalsArgs);
         }catch (final Throwable t) {

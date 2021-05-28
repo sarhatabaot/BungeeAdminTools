@@ -1,4 +1,4 @@
-package fr.Alphart.bungeeadmintools.Modules.Core.Importer;
+package fr.alphart.bungeeadmintools.modules.core.importer;
 
 import java.io.File;
 import java.sql.Connection;
@@ -14,14 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Utils.CallbackUtils.ProgressCallback;
-import fr.Alphart.bungeeadmintools.database.DataSourceHandler;
-import fr.Alphart.bungeeadmintools.database.SQLQueries;
 
-public class SQLiteMigrater extends Importer{
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import fr.alphart.bungeeadmintools.database.SQLQueries;
+import fr.alphart.bungeeadmintools.utils.CallbackUtils;
+
+public class SQLiteMigrater extends Importer {
     @Override
-    protected void importData(final ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception {
+    protected void importData(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception {
         ResultSet res = null;
         if(new File(BAT.getInstance().getDataFolder(), "bat_database.db").exists()){
             progressionCallback.onMinorError("The SQLite Driver must be downloaded. The server may freeze during the download.");

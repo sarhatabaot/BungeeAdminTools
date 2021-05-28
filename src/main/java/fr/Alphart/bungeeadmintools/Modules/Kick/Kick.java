@@ -77,7 +77,7 @@ public class Kick implements IModule {
 		}
 
 		// Register commands
-		commandHandler = new fr.alphart.bungeeadmintools.modules.kick.KickCommand(this);
+		commandHandler = new KickCommand(this);
 		commandHandler.loadCmds();
 
 		return true;
@@ -176,8 +176,8 @@ public class Kick implements IModule {
 	 *            's name
 	 * @return List of KickEntry of the player
 	 */
-	public List<fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry> getKickData(final String pName) {
-		final List<fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry> kickList = new ArrayList<fr.Alphart.bungeeadmintools.Modules.Kick.KickEntry>();
+	public List<KickEntry> getKickData(final String pName) {
+		final List<KickEntry> kickList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BAT.getConnection()) {
@@ -200,7 +200,7 @@ public class Kick implements IModule {
 				}else{
 					date = resultSet.getTimestamp("kick_date");
 				}
-				kickList.add(new fr.alphart.bungeeadmintools.modules.kick.KickEntry(pName, server, reason, staff, date));
+				kickList.add(new KickEntry(pName, server, reason, staff, date));
 			}
 		} catch (final SQLException e) {
 			DataSourceHandler.handleException(e);

@@ -1,17 +1,17 @@
-package fr.Alphart.bungeeadmintools.Modules.Mute;
+package fr.alphart.bungeeadmintools.modules.mute;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.Alphart.bungeeadmintools.I18n.I18n._;
+import static fr.alphart.bungeeadmintools.I18n.I18n._;
 
-import fr.Alphart.bungeeadmintools.BAT;
-import fr.Alphart.bungeeadmintools.Modules.BATCommand;
-import fr.Alphart.bungeeadmintools.Modules.CommandHandler;
-import fr.Alphart.bungeeadmintools.Modules.Core.Core;
-import fr.Alphart.bungeeadmintools.Modules.Core.PermissionManager;
-import fr.Alphart.bungeeadmintools.Modules.IModule;
-import fr.Alphart.bungeeadmintools.Modules.InvalidModuleException;
-import fr.Alphart.bungeeadmintools.Utils.FormatUtils;
-import fr.Alphart.bungeeadmintools.Utils.Utils;
+import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.modules.BATCommand;
+import fr.alphart.bungeeadmintools.modules.CommandHandler;
+import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
+import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
+import fr.alphart.bungeeadmintools.utils.FormatUtils;
+import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
