@@ -157,7 +157,7 @@ public class MuteCommand extends CommandHandler {
 		}
 		target = (ip == null) ? target : ip;
 
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
+		checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
 
 		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), formatWithColor("alreadyMute"));
 
@@ -291,7 +291,7 @@ public class MuteCommand extends CommandHandler {
 		}
 		target = (ip == null) ? target : ip;
 
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
+		checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.MUTE, target), formatWithColor("isExempt"));
 
 		checkArgument(!mute.isMute((ip == null) ? target : ip, server, false), formatWithColor("alreadyMute"));
 

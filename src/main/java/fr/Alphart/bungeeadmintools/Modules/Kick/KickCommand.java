@@ -66,7 +66,7 @@ public class KickCommand extends CommandHandler {
 					PermissionManager.canExecuteAction(PermissionManager.Action.KICK, sender, player.getServer().getInfo().getName()),
 					I18n.formatWithColor("noPerm"));
 
-   				Preconditions.checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
+   				Preconditions.checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
 
    				final String returnedMsg = kick.kick(player, sender.getName(),
 					(args.length == 1) ? IModule.NO_REASON : Utils.getFinalArg(args, 1));
@@ -119,7 +119,7 @@ public class KickCommand extends CommandHandler {
 			    	UUID pUUID = RedisBungee.getApi().getUuidFromName(pName, true);
 			    	Preconditions.checkArgument(pUUID != null, I18n.formatWithColor("playerNotFound"));
 			    	
-			    	Preconditions.checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
+			    	Preconditions.checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
 			    	
 			    	final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(pName);
 			    	final String returnedMsg;
@@ -136,7 +136,7 @@ public class KickCommand extends CommandHandler {
 			final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(pName);
 				Preconditions.checkArgument(player != null, I18n.formatWithColor("playerNotFound"));
 
-				Preconditions.checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
+				Preconditions.checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.KICK, pName), I18n.formatWithColor("isExempt"));
 
 				final String returnedMsg = kick.gKick(player, sender.getName(),
 					(args.length == 1) ? IModule.NO_REASON : Utils.getFinalArg(args, 1));

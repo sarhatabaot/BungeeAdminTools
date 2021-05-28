@@ -171,7 +171,7 @@ public class BanCommand extends CommandHandler {
 
 		// We just check if the target is exempt from the ban, which means he's
 		// exempt from the full module command
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.BAN, target), formatWithColor("isExempt"));
+		checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.BAN, target), formatWithColor("isExempt"));
 
 		checkArgument(!ban.isBan((ip == null) ? target : ip, server), formatWithColor("alreadyBan"));
 
@@ -183,7 +183,7 @@ public class BanCommand extends CommandHandler {
 			returnedMsg = ban.ban(target, server, staff, 0, reason);
 		}
 
-		BAT.broadcast(returnedMsg, PermissionManager.Action.banBroadcast.getPermission());
+		BAT.broadcast(returnedMsg, PermissionManager.Action.BAN_BROADCAST.getPermission());
 	}
 
 	@RunAsync
@@ -310,7 +310,7 @@ public class BanCommand extends CommandHandler {
 		}
 		target = (ip == null) ? target : ip;
 		
-		checkArgument(!PermissionManager.isExemptFrom(PermissionManager.Action.BAN, target), formatWithColor("isExempt"));
+		checkArgument(PermissionManager.isExemptFrom(PermissionManager.Action.BAN, target), formatWithColor("isExempt"));
 		checkArgument(!ban.isBan(target, server), formatWithColor("alreadyBan"));
 
 		if (ipBan && player != null) {
@@ -321,7 +321,7 @@ public class BanCommand extends CommandHandler {
 			returnedMsg = ban.ban(target , server, staff, expirationTimestamp, reason);
 		}
 
-		BAT.broadcast(returnedMsg, PermissionManager.Action.banBroadcast.getPermission());
+		BAT.broadcast(returnedMsg, PermissionManager.Action.BAN_BROADCAST.getPermission());
 	}
 
 	@RunAsync
@@ -441,6 +441,6 @@ public class BanCommand extends CommandHandler {
 			returnedMsg = ban.unBan(target, server, staff, reason);
 		}
 
-		BAT.broadcast(returnedMsg, PermissionManager.Action.banBroadcast.getPermission());
+		BAT.broadcast(returnedMsg, PermissionManager.Action.BAN_BROADCAST.getPermission());
 	}
 }
