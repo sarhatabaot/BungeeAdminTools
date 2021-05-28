@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
-import static fr.alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
 
 public class LookupFormatter {
@@ -53,7 +53,7 @@ public class LookupFormatter {
 
         if (!pDetails.exist()) {
             final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
-            returnedMsg.add(__("playerNotFound"));
+            returnedMsg.add(formatWithColorAndAddPrefix("playerNotFound"));
             return returnedMsg;
         }
 
@@ -189,8 +189,8 @@ public class LookupFormatter {
         }catch(final NumberFormatException e){
             last_comments = "Unable to parse the number of last_comments";
         }
-        
-        final List<BaseComponent[]> finalMessage = FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
+
+        return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
                 lookupPattern
                 .replace("{connection_state}", connection_state)
                 .replace("{ban_servers}", ban_servers).replace("{banip_servers}", banip_servers)
@@ -203,15 +203,13 @@ public class LookupFormatter {
                 // '¤' is used as a space character, so we replace it with space and display correctly the escaped one
                 .replace("¤", " ").replace("\\¤", "¤")
                 ));
-        
-        return finalMessage;
     }
 
     public List<BaseComponent[]> getSummaryLookupIP(final String ip) {
         final EntityEntry ipDetails = new EntityEntry(ip);
         if (!ipDetails.exist()) {
             final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
-            returnedMsg.add(__("unknownIp"));
+            returnedMsg.add(formatWithColorAndAddPrefix("unknownIp"));
             return returnedMsg;
         }
         boolean isBan = false;
@@ -269,11 +267,9 @@ public class LookupFormatter {
             }
             replacedString = replacedString.replace("{ip_location}", ipLocation);
         }
-        
-        final List<BaseComponent[]> finalMessage = FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
-                replacedString));
 
-        return finalMessage;
+        return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
+                replacedString));
     }
     
     public List<BaseComponent[]> getSummaryStaffLookup(final String staff, final boolean displayID) {
@@ -325,8 +321,8 @@ public class LookupFormatter {
         }catch(final InvalidModuleException e){
             e.printStackTrace();
         }
-        
-        final List<BaseComponent[]> finalMessage = FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
+
+        return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
                 formatWithColor("staffLookup")
                 .replace("{bans_number}", String.valueOf(bans_number)).replace("{unbans_number}", String.valueOf(unbans_number))
                 .replace("{mutes_number}", String.valueOf(mutes_number)).replace("{unmutes_number}", String.valueOf(unmutes_number))
@@ -336,8 +332,6 @@ public class LookupFormatter {
                 .replace("{staff}", staff).replace("{uuid}", Core.getUUID(staff))
                 .replace("¤", " ").replace("\\¤", "¤")
                 ));
-
-        return finalMessage;
     }
     
     public List<BaseComponent[]> formatBanLookup(final String entity, final List<BanEntry> bans, 
@@ -350,7 +344,7 @@ public class LookupFormatter {
                 page = totalPages;
             }
             int beginIndex = (page - 1) * entriesPerPage;
-            int endIndex = (beginIndex + entriesPerPage < bans.size()) ? beginIndex + entriesPerPage : bans.size();
+            int endIndex = Math.min(beginIndex + entriesPerPage, bans.size());
             for(int i=bans.size() -1; i > 0; i--){
                 if(i >= beginIndex && i < endIndex){
                     continue;
@@ -446,7 +440,7 @@ public class LookupFormatter {
                 page = totalPages;
             }
             int beginIndex = (page - 1) * entriesPerPage;
-            int endIndex = (beginIndex + entriesPerPage < mutes.size()) ? beginIndex + entriesPerPage : mutes.size();
+            int endIndex = Math.min(beginIndex + entriesPerPage, mutes.size());
             for(int i=mutes.size() -1; i > 0; i--){
                 if(i >= beginIndex && i < endIndex){
                     continue;
@@ -461,6 +455,7 @@ public class LookupFormatter {
         for (final MuteEntry muteEntry : mutes) {
             if (muteEntry.isActive()) {
                 isMute = true;
+                break;
             }
         }
 
@@ -541,7 +536,7 @@ public class LookupFormatter {
                 page = totalPages;
             }
             int beginIndex = (page - 1) * entriesPerPage;
-            int endIndex = (beginIndex + entriesPerPage < kicks.size()) ? beginIndex + entriesPerPage : kicks.size();
+            int endIndex = Math.min(beginIndex + entriesPerPage, kicks.size());
             for(int i=kicks.size() -1; i > 0; i--){
                 if(i >= beginIndex && i < endIndex){
                     continue;
@@ -585,7 +580,7 @@ public class LookupFormatter {
                 page = totalPages;
             }
             int beginIndex = (page - 1) * entriesPerPage;
-            int endIndex = (beginIndex + entriesPerPage < comments.size()) ? beginIndex + entriesPerPage : comments.size();
+            int endIndex = Math.min(beginIndex + entriesPerPage, comments.size());
             for(int i=comments.size() -1; i > 0; i--){
                 if(i >= beginIndex && i < endIndex){
                     continue;

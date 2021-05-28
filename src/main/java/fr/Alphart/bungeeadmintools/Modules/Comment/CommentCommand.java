@@ -2,7 +2,7 @@ package fr.alphart.bungeeadmintools.modules.comment;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
-import static fr.alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
 
 import fr.alphart.bungeeadmintools.BAT;
@@ -61,7 +61,7 @@ public class CommentCommand extends CommandHandler {
 			
 			checkArgument(comment.hasLastcommentCooledDown(args[0]), formatWithColor("cooldownUnfinished"));
 			comment.insertComment(args[0], Utils.getFinalArg(args, 1), CommentEntry.Type.NOTE, sender.getName());
-			sender.sendMessage(__("commentAdded"));
+			sender.sendMessage(formatWithColorAndAddPrefix("commentAdded"));
 		}
 	}
 	
@@ -99,11 +99,10 @@ public class CommentCommand extends CommandHandler {
 	          checkArgument(comment.hasLastcommentCooledDown(args[0]), formatWithColor("cooldownUnfinished"));
 			comment.insertComment(args[0], reason, CommentEntry.Type.WARNING, sender.getName());
 			if(target != null){
-			  target.sendMessage(__("wasWarnedNotif", new String[] {reason}));
+			  target.sendMessage(I18n.formatWithColorAndAddPrefix("wasWarnedNotif", new String[] {reason}));
 			}
 			  
 			BAT.broadcast(I18n.formatWithColor("warnBroadcast", new String[]{args[0], sender.getName(), reason}), PermissionManager.Action.WARN_BROADCAST.getPermission());
-			return;
 		}
 	}
 }

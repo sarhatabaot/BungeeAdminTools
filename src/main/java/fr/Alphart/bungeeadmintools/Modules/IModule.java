@@ -5,48 +5,48 @@ import java.util.List;
 public interface IModule {
 	// Constants
 	// Server groups related
-	public static final String NO_REASON = "noreason";
-	public static final String GLOBAL_SERVER = "(global)";
-	public static final String ANY_SERVER = "(any)";
+	String NO_REASON = "noreason";
+	String GLOBAL_SERVER = "(global)";
+	String ANY_SERVER = "(any)";
 
 	// Module part
-	public final static Integer ON_STATE = 1;
-	public final static Integer OFF_STATE = 0;
+	Integer ON_STATE = 1;
+	Integer OFF_STATE = 0;
 
-	public String getName();
+	String getName();
 
 	/**
 	 * Load the module
 	 * 
 	 * @return true if everything's ok otherwise false
 	 */
-	public boolean load();
+	boolean load();
 
 	/**
 	 * Get the configuration section of this module
 	 * 
 	 * @return configuration section of this module
 	 */
-	public ModuleConfiguration getConfig();
+	ModuleConfiguration getConfig();
 
 	/**
 	 * Unload the module
 	 * 
 	 * @return true if everything's ok otherwise false
 	 */
-	public boolean unload();
+	boolean unload();
 
 	/**
 	 * Get main command name
 	 * 
 	 * @return name of the main command without a slash
 	 */
-	public String getMainCommand();
+	String getMainCommand();
 
 	/**
 	 * Get commands used by this module
 	 * 
 	 * @return list of commands
 	 */
-	public List<BATCommand> getCommands();
+	List<BATCommand> getCommands();
 }

@@ -92,8 +92,7 @@ public class SQLiteMigrater extends Importer {
                         int columnCount = res.getMetaData().getColumnCount();
                         while (res.next()) {
                             // If there is an id, we will ignore it (start from columnIndex 2)
-                            boolean ignoreFirstColumn = (moduleImportQueries.get(table).getValue().contains("NULL"))
-                                    ? true : false;
+                            boolean ignoreFirstColumn = moduleImportQueries.get(table).getValue().contains("NULL");
                             // SOme parameters error "No value specified for parameter 1" need to find the good formula to delimite the start and the end
                             for(i=(ignoreFirstColumn) ? 2 : 1; i < (columnCount + 1); i++){
                                 Object obj = res.getObject(i);

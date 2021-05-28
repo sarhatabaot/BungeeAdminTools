@@ -47,7 +47,7 @@ public class MinecraftUUIDImporter extends Importer {
                 while((temp = brPlayer.readLine()) != null){
                     sb.append(temp);
                 }
-                playerBanEntries = (Set<Map<String, String>>) gson.fromJson(sb.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType());
+                playerBanEntries = gson.fromJson(sb.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType());
                 sb.setLength(0);
                 brPlayer.close();
             }
@@ -58,7 +58,7 @@ public class MinecraftUUIDImporter extends Importer {
                 while((temp = brIps.readLine()) != null){
                     sb.append(temp);
                 }
-                ipBanEntries = (Set<Map<String, String>>) gson.fromJson(sb.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType());
+                ipBanEntries = gson.fromJson(sb.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType());
                 brIps.close();
             }
             status = new ImportStatus(playerBanEntries.size() + ipBanEntries.size());

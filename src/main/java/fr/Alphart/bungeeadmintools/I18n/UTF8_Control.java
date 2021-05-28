@@ -13,8 +13,7 @@ import java.util.ResourceBundle.Control;
 public class UTF8_Control extends Control {
 	@Override
 	public ResourceBundle newBundle(final String baseName, final Locale locale, final String format,
-			final ClassLoader loader, final boolean reload) throws IllegalAccessException, InstantiationException,
-			IOException {
+			final ClassLoader loader, final boolean reload) throws IOException {
 		final String bundleName = toBundleName(baseName, locale);
 		final String resourceName = toResourceName(bundleName, "language");
 		ResourceBundle bundle = null;

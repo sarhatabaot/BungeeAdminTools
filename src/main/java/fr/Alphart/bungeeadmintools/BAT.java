@@ -105,22 +105,19 @@ public class BAT extends Plugin {
 		    }
 		}
 		prefix = config.getPrefix();
-		loadDB(new CallbackUtils.Callback<Boolean>(){
-			@Override
-			public void done(final Boolean dbState, Throwable throwable) {
-				if (dbState) {
-				    getLogger().config("Connection to the database established");
-					// Try enabling redis support.
-					redis = new RedisUtils(config.isRedisSupport());
-			        modules = new ModulesManager();
-					modules.loadModules();
-				} else {
-					getLogger().severe("BAT is gonna shutdown because it can't connect to the database.");
-					return;
-				}
-				// Init the I18n module
-				I18n.getString("global");
+		loadDB((dbState, throwable) -> {
+			if (dbState) {
+				getLogger().config("Connection to the database established");
+				// Try enabling redis support.
+				redis = new RedisUtils(config.isRedisSupport());
+				modules = new ModulesManager();
+				modules.loadModules();
+			} else {
+				getLogger().severe("BAT is gonna shutdown because it can't connect to the database.");
+				return;
 			}
+			// Init the I18n module
+			I18n.getString("global");
 		});
 	}
 	
@@ -230,9 +227,9 @@ public class BAT extends Plugin {
 			u = driverPath.toURI().toURL();
 			systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 			sysclass = URLClassLoader.class;
-			final Method method = sysclass.getDeclaredMethod("addURL", new Class[] { URL.class });
+			final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
 			method.setAccessible(true);
-			method.invoke(systemClassLoader, new Object[] { u });
+			method.invoke(systemClassLoader, u);
 
 			Class.forName("org.sqlite.JDBC");
 			return true;

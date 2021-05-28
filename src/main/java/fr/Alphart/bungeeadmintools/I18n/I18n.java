@@ -139,7 +139,6 @@ public class I18n {
 	 * Format a message with given object. Parse color
 	 * 
 	 * @param message
-	 * @param formatObject
 	 * @return String
 	 */
 	public static String formatWithColor(final String message) {
@@ -158,7 +157,7 @@ public class I18n {
 	 * @param formatObject
 	 * @return
 	 */
-	public static BaseComponent[] __(final String message, final String[] formatObject) {
+	public static BaseComponent[] formatWithColorAndAddPrefix(final String message, final String[] formatObject) {
 		try {
 			final MessageFormat mf = new MessageFormat(getString(message));
 			return BAT.__(mf.format(preprocessArgs(formatObject)));
@@ -171,10 +170,9 @@ public class I18n {
 	 * Same as {@link #formatWithColor(String, String[])} except it adds a prefix
 	 * 
 	 * @param message
-	 * @param formatObject
 	 * @return
 	 */
-	public static BaseComponent[] __(final String message) {
+	public static BaseComponent[] formatWithColorAndAddPrefix(final String message) {
 		try {
 			// Replace the quote as the message formatter does
 			return BAT.__(getString(message).replace("''", "'"));
@@ -187,7 +185,7 @@ public class I18n {
 	 * Preprocess formatArgs to replace value contained in the map argsReplacer,
 	 * in order to have global instead of global for example
 	 * 
-	 * @param args
+	 * @param formatArgs
 	 * @return
 	 */
 	public static String[] preprocessArgs(final String[] formatArgs) {

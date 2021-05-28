@@ -2,7 +2,7 @@ package fr.alphart.bungeeadmintools.modules.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
-import static fr.alphart.bungeeadmintools.I18n.I18n.__;
+import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
 
 import java.lang.reflect.InvocationTargetException;
@@ -149,10 +149,10 @@ public class CoreCommand extends BATCommand {
 				if (cmd.getBATPermission().isEmpty() || sender.hasPermission(cmd.getBATPermission()) || sender.hasPermission("bat.admin")) {
 					cmd.execute(sender, cleanArgs);
 				} else {
-					sender.sendMessage(__("noPerm"));
+					sender.sendMessage(formatWithColorAndAddPrefix("noPerm"));
 				}
 			} else {
-				sender.sendMessage(__("invalidCommand"));
+				sender.sendMessage(formatWithColorAndAddPrefix("invalidCommand"));
 			}
 		}
 	}
@@ -187,7 +187,7 @@ public class CoreCommand extends BATCommand {
 		@Override
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
-			sender.sendMessage(__("The loaded modules are :&a"));
+			sender.sendMessage(formatWithColorAndAddPrefix("The loaded modules are :&a"));
 			for (final IModule module : BAT.getInstance().getModules().getLoadedModules()) {
 				if (module instanceof Core) {
 					continue;
@@ -207,7 +207,7 @@ public class CoreCommand extends BATCommand {
 			// It means that no module were loaded otherwise there would be
 			// something remaining in the StringBuilder
 			if (sb.length() == 0) {
-				sender.sendMessage(__("&cThere aren't any loaded modules!"));
+				sender.sendMessage(formatWithColorAndAddPrefix("&cThere aren't any loaded modules!"));
 			} else {
 				sb.setLength(0); // Clean the sb
 			}
@@ -222,7 +222,7 @@ public class CoreCommand extends BATCommand {
 		@Override
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
-			sender.sendMessage(__("Starting reload ..."));
+			sender.sendMessage(formatWithColorAndAddPrefix("Starting reload ..."));
 			try {
 				BAT.getInstance().getConfiguration().reload();
 			} catch (InvalidConfigurationException e) {
@@ -232,7 +232,7 @@ public class CoreCommand extends BATCommand {
 			I18n.reload();
 			BAT.getInstance().getModules().unloadModules();
 			BAT.getInstance().getModules().loadModules();		
-			sender.sendMessage(__("Reload successfully executed ..."));
+			sender.sendMessage(formatWithColorAndAddPrefix("Reload successfully executed ..."));
 		}
 	}
 	
@@ -287,7 +287,7 @@ public class CoreCommand extends BATCommand {
 							message = lookupFormatter.formatBanLookup(entity, bans, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__((!Utils.validIP(entity))
+							message.add(formatWithColorAndAddPrefix((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been banned."
 										: "&eThe IP &a" + entity + "&e has never been banned."));
 						}
@@ -298,7 +298,7 @@ public class CoreCommand extends BATCommand {
 							message = lookupFormatter.formatMuteLookup(entity, mutes, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__((!Utils.validIP(entity))
+							message.add(formatWithColorAndAddPrefix((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been muted."
 										: "&eThe IP &a" + entity + "&e has never been muted."));
 						}
@@ -309,7 +309,7 @@ public class CoreCommand extends BATCommand {
 							message = lookupFormatter.formatKickLookup(entity, kicks, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__((!Utils.validIP(entity))
+							message.add(formatWithColorAndAddPrefix((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has never been kicked."
 										: "&eThe IP &a" + entity + "&e has never been kicked."));
 						}
@@ -320,7 +320,7 @@ public class CoreCommand extends BATCommand {
 							message = lookupFormatter.commentRowLookup(entity, comments, page, false);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__((!Utils.validIP(entity))
+							message.add(formatWithColorAndAddPrefix((!Utils.validIP(entity))
 										? "&eThe player &a" + entity + "&e has no comment about him."
 										: "&eThe IP &a" + entity + "&e has no comment."));
 						}
@@ -379,7 +379,7 @@ public class CoreCommand extends BATCommand {
 							message = LookupCmd.getLookupFormatter().formatBanLookup(entity, bans, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__("&b" + entity + "&e has never performed any operation concerning ban."));
+							message.add(formatWithColorAndAddPrefix("&b" + entity + "&e has never performed any operation concerning ban."));
 						}
 						break;
 					case "mute":
@@ -388,7 +388,7 @@ public class CoreCommand extends BATCommand {
 							message = LookupCmd.getLookupFormatter().formatMuteLookup(entity, mutes, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__("&b" + entity + "&e has never performed any operation concerning mute."));
+							message.add(formatWithColorAndAddPrefix("&b" + entity + "&e has never performed any operation concerning mute."));
 						}
 						break;
 					case "kick":
@@ -397,7 +397,7 @@ public class CoreCommand extends BATCommand {
 							message = LookupCmd.getLookupFormatter().formatKickLookup(entity, kicks, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__("&b" + entity + "&e has never performed any operation concerning kick."));
+							message.add(formatWithColorAndAddPrefix("&b" + entity + "&e has never performed any operation concerning kick."));
 						}
 						break;
 					case "comment":
@@ -406,7 +406,7 @@ public class CoreCommand extends BATCommand {
 							message = LookupCmd.getLookupFormatter().commentRowLookup(entity, comments, page, true);
 						}else{
 							message = new ArrayList<BaseComponent[]>();
-							message.add(__("&b" + entity + "&e has never performed any operation concerning comment."));
+							message.add(formatWithColorAndAddPrefix("&b" + entity + "&e has never performed any operation concerning comment."));
 						}
 						break;
 					default:
@@ -432,7 +432,7 @@ public class CoreCommand extends BATCommand {
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
 			if (!CommandQueue.executeQueueCommand(sender)) {
-				sender.sendMessage(__("noQueuedCommand"));
+				sender.sendMessage(formatWithColorAndAddPrefix("noQueuedCommand"));
 			}
 		}
 
@@ -462,7 +462,7 @@ public class CoreCommand extends BATCommand {
 			
 			final Importer importer = importers.get(source);
 			if(importer != null){
-			    sender.sendMessage(__("BAT will be disabled during the import ..."));
+			    sender.sendMessage(formatWithColorAndAddPrefix("BAT will be disabled during the import ..."));
 			    BAT.getInstance().getModules().unloadModules();
 			    
                 importer.startImport(new CallbackUtils.ProgressCallback<Importer.ImportStatus>() {
@@ -470,33 +470,32 @@ public class CoreCommand extends BATCommand {
                     public void done(Importer.ImportStatus result, Throwable throwable) {
                         if(throwable != null){
                             if(throwable instanceof RuntimeException){
-                                sender.sendMessage(__("An error (" + throwable.getMessage()
+                                sender.sendMessage(formatWithColorAndAddPrefix("An error (" + throwable.getMessage()
                                         + ") has occured during the import. Please check the logs"));
-                                throwable.printStackTrace();
-                            }else{
-                                sender.sendMessage(__("An error has occured during the import. Please check the logs"));
+							}else{
+                                sender.sendMessage(formatWithColorAndAddPrefix("An error has occured during the import. Please check the logs"));
                                 BAT.getInstance().getLogger().severe("An error has occured during the import of data from " + source 
                                         + ". Please report this :");
-                                throwable.printStackTrace();
-                            }
-                        }else{
-                            sender.sendMessage(__("Congratulations, the migration is finished. &a"
+							}
+							throwable.printStackTrace();
+						}else{
+                            sender.sendMessage(formatWithColorAndAddPrefix("Congratulations, the migration is finished. &a"
                                     + result.getConvertedEntries() + " entries&e were converted successfully."));
                         }
                         BAT.getInstance().getModules().loadModules();
-                        sender.sendMessage(__("BAT is now reenabled ..."));
+                        sender.sendMessage(formatWithColorAndAddPrefix("BAT is now reenabled ..."));
                     }
                     
                     @Override
                     public void onProgress(Importer.ImportStatus progressStatus) {
-                        sender.sendMessage(__("&a" + new DecimalFormat("0.00").format(progressStatus.getProgressionPercent())
+                        sender.sendMessage(formatWithColorAndAddPrefix("&a" + new DecimalFormat("0.00").format(progressStatus.getProgressionPercent())
                                 + "%&e entries converted !&a" + (progressStatus.getRemainingEntries()) 
                                 + "&e remaining entries on a total of &6" + progressStatus.getTotalEntries()));
                     }
                     
                     @Override
                     public void onMinorError(String errorMessage) {
-                        sender.sendMessage(__(errorMessage));
+                        sender.sendMessage(formatWithColorAndAddPrefix(errorMessage));
                     }
                 }, Utils.getFinalArg(args, 1));
 			}else{
@@ -516,11 +515,11 @@ public class CoreCommand extends BATCommand {
 				throw new IllegalArgumentException("You can't backup an SQLite database with this command. "
 						+ "To save an SQLite database just copy and paste the file 'bat_database.db'.");
 			}
-			sender.sendMessage(__("Starting backup of BAT datas ..."));
+			sender.sendMessage(formatWithColorAndAddPrefix("Starting backup of BAT datas ..."));
 			BAT.getInstance().getDsHandler().generateMysqlBackup(new CallbackUtils.Callback<String>() {
 				@Override
 				public void done(final String result, Throwable throwable) {
-					sender.sendMessage(__(result));
+					sender.sendMessage(formatWithColorAndAddPrefix(result));
 				}
 			});
 		}

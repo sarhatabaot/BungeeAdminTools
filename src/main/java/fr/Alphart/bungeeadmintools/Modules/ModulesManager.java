@@ -34,8 +34,8 @@ public class ModulesManager {
 	public ModulesManager() {
 		log = BAT.getInstance().getLogger();
 		sb = new StringBuilder();
-		modules = new LinkedHashMap<IModule, Integer>();
-		modulesNames = new HashMap<String, IModule>();
+		modules = new LinkedHashMap<>();
+		modulesNames = new HashMap<>();
 	}
 
 	public void showHelp(final CommandSender sender) {
@@ -118,9 +118,9 @@ public class ModulesManager {
 	}
 
 	public Set<IModule> getLoadedModules() {
-		final Set<IModule> modulesList = new HashSet<IModule>();
+		final Set<IModule> modulesList = new HashSet<>();
 		for (final Entry<IModule, Integer> entry : modules.entrySet()) {
-			if (entry.getValue() == IModule.ON_STATE) {
+			if (entry.getValue().equals(IModule.ON_STATE)) {
 				modulesList.add(entry.getKey());
 			}
 		}

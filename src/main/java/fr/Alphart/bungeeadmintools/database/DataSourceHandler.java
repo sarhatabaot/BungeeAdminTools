@@ -276,7 +276,7 @@ public class DataSourceHandler {
 	    
 	    public List<String> getLines(){
 	        if(pumpedLines == null){
-	            return new ArrayList<String>();
+	            return new ArrayList<>();
 	        }
 	        return pumpedLines;
 	    }

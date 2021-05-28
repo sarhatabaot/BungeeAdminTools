@@ -1,6 +1,6 @@
 package fr.alphart.bungeeadmintools.modules.core;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +19,6 @@ import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.utils.EnhancedDateFormat;
-import fr.alphart.bungeeadmintools.utils.Metrics;
 import fr.alphart.bungeeadmintools.utils.MojangAPIProvider;
 import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
@@ -31,7 +30,6 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import com.google.common.base.Charsets;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -45,7 +43,7 @@ public class Core implements IModule, Listener {
 	       .maximumSize(10000)
 	       .expireAfterAccess(30, TimeUnit.MINUTES)
 	       .build(
-	           new CacheLoader<String, String>() {
+	           new CacheLoader<>() {
 	             public String load(final String pName) throws UUIDNotFoundException {
 	            	final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(pName);
 	         		if (player != null) {
@@ -83,7 +81,7 @@ public class Core implements IModule, Listener {
 	         		}
 	         		// If offline server, generate the UUID
 	         		else if(UUID.isEmpty()){
-	         			UUID = java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + pName).getBytes(Charsets.UTF_8)).toString().replaceAll( "-", "" );
+	         			UUID = java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + pName).getBytes(StandardCharsets.UTF_8)).toString().replaceAll( "-", "" );
 	         		}
 
 	         		return UUID;
@@ -130,14 +128,7 @@ public class Core implements IModule, Listener {
 		
 		// Update the date format (if translation has been changed)
 		defaultDF = new EnhancedDateFormat(BAT.getInstance().getConfiguration().isLitteralDate());
-		
-        // Init metrics
-        try{
-            initMetrics();
-        }catch(final IOException e){
-            BAT.getInstance().getLogger().severe("BAT met an error while trying to connect to Metrics :");
-            e.printStackTrace();
-        }
+
 		return true;
 	}
 
@@ -167,7 +158,6 @@ public class Core implements IModule, Listener {
 	 * @throws UUIDNotFoundException
 	 * @return String which is the UUID
 	 */
-	@SuppressWarnings("deprecation")
 	public static String getUUID(final String pName){
 		try {
 			return uuidCache.get(pName);
@@ -280,41 +270,12 @@ public class Core implements IModule, Listener {
 	public static Collection<String> getCommandSenderPermission(final CommandSender sender){
 		return sender.getPermissions();
 	}
-	
-	public void initMetrics() throws IOException{
-        Metrics metrics = new Metrics(BAT.getInstance());
-        final Metrics.Graph locale = metrics.createGraph("Locale");
-        locale.addPlotter(new Metrics.Plotter(BAT.getInstance().getConfiguration().getLocale().getLanguage()) {
-            @Override
-            public int getValue() {
-                return 1;
-            }
-        });
-        final Metrics.Graph RDBMS = metrics.createGraph("RDBMS");
-        RDBMS.addPlotter(new Metrics.Plotter("MySQL") {
-            @Override
-            public int getValue() {
-                return !DataSourceHandler.isSQLite() ? 1 : 0;
-            }
-        });
-        RDBMS.addPlotter(new Metrics.Plotter("SQLite") {
-            @Override
-            public int getValue() {
-                return DataSourceHandler.isSQLite() ? 1 : 0;
-            }
-        });
-        metrics.start();
-	}
+
 	
 	// Event listener
 	@EventHandler
 	public void onPlayerJoin(final PostLoginEvent ev) {
-		BAT.getInstance().getProxy().getScheduler().runAsync(BAT.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				updatePlayerIPandUUID(ev.getPlayer());
-			}
-		});
+		BAT.getInstance().getProxy().getScheduler().runAsync(BAT.getInstance(), () -> updatePlayerIPandUUID(ev.getPlayer()));
 	}
 
 	@EventHandler

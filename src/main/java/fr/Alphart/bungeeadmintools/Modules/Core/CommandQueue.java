@@ -19,14 +19,14 @@ public class CommandQueue {
 	 * Key : player name <br>
 	 * Value: Entry: K: expiration timemstamp; V: command
 	 */
-	private static Map<String, Entry<Long, String>> preExecCommand = Maps.newHashMap();
+	private static final Map<String, Entry<Long, String>> preExecCommand = Maps.newHashMap();
 	/**
 	 * Store the name of the sender which are executing a queued command
 	 */
-	private static List<String> executingQueuedCommand = Lists.newArrayList();
+	private static final List<String> executingQueuedCommand = Lists.newArrayList();
 
 	public static String queueCommand(final CommandSender sender, final String command) {
-		preExecCommand.put(sender.getName(), new AbstractMap.SimpleEntry<Long, String>(
+		preExecCommand.put(sender.getName(), new AbstractMap.SimpleEntry<>(
 				System.currentTimeMillis() + 15000, command));
 		return "You must confirm your command using";
 	}

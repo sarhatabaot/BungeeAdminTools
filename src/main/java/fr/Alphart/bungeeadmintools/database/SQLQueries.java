@@ -287,7 +287,7 @@ public class SQLQueries {
 		public static final String patternTriggerCheck = "SELECT COUNT(*) FROM `" + table + "` WHERE entity = ? && note LIKE ?;";
 		
 		public static class SQLite{
-			public static final String createTable[] = {
+			public static final String[] createTable = {
 				"CREATE TABLE IF NOT EXISTS `" + table + "` ("
 				+ "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ "`entity` varchar(100) NOT NULL,"
@@ -328,7 +328,7 @@ public class SQLQueries {
 		public static final String getIpUsers = "SELECT BAT_player FROM `" + table + "` WHERE lastip = ?";
 
 		public static class SQLite {
-			public static final String createTable[] = {
+			public static final String[] createTable = {
 				"CREATE TABLE IF NOT EXISTS `" + table + "` (" + "`BAT_player` varchar(30) NOT NULL,"
 						+ "`UUID` varchar(100) UNIQUE NOT NULL," + "`lastip` varchar(50) NOT NULL,"
 						+ "`firstlogin` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,"

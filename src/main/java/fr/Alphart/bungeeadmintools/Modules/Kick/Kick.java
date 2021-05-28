@@ -38,7 +38,7 @@ public class Kick implements IModule {
 
 	@Override
 	public List<BATCommand> getCommands() {
-		return commandHandler.getCmds();
+		return commandHandler.getCommands();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class Kick implements IModule {
 
 		// Register commands
 		commandHandler = new KickCommand(this);
-		commandHandler.loadCmds();
+		commandHandler.loadCommands();
 
 		return true;
 	}
@@ -172,7 +172,7 @@ public class Kick implements IModule {
 	 * Get all kick data of a player <br>
 	 * <b>Should be runned async to optimize performance</b>
 	 * 
-	 * @param player
+	 * @param pName
 	 *            's name
 	 * @return List of KickEntry of the player
 	 */

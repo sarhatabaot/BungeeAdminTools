@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class Comment implements IModule {
 
 	@Override
 	public List<BATCommand> getCommands() {
-		return commandHandler.getCmds();
+		return commandHandler.getCommands();
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class Comment implements IModule {
 
 		// Register commands
 		commandHandler = new CommentCommand(this);
-		commandHandler.loadCmds();
+		commandHandler.loadCommands();
 		
 		return true;
 	}
@@ -112,7 +112,7 @@ public class Comment implements IModule {
                         final Configuration triggerSection = config.getSection("triggers");
                         triggers.clear();
                         for(final String triggerName : triggerSection.getKeys()){
-                            final List<String> patterns = Arrays.asList(triggerSection.getString(triggerName + ".pattern"));
+                            final List<String> patterns = Collections.singletonList(triggerSection.getString(triggerName + ".pattern"));
                             final List<String> cmds = triggerSection.getStringList(triggerName + ".commands");
                             final int triggerNumber = triggerSection.getInt(triggerName + ".triggerNumber");
                             triggers.put(triggerName, new Trigger(triggerNumber, patterns, cmds));
@@ -133,7 +133,7 @@ public class Comment implements IModule {
 			"  commands: list of commands that should be executed when it triggers, you can use {player} variable",
 			"  triggerNumber: the number at which this triggers"})
 		@Getter
-		private Map<String, Trigger> triggers = new HashMap<String, Trigger>(){
+		private final Map<String, Trigger> triggers = new HashMap<>(){
 			private static final long serialVersionUID = 1L;
 		{
 			put("example", new Trigger());
@@ -141,7 +141,7 @@ public class Comment implements IModule {
 		
 		@Getter
 		@net.cubespace.Yamler.Config.Comment("Interval in seconds between two comments on the same player")
-		private int cooldown = 3;
+		private final int cooldown = 3;
 	}
 	
 	/**

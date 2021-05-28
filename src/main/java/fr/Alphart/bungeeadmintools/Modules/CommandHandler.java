@@ -15,16 +15,16 @@ public abstract class CommandHandler {
 
 	protected CommandHandler(final IModule module) {
 		this.module = module;
-		commands = new ArrayList<BATCommand>();
+		commands = new ArrayList<>();
 	}
 
-	public List<BATCommand> getCmds() {
+	public List<BATCommand> getCommands() {
 		return commands;
 	}
 
-	public void loadCmds() {
+	public void loadCommands() {
 		// Get all commands and put them in a list
-		final List<String> cmdName = new ArrayList<String>();
+		final List<String> cmdName = new ArrayList<>();
 		for (final Class<?> subClass : getClass().getDeclaredClasses()) {
 			try {
 				if(subClass.getAnnotation(BATCommand.Disable.class) != null){
@@ -48,13 +48,7 @@ public abstract class CommandHandler {
 
 		// Sort the commands list and remove unused command
 		final List<String> enabledCmds = module.getConfig().getEnabledCmds();
-		final Iterator<BATCommand> it = commands.iterator();
-		while (it.hasNext()) {
-			final BATCommand cmd = it.next();
-			if (!enabledCmds.contains(cmd.getName())) {
-				it.remove();
-			}
-		}
+		commands.removeIf(cmd -> !enabledCmds.contains(cmd.getName()));
 	}
 
 }

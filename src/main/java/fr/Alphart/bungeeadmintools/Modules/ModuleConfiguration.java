@@ -39,7 +39,7 @@ public abstract class ModuleConfiguration extends YamlConfig {
 	@Getter
 	private boolean enabled = true;
 
-	private Map<String, Boolean> commands = new HashMap<String, Boolean>();
+	private Map<String, Boolean> commands = new HashMap<>();
 
 	/**
 	 * Get the names of the enabled commands for this module
@@ -47,7 +47,7 @@ public abstract class ModuleConfiguration extends YamlConfig {
 	 * @return list of the enabled commands
 	 */
 	public List<String> getEnabledCmds() {
-		final List<String> enabledCmds = new ArrayList<String>();
+		final List<String> enabledCmds = new ArrayList<>();
 		for (final Entry<String, Boolean> entry : commands.entrySet()) {
 			if (entry.getValue()) {
 				enabledCmds.add(entry.getKey());
@@ -62,20 +62,15 @@ public abstract class ModuleConfiguration extends YamlConfig {
 	 * @param commands
 	 *            list
 	 */
-	public void setProvidedCmds(final List<String> cmds) {
-		Collections.sort(cmds);
+	public void setProvidedCmds(final List<String> commands) {
+		Collections.sort(commands);
 		// Add new commands if there are
-		for (final String cmdName : cmds) {
-			if (!commands.containsKey(cmdName)) {
-				commands.put(cmdName, true);
+		for (final String cmdName : commands) {
+			if (!this.commands.containsKey(cmdName)) {
+				this.commands.put(cmdName, true);
 			}
 		}
 		// Iterate through the commands map and remove the ones who don't exist (e.g because of an update)
-		for(final Iterator<Map.Entry<String, Boolean>> it = commands.entrySet().iterator(); it.hasNext();){
-			final Map.Entry<String, Boolean> cmdEntry = it.next();
-			if(!cmds.contains(cmdEntry.getKey())){
-				it.remove();
-			}
-		}
+		this.commands.entrySet().removeIf(cmdEntry -> !commands.contains(cmdEntry.getKey()));
 	}
 }

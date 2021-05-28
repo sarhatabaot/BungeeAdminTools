@@ -93,7 +93,7 @@ public class MojangAPIProvider {
       }
   }
   
-  private class MojangUUIDProfile{
+  private static class MojangUUIDProfile{
     String id;
     String name;
   }
