@@ -132,12 +132,11 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
     public void execute(final CommandSender sender, final String[] args) {
         // If the sender doesn't have the permission, we're gonna check if he has this permission with children permission
         // Example : in this plugin, if the sender has "bat.ban.server1", he also has "bat.ban"
-        if (!(permission == null || sender.hasPermission(permission) || sender.hasPermission("bat.admin")
-                || (sender.hasPermission("bat.grantall.global") && permission.endsWith("global")))) {
+        if (!(permission == null || sender.hasPermission(permission) || sender.hasPermission("bat.admin") || (sender.hasPermission("bat.grantall.global") && permission.endsWith("global")))) {
             boolean hasPerm = false;
             Collection<String> senderPerm = Core.getCommandSenderPermission(sender);
             for (final String perm : senderPerm) {
-                // The grantall give acces to all command (used when command is executed, but the plugin check in the command if the sender can execute this action)
+                // The grantall give access to all command (used when command is executed, but the plugin check in the command if the sender can execute this action)
                 // except the /bat ... commands
                 if (perm.toLowerCase().startsWith(permission)) {
                     hasPerm = true;
