@@ -14,7 +14,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class FormatUtils {
 	private static StringBuilder sb = new StringBuilder();
@@ -85,7 +85,7 @@ public class FormatUtils {
 		msg.add(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', sb.toString())));
 		sb.setLength(0);
 		boolean coreHelp = "core".equalsIgnoreCase(helpName);
-		final Map<String, Boolean> simpleAliasesCommands = BAT.getInstance().getConfiguration().getSimpleAliasesCommands();
+		final Map<String, Boolean> simpleAliasesCommands = BungeeAdminToolsPlugin.getInstance().getConfiguration().getSimpleAliasesCommands();
 		for (final BATCommand cmd : cmds) {
 			if (sender.hasPermission("bat.admin") || sender.hasPermission(cmd.getBATPermission())) {
 				if(coreHelp){
@@ -102,7 +102,7 @@ public class FormatUtils {
 			sender.sendMessage(tx);
 		}
 		if (msg.size() == 1) {
-			sender.sendMessage(BAT.__("&c No command corresponding to your permission has been found"));
+			sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix("&c No command corresponding to your permission has been found"));
 		}
 	}
 

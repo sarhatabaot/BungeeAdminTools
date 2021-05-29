@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
@@ -29,7 +29,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 public class Kick implements IModule {
 	private final String name = "kick";
-	private fr.alphart.bungeeadmintools.modules.kick.KickCommand commandHandler;
+	private OldKickCommand commandHandler;
 	private final KickConfig config;
 
 	public Kick(){
@@ -60,7 +60,7 @@ public class Kick implements IModule {
 	public boolean load() {
 		// Init table
 		Statement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
 			if (DataSourceHandler.isSQLite()) {
 				for (final String query : SQLQueries.Kick.SQLite.createTable) {
@@ -77,7 +77,7 @@ public class Kick implements IModule {
 		}
 
 		// Register commands
-		commandHandler = new KickCommand(this);
+		commandHandler = new OldKickCommand(this);
 		commandHandler.loadCommands();
 
 		return true;
@@ -109,7 +109,7 @@ public class Kick implements IModule {
 	}
 	public String kickSQL(final UUID pUUID, final String server, final String staff, final String reason) {
 		PreparedStatement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			if (DataSourceHandler.isSQLite()) {
 				statement = conn.prepareStatement(SQLQueries.Kick.SQLite.kickPlayer);
 			} else {
@@ -143,7 +143,7 @@ public class Kick implements IModule {
 	}
 	public String gKickSQL(final UUID pUUID, final String staff, final String reason) {
 		PreparedStatement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			if (DataSourceHandler.isSQLite()) {
 				statement = conn.prepareStatement(SQLQueries.Kick.SQLite.kickPlayer);
 			} else {
@@ -156,10 +156,10 @@ public class Kick implements IModule {
 			statement.executeUpdate();
 			statement.close();
 
-			if (BAT.getInstance().getRedis().isRedisEnabled()) {
+			if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 			    	return I18n.formatWithColor("gKickBroadcast", new String[] { RedisBungee.getApi().getNameFromUuid(pUUID), staff, reason });
 			} else {
-				return I18n.formatWithColor("gKickBroadcast", new String[] { BAT.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
+				return I18n.formatWithColor("gKickBroadcast", new String[] { BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
 			}
 		} catch (final SQLException e) {
 			return DataSourceHandler.handleException(e);
@@ -180,7 +180,7 @@ public class Kick implements IModule {
 		final List<KickEntry> kickList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
 					? SQLQueries.Kick.SQLite.getKick
 					: SQLQueries.Kick.getKick);
@@ -214,7 +214,7 @@ public class Kick implements IModule {
 		final List<fr.alphart.bungeeadmintools.modules.kick.KickEntry> kickList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
 					? SQLQueries.Kick.SQLite.getManagedKick
 					: SQLQueries.Kick.getManagedKick);

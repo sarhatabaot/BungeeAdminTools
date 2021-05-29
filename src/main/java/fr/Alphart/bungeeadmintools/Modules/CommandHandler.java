@@ -2,12 +2,9 @@ package fr.alphart.bungeeadmintools.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import fr.alphart.bungeeadmintools.BAT;
-import fr.alphart.bungeeadmintools.modules.BATCommand;
-import fr.alphart.bungeeadmintools.modules.IModule;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public abstract class CommandHandler {
 	private final IModule module;
@@ -35,7 +32,7 @@ public abstract class CommandHandler {
 				cmdName.add(command.getName());
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | SecurityException e) {
-				BAT.getInstance()
+				BungeeAdminToolsPlugin.getInstance()
 				.getLogger()
 				.severe("An error happend during loading of " + module.getName()
 						+ " commands please report this :");

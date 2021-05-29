@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.CommandHandler;
@@ -85,7 +85,7 @@ public class Mute implements IModule, Listener {
 	public boolean load() {
 		// Init table
 		Statement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
 			if (DataSourceHandler.isSQLite()) {
 				for (final String query : SQLQueries.Mute.SQLite.createTable) {
@@ -102,13 +102,13 @@ public class Mute implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new fr.alphart.bungeeadmintools.modules.mute.MuteCommand(this);
+		commandHandler = new OldMuteCommand(this);
 		commandHandler.loadCommands();
 
 		mutedPlayers = new ConcurrentHashMap<>();
 
 		final MuteTask muteTask = new MuteTask(this);
-		task = ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), muteTask, 0, 10, TimeUnit.SECONDS);
+		task = ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), muteTask, 0, 10, TimeUnit.SECONDS);
 		return true;
 	}
 
@@ -145,7 +145,7 @@ public class Mute implements IModule, Listener {
 		
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
 					? SQLQueries.Mute.SQLite.getMuteMessage
 					: SQLQueries.Mute.getMuteMessage);
@@ -154,7 +154,7 @@ public class Mute implements IModule, Listener {
 				statement.setString(2, Core.getPlayerIP(pName));
 				statement.setString(3, server);
 			}catch(final UUIDNotFoundException e){
-				BAT.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pName + ". Please report this error :");
+				BungeeAdminToolsPlugin.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pName + ". Please report this error :");
 				e.printStackTrace();
 			}
 			resultSet = statement.executeQuery();
@@ -211,6 +211,10 @@ public class Mute implements IModule, Listener {
 		return -1;
 	}
 
+	public boolean isMute(final String target) {
+		return isMute(target, GLOBAL_SERVER, false);
+	}
+
 	/**
 	 * Check if this entity (player or ip) is muted<br>
 	 * <b>Use uncached data. Use {@link #isMute(ProxiedPlayer, String)} instead
@@ -240,7 +244,7 @@ public class Mute implements IModule, Listener {
 
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If this is an ip which may be muted
 			if (Utils.validIP(mutedEntity)) {
 				statement = conn.prepareStatement((ANY_SERVER.equals(server)) ? SQLQueries.Mute.isMuteIP
@@ -291,7 +295,7 @@ public class Mute implements IModule, Listener {
 	public String mute(final String mutedEntity, final String server, final String staff,
 			final long expirationTimestamp, final String reason) {
 		PreparedStatement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			if (Utils.validIP(mutedEntity)) {
 				statement = conn.prepareStatement(SQLQueries.Mute.createMuteIP);
 				statement.setString(1, mutedEntity);
@@ -302,7 +306,7 @@ public class Mute implements IModule, Listener {
 				statement.executeUpdate();
 				statement.close();
 
-				if (BAT.getInstance().getRedis().isRedisEnabled()) {
+				if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 				    	for (UUID pUUID : RedisBungee.getApi().getPlayersOnline()) {
 				    	    	if (RedisBungee.getApi().getPlayerIp(pUUID).equals(mutedEntity)) {
 				    	    	    	// The mute task timer will add the player to the bungeecord instance's cache if needed.
@@ -311,7 +315,7 @@ public class Mute implements IModule, Listener {
 				    	    	    	    	if (player != null) {
 				    	    	    	    	    	player.sendMessage(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason }));
 				    	    	    	    	} else {
-					    	    	    	    	BAT.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
+					    	    	    	    	BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
 				    	    	    	    	}
 				    	    	    	}
 				    	    	}
@@ -356,11 +360,11 @@ public class Mute implements IModule, Listener {
 						if(server.equals(GLOBAL_SERVER) || player.getServer().getInfo().getName().equalsIgnoreCase(server)){
 							player.sendMessage(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason }));
 						}
-					} else if (BAT.getInstance().getRedis().isRedisEnabled()) {
+					} else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 						//Need to implement a function to get an UUID object instead of a string one.
 						final UUID pUUID = Core.getUUIDfromString(Core.getUUID(mutedEntity));
-						BAT.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
-				    	BAT.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
+						BungeeAdminToolsPlugin.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
+				    	BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
 					}
 			    	if (expirationTimestamp > 0) {
 						return I18n.formatWithColor("muteTempBroadcast", new String[] {mutedEntity, FormatUtils.getDuration(expirationTimestamp),
@@ -409,7 +413,7 @@ public class Mute implements IModule, Listener {
 	 */
 	public String unMute(final String mutedEntity, final String server, final String staff, final String reason) {
 		PreparedStatement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If the mutedEntity is an ip
 			if (Utils.validIP(mutedEntity)) {
 				if (ANY_SERVER.equals(server)) {
@@ -459,12 +463,12 @@ public class Mute implements IModule, Listener {
 					if(ANY_SERVER.equals(server) || GLOBAL_SERVER.equals(server) || player.getServer().getInfo().getName().equalsIgnoreCase(server)){
 						player.sendMessage(I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[] { reason }));
 					}
-				} else if (BAT.getInstance().getRedis().isRedisEnabled()) {
+				} else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 						final UUID pUUID = Core.getUUIDfromString(Core.getUUID(mutedEntity));
 				    	ServerInfo pServer = RedisBungee.getApi().getServerFor(pUUID);
 				    	if (ANY_SERVER.equals(server) || GLOBAL_SERVER.equals(server) || (pServer != null && pServer.getName().equalsIgnoreCase(server))){
-				    		BAT.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
-				    		BAT.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[] { reason })));
+				    		BungeeAdminToolsPlugin.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
+				    		BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[] { reason })));
 				    	}
 				}
 
@@ -512,7 +516,7 @@ public class Mute implements IModule, Listener {
 		final List<MuteEntry> muteList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If the entity is an ip
 			if (Utils.validIP(entity)) {
 				statement = conn.prepareStatement((DataSourceHandler.isSQLite())
@@ -636,12 +640,12 @@ public class Mute implements IModule, Listener {
 			if(muteMessage != null){
 				if(muteMessage.getValue() != null){
 					if(muteMessage.getValue().getTime() >= System.currentTimeMillis()){
-						return BAT.__(muteMessage.getKey().replace("{expiration}", FormatUtils.getDuration(muteMessage.getValue().getTime())));
+						return BungeeAdminToolsPlugin.colorizeAndAddPrefix(muteMessage.getKey().replace("{expiration}", FormatUtils.getDuration(muteMessage.getValue().getTime())));
 					}
 					// If it's not synchronized with the db, force the update of mute data
 					else{
 						Statement statement = null;
-						try (Connection conn = BAT.getConnection()) {
+						try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 							statement = conn.createStatement();
 							if (DataSourceHandler.isSQLite()) {
 								statement.executeUpdate(SQLQueries.Mute.SQLite.updateExpiredMute);
@@ -657,7 +661,7 @@ public class Mute implements IModule, Listener {
 					}
 				}
 				else{
-					return BAT.__(muteMessage.getKey());
+					return BungeeAdminToolsPlugin.colorizeAndAddPrefix(muteMessage.getKey());
 				}
 			}
 			return I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[]{ NO_REASON });
@@ -683,7 +687,7 @@ public class Mute implements IModule, Listener {
 		}
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement("SELECT mute_server FROM `BAT_mute` WHERE UUID = ? AND mute_state = 1;");
 			statement.setString(1, Core.getUUID(pName));
 			resultSet = statement.executeQuery();
@@ -727,7 +731,7 @@ public class Mute implements IModule, Listener {
 		final List<MuteEntry> muteList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement((DataSourceHandler.isSQLite())
 					? SQLQueries.Mute.SQLite.getManagedMute
 					: SQLQueries.Mute.getManagedMute);
@@ -793,7 +797,7 @@ public class Mute implements IModule, Listener {
 		final int muteState = isMute(player, e.getServer().getInfo().getName());
 		if (muteState == -1) {
 			// Load mute data with a little bit of delay to handle server switching operations which may take some time
-			BAT.getInstance().getProxy().getScheduler().schedule(BAT.getInstance(), new Runnable() {
+			BungeeAdminToolsPlugin.getInstance().getProxy().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
 					updateMuteData(pName);

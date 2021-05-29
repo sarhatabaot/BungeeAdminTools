@@ -15,7 +15,7 @@ import java.util.Set;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
@@ -23,12 +23,12 @@ import fr.alphart.bungeeadmintools.utils.CallbackUtils;
 
 public class MinecraftUUIDImporter extends Importer {
     private static final DateFormat dfMc = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-    private final File bannedPlayersFile = new File(BAT.getInstance().getDataFolder(), "banned-players.json");
-    private final File bannedIpsFile = new File(BAT.getInstance().getDataFolder(), "banned-ips.json");
+    private final File bannedPlayersFile = new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.json");
+    private final File bannedIpsFile = new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.json");
     
     @Override
     protected void importData(CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, final String... additionalsArgs) throws Exception {
-        try (Connection conn = BAT.getConnection()) {
+        try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             // Check if either the banned-players.txt or the banned-ips.txt file exists
             if(!bannedPlayersFile.exists() 
                 && !bannedIpsFile.exists()){
@@ -116,7 +116,7 @@ public class MinecraftUUIDImporter extends Importer {
             status.incrementConvertedEntries(uncomittedEntries);
             progressionCallback.done(status, null);
         }catch (final IOException e){
-            BAT.getInstance().getLogger().severe("An error related to files occured during the import of Minecraft v1.6 ban records :");
+            BungeeAdminToolsPlugin.getInstance().getLogger().severe("An error related to files occured during the import of Minecraft v1.6 ban records :");
             e.printStackTrace();
             throw new RuntimeException(e);
         }

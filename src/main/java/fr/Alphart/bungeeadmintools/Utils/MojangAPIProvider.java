@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class MojangAPIProvider {
   private static Gson gson = new Gson();
@@ -43,7 +43,7 @@ public class MojangAPIProvider {
         return p.id;
       }
     } catch (IOException e) {
-      BAT.getInstance().getLogger().log(Level.CONFIG, "Can't retrieve UUID from mojang servers", e);
+      BungeeAdminToolsPlugin.getInstance().getLogger().log(Level.CONFIG, "Can't retrieve UUID from mojang servers", e);
     } finally{
       if(reader != null){
         try {

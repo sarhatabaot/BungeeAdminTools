@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -25,7 +25,7 @@ public class BanHammerImporter extends Importer {
         ResultSet res = null;
         boolean tableFound = true;
         boolean banHammerOnMysql = true;
-        try (Connection conn = BAT.getConnection()) {
+        try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             // Check if the bungee suite tables are here
             final DatabaseMetaData dbm = conn.getMetaData();
             for(final String table : Arrays.asList("banhammer_bans", "banhammer_players")){
@@ -37,9 +37,9 @@ public class BanHammerImporter extends Importer {
             // If mysql is on and the table weren't found, try to look for a banhammer.db file
             if(!tableFound){
                 banHammerOnMysql = false;
-                if(new File(BAT.getInstance().getDataFolder(), "banhammer.db").exists()){
+                if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banhammer.db").exists()){
                     progressionCallback.onMinorError("The SQLite Driver must be downloaded. The server may freeze during the download.");
-                    if(BAT.getInstance().loadSQLiteDriver()){
+                    if(BungeeAdminToolsPlugin.getInstance().loadSQLiteDriver()){
                         tableFound = true;
                     }
                 }else{
@@ -54,7 +54,7 @@ public class BanHammerImporter extends Importer {
             if(tableFound){
                 try(Connection connBH = (banHammerOnMysql) 
                         ? conn
-                        : DriverManager.getConnection("jdbc:sqlite:" + BAT.getInstance().getDataFolder().getAbsolutePath() + File.separator
+                        : DriverManager.getConnection("jdbc:sqlite:" + BungeeAdminToolsPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator
                                 + "banhammer.db");){
                     // Count the number of entries (use to show the progression)
                     final ResultSet resCount = connBH.prepareStatement("SELECT  " + (banHammerOnMysql ? "count()" : "COUNT(*)") + " FROM banhammer_bans;"

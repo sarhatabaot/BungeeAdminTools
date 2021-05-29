@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.core.CommandQueue;
 import fr.alphart.bungeeadmintools.modules.core.Core;
-import fr.alphart.bungeeadmintools.modules.core.CoreCommand;
+import fr.alphart.bungeeadmintools.modules.core.OldCoreCommand;
 import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
@@ -31,7 +31,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command implements TabExecutor {
     private static final Pattern pattern = Pattern.compile("<.*?>");
@@ -73,7 +73,7 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
             runAsync = true;
         }
 
-        if (CoreCommand.class.equals(getClass().getEnclosingClass())) {
+        if (OldCoreCommand.class.equals(getClass().getEnclosingClass())) {
             coreCommand = true;
         }
     }
@@ -120,10 +120,10 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
         } else if (exception instanceof UUIDNotFoundException) {
             sender.sendMessage(I18n.formatWithColorAndAddPrefix("invalidArgs", new String[]{I18n.formatWithColor("cannotGetUUID", new String[]{((UUIDNotFoundException) exception).getInvolvedPlayer()})}));
         } else if (exception instanceof MissingResourceException) {
-            sender.sendMessage(BAT.__("&cAn error occured with the translation. Key involved : &a" + ((MissingResourceException) exception).getKey()));
+            sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix("&cAn error occured with the translation. Key involved : &a" + ((MissingResourceException) exception).getKey()));
         } else {
-            sender.sendMessage(BAT.__("A command errror happens ! Please check the console."));
-            BAT.getInstance().getLogger().severe("A command errror happens ! Please report this stacktrace :");
+            sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix("A command errror happens ! Please check the console."));
+            BungeeAdminToolsPlugin.getInstance().getLogger().severe("A command errror happens ! Please report this stacktrace :");
             exception.printStackTrace();
         }
     }
@@ -167,11 +167,11 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
             }
         }
         // Overrides command to confirm if /bat confirm is disabled
-        final boolean confirmedCmd = !BAT.getInstance().getConfiguration().isConfirmCommand() || CommandQueue.isExecutingQueueCommand(sender);
+        final boolean confirmedCmd = !BungeeAdminToolsPlugin.getInstance().getConfiguration().isConfirmCommand() || CommandQueue.isExecutingQueueCommand(sender);
         try {
             Preconditions.checkArgument(args.length >= minArgs);
             if (runAsync) {
-                ProxyServer.getInstance().getScheduler().runAsync(BAT.getInstance(), () -> {
+                ProxyServer.getInstance().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), () -> {
 					try {
 						onCommand(sender, args, confirmedCmd);
 					} catch (final Exception exception) {
@@ -193,12 +193,12 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
         final List<String> result = new ArrayList<>();
         if (args.length == 0) {
-            sender.sendMessage(BAT.__("Add the first letter to autocomplete"));
+            sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix("Add the first letter to autocomplete"));
             return result;
         }
         final String playerToCheck = args[args.length - 1];
         if (playerToCheck.length() > 0) {
-            if (BAT.getInstance().getRedis().isRedisEnabled()) {
+            if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
                 for (final String player : RedisBungee.getApi().getHumanPlayersOnline()) {
                     if (player
                             .substring(
@@ -255,7 +255,7 @@ public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command impl
     }
 
     public void mustConfirmCommand(final CommandSender sender, final String command, final String message) {
-        final String cmdToConfirm = (BAT.getInstance().getConfiguration().getSimpleAliasesCommands().get("confirm"))
+        final String cmdToConfirm = (BungeeAdminToolsPlugin.getInstance().getConfiguration().getSimpleAliasesCommands().get("confirm"))
                 ? "confirm" : "bat confirm";
         if (!CommandQueue.isExecutingQueueCommand(sender)) {
             if ("".equals(message)) {

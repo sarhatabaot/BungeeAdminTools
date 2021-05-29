@@ -5,11 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.cubespace.Yamler.Config.Config;
 import net.cubespace.Yamler.Config.YamlConfig;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -29,7 +28,7 @@ public class Trigger extends YamlConfig {
 		final CommandSender console = ProxyServer.getInstance().getConsole();
 		long delay = 100;
 		for (final String command : commands) {
-		    ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), () -> pm.dispatchCommand(console, command.replace("{player}", pName).replace("{reason}", reason)), delay, TimeUnit.MILLISECONDS);
+		    ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), () -> pm.dispatchCommand(console, command.replace("{player}", pName).replace("{reason}", reason)), delay, TimeUnit.MILLISECONDS);
 		    delay += 500;
 		}
 	}

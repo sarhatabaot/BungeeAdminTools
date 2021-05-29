@@ -34,7 +34,7 @@ import net.md_5.bungee.event.EventHandler;
 import com.google.common.base.Charsets;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.utils.FormatUtils;
@@ -46,7 +46,7 @@ import fr.alphart.bungeeadmintools.database.SQLQueries;
 public class Ban implements IModule, Listener {
 	private final String name = "ban";
 	private ScheduledTask task;
-	private fr.alphart.bungeeadmintools.modules.ban.BanCommand commandHandler;
+	private OldBanCommand commandHandler;
 	private final BanConfig config;
 
 	public Ban(){
@@ -76,7 +76,7 @@ public class Ban implements IModule, Listener {
 	@Override
 	public boolean load() {
 		// Init table
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			final Statement statement = conn.createStatement();
 			if (DataSourceHandler.isSQLite()) {
 				for (final String query : SQLQueries.Ban.SQLite.createTable) {
@@ -91,12 +91,12 @@ public class Ban implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new BanCommand(this);
+		commandHandler = new OldBanCommand(this);
 		commandHandler.loadCommands();
 
 		// Launch tempban task
 		final BanExpirationTask banExpirationTask = new BanExpirationTask(this);
-		task = ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), banExpirationTask, 0, 10, TimeUnit.SECONDS);
+		task = ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), banExpirationTask, 0, 10, TimeUnit.SECONDS);
 
 		// Check if the online players are banned (if the module has been reloaded)
 		for(final ProxiedPlayer player : ProxyServer.getInstance().getPlayers()){
@@ -138,7 +138,7 @@ public class Ban implements IModule, Listener {
 		
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
 					? SQLQueries.Ban.SQLite.getBanMessage
 					: SQLQueries.Ban.getBanMessage);
@@ -154,7 +154,7 @@ public class Ban implements IModule, Listener {
 				statement.setString(2, pConn.getAddress().getAddress().getHostAddress());
 				statement.setString(3, server);
 			}catch(final UUIDNotFoundException e){
-				BAT.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pConn.getName() + ". Please report this error :");
+				BungeeAdminToolsPlugin.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pConn.getName() + ". Please report this error :");
 				e.printStackTrace();
 			}
 			resultSet = statement.executeQuery();
@@ -216,7 +216,7 @@ public class Ban implements IModule, Listener {
 	public boolean isBan(final String bannedEntity, final String server) {
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If this is an ip which may be banned
 			if (Utils.validIP(bannedEntity)) {
 				statement = conn.prepareStatement((ANY_SERVER.equals(server)) ? SQLQueries.Ban.isBanIP
@@ -271,7 +271,7 @@ public class Ban implements IModule, Listener {
 	 */
 	public String ban(final String bannedEntity, final String server, final String staff,
 			final long expirationTimestamp, final String reason) {
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If the bannedEntity is an ip
 			if (Utils.validIP(bannedEntity)) {
 
@@ -286,14 +286,14 @@ public class Ban implements IModule, Listener {
 
 				for (final ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
 					if (Utils.getPlayerIP(player).equals(bannedEntity) && (GLOBAL_SERVER.equals(server) || server.equalsIgnoreCase(player.getServer().getInfo().getName())) ) {
-						BAT.kick(player, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
+						BungeeAdminToolsPlugin.kick(player, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
 					}
 				}
 				
-				if (BAT.getInstance().getRedis().isRedisEnabled()) {
+				if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 				    	for (final UUID pUUID : RedisBungee.getApi().getPlayersOnline()) {
 				    	    	if (RedisBungee.getApi().getPlayerIp(pUUID).equals(bannedEntity) && (GLOBAL_SERVER.equals(server) || server.equalsIgnoreCase(RedisBungee.getApi().getServerFor(pUUID).getName()))) {
-				    	    	    	BAT.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
+				    	    	    	BungeeAdminToolsPlugin.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
 				    	    	}
 				    	}
 				}
@@ -323,12 +323,12 @@ public class Ban implements IModule, Listener {
 				// banned
 				if (player != null
 						&& (server.equals(GLOBAL_SERVER) || player.getServer().getInfo().getName().equalsIgnoreCase(server))) {
-					BAT.kick(player, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
-				} else if (BAT.getInstance().getRedis().isRedisEnabled()) {
+					BungeeAdminToolsPlugin.kick(player, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
+				} else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
 				    	UUID pUUID = RedisBungee.getApi().getUuidFromName(bannedEntity);
 				    	if (RedisBungee.getApi().isPlayerOnline(pUUID)
 				    		&& ((server.equals(GLOBAL_SERVER) || RedisBungee.getApi().getServerFor(pUUID).getName().equalsIgnoreCase(server)))) {
-				    	    	BAT.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
+				    	    	BungeeAdminToolsPlugin.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[] { reason }));
 				    	}
 				}
 
@@ -365,7 +365,7 @@ public class Ban implements IModule, Listener {
 	
 	public String banRedisIP(final UUID pUUID, final String server, final String staff,
 			final long expirationTimestamp, final String reason) {
-	    	if (BAT.getInstance().getRedis().isRedisEnabled() && RedisBungee.getApi().isPlayerOnline(pUUID)) {
+	    	if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled() && RedisBungee.getApi().isPlayerOnline(pUUID)) {
 	    	    	ban(RedisBungee.getApi().getPlayerIp(pUUID).getHostAddress(), server, staff, expirationTimestamp, reason);
 			return I18n.formatWithColor("banBroadcast", new String[] { RedisBungee.getApi().getNameFromUuid(pUUID) + "'s IP", staff, server, reason });
 	    	} else {
@@ -388,7 +388,7 @@ public class Ban implements IModule, Listener {
 	 */
 	public String unBan(final String bannedEntity, final String server, final String staff, final String reason) {
 		PreparedStatement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If the bannedEntity is an ip
 			if (Utils.validIP(bannedEntity)) {
 				if (ANY_SERVER.equals(server)) {
@@ -474,7 +474,7 @@ public class Ban implements IModule, Listener {
 		final List<BanEntry> banList = new ArrayList<BanEntry>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			// If the entity is an ip
 			if (Utils.validIP(entity)) {
 				statement = conn.prepareStatement((DataSourceHandler.isSQLite())
@@ -536,7 +536,7 @@ public class Ban implements IModule, Listener {
 		final List<BanEntry> banList = new ArrayList<>();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement((DataSourceHandler.isSQLite())
 					? SQLQueries.Ban.SQLite.getManagedBan
 					: SQLQueries.Ban.getManagedBan);
@@ -603,7 +603,7 @@ public class Ban implements IModule, Listener {
 				if(e.getPlayer().getServer() == null){
 					e.setCancelled(true);
 					// Need to delay for avoiding the "bit cannot be cast to fm exception" and to annoy the banned player :p
-					ProxyServer.getInstance().getScheduler().schedule(BAT.getInstance(), new Runnable() {
+					ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), new Runnable() {
 						@Override
 						public void run() {
 							e.getPlayer().disconnect(getBanMessage(player.getPendingConnection(), target));
@@ -626,8 +626,8 @@ public class Ban implements IModule, Listener {
 
 	@EventHandler
 	public void onPlayerLogin(final LoginEvent ev) {
-		ev.registerIntent(BAT.getInstance());
-	    BAT.getInstance().getProxy().getScheduler().runAsync(BAT.getInstance(), new Runnable()
+		ev.registerIntent(BungeeAdminToolsPlugin.getInstance());
+	    BungeeAdminToolsPlugin.getInstance().getProxy().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), new Runnable()
 	    {
 	      public void run() {
 	        boolean isBanPlayer = false;
@@ -635,7 +635,7 @@ public class Ban implements IModule, Listener {
 	        PreparedStatement statement = null;
 	        ResultSet resultSet = null;
 	        UUID uuid = null;
-	        try(Connection conn = BAT.getConnection()){ 
+	        try(Connection conn = BungeeAdminToolsPlugin.getConnection()){
 	        	statement = conn.prepareStatement("SELECT ban_id FROM `BAT_ban` WHERE ban_state = 1 AND UUID = ? AND ban_server = '" + GLOBAL_SERVER + "';");
 	        	// If this is an online mode server, the uuid will be already set
 	        	if(ev.getConnection().getUniqueId() != null){
@@ -662,7 +662,7 @@ public class Ban implements IModule, Listener {
 	          ev.setCancelReason(TextComponent.toLegacyText(bM));
 	          ev.setCancelled(true);
 	        }
-	        ev.completeIntent(BAT.getInstance());
+	        ev.completeIntent(BungeeAdminToolsPlugin.getInstance());
 	      }
 	    });
 	}

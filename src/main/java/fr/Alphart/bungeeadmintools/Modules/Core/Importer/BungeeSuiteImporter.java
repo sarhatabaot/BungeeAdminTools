@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -21,7 +21,7 @@ public class BungeeSuiteImporter extends Importer {
     @Override
     protected void importData(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception{
         ResultSet res = null;
-        try (Connection conn = BAT.getConnection()) {
+        try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             // Check if the bungee suite tables are here
             final DatabaseMetaData dbm = conn.getMetaData();
             for(final String table : Arrays.asList("BungeeBans", "BungeePlayers")){

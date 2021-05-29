@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
@@ -34,16 +34,16 @@ public class EntityEntry {
 	
 	private final String entity;
 
-	private final List<BanEntry> bans = new ArrayList<BanEntry>();
-	private final List<MuteEntry> mutes = new ArrayList<MuteEntry>();
-	private final List<KickEntry> kicks = new ArrayList<KickEntry>();
-	private final List<CommentEntry> comments = new ArrayList<CommentEntry>();
+	private final List<BanEntry> bans = new ArrayList<>();
+	private final List<MuteEntry> mutes = new ArrayList<>();
+	private final List<KickEntry> kicks = new ArrayList<>();
+	private final List<CommentEntry> comments = new ArrayList<>();
 
 	private Timestamp firstLogin;
 	private Timestamp lastLogin;
 	private String lastIP = "0.0.0.0";
 
-	private final List<String> ipUsers = new ArrayList<String>();
+	private final List<String> ipUsers = new ArrayList<>();
 
 	private boolean exist = true;
 	private boolean player = false;
@@ -57,7 +57,7 @@ public class EntityEntry {
 			player = true;
 			PreparedStatement statement = null;
 			ResultSet resultSet = null;
-			try (Connection conn = BAT.getConnection()) {
+			try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 				statement = (DataSourceHandler.isSQLite()) ? conn
 						.prepareStatement(SQLQueries.Core.SQLite.getPlayerData) : conn
 						.prepareStatement(SQLQueries.Core.getPlayerData);
@@ -98,7 +98,7 @@ public class EntityEntry {
 			// Get users from this ip
 			PreparedStatement statement = null;
 			ResultSet resultSet = null;
-			try (Connection conn = BAT.getConnection()) {
+			try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 				statement = conn.prepareStatement(SQLQueries.Core.getIpUsers);
 				statement.setString(1, entity);
 
@@ -115,7 +115,7 @@ public class EntityEntry {
 		}
 		
 		// Load the data related to this entity of each modules
-		final ModulesManager modules = BAT.getInstance().getModules();
+		final ModulesManager modules = BungeeAdminToolsPlugin.getInstance().getModules();
 		try {
 			if (modules.isLoaded("ban")) {
 				bans.addAll(modules.getBanModule().getBanData(entity));

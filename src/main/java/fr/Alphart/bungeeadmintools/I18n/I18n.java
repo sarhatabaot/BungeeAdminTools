@@ -11,7 +11,7 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -31,12 +31,12 @@ public class I18n {
 	private ResourceBundle customBundle;
 
 	private I18n() {
-		final Locale locale = BAT.getInstance().getConfiguration().getLocale();
+		final Locale locale = BungeeAdminToolsPlugin.getInstance().getConfiguration().getLocale();
 		enBundle = ResourceBundle.getBundle("messages", new Locale("en"), new fr.alphart.bungeeadmintools.I18n.UTF8_Control());
 		try {
 			localeBundle = ResourceBundle.getBundle("messages", locale, new fr.alphart.bungeeadmintools.I18n.UTF8_Control());
 		} catch (final MissingResourceException e) {
-			BAT.getInstance()
+			BungeeAdminToolsPlugin.getInstance()
 			.getLogger()
 			.severe("The language file " + locale.toLanguageTag()
 					+ " was not found or is incorrect.");
@@ -45,7 +45,7 @@ public class I18n {
 		// Try to load a custom bundle
 		File pFile = null;
 		try {
-			for(final File file : BAT.getInstance().getDataFolder().listFiles()){
+			for(final File file : BungeeAdminToolsPlugin.getInstance().getDataFolder().listFiles()){
 				if(file.getName().endsWith("language")){
 					pFile = file;
 					if(pFile.getName().toLowerCase().contains(locale.getLanguage().toLowerCase())){
@@ -57,7 +57,7 @@ public class I18n {
 				customBundle = new PropertyResourceBundle(new FileReader(pFile));
 			}
 		} catch (final IOException e) {
-			BAT.getInstance().getLogger().severe("The custom language file cannot be loaded.");
+			BungeeAdminToolsPlugin.getInstance().getLogger().severe("The custom language file cannot be loaded.");
 			e.printStackTrace();
 		}
 		if(customBundle == null){
@@ -106,12 +106,12 @@ public class I18n {
 				message = getInstance().localeBundle.getString(key);
 			}
 		}catch(final MissingResourceException e){
-			BAT.getInstance().getLogger().info("Incorrect translation key : " + key + ". Locale: " 
+			BungeeAdminToolsPlugin.getInstance().getLogger().info("Incorrect translation key : " + key + ". Locale: "
 					+ getInstance().localeBundle.getLocale().getLanguage());
 			try{
 				message = getInstance().enBundle.getString(key);
 			}catch(final MissingResourceException subE){
-				BAT.getInstance().getLogger().warning("Incorrect translation key in default bundle."
+				BungeeAdminToolsPlugin.getInstance().getLogger().warning("Incorrect translation key in default bundle."
 						+ "Key : " + key);
 				throw new IllegalArgumentException("Incorrect translation key, please check the log.");
 			}
@@ -160,7 +160,7 @@ public class I18n {
 	public static BaseComponent[] formatWithColorAndAddPrefix(final String message, final String[] formatObject) {
 		try {
 			final MessageFormat mf = new MessageFormat(getString(message));
-			return BAT.__(mf.format(preprocessArgs(formatObject)));
+			return BungeeAdminToolsPlugin.colorizeAndAddPrefix(mf.format(preprocessArgs(formatObject)));
 		} catch (final IllegalArgumentException e) {
 			return TextComponent.fromLegacyText("");
 		}
@@ -175,7 +175,7 @@ public class I18n {
 	public static BaseComponent[] formatWithColorAndAddPrefix(final String message) {
 		try {
 			// Replace the quote as the message formatter does
-			return BAT.__(getString(message).replace("''", "'"));
+			return BungeeAdminToolsPlugin.colorizeAndAddPrefix(getString(message).replace("''", "'"));
 		} catch (final IllegalArgumentException e) {
 			return TextComponent.fromLegacyText("");
 		}

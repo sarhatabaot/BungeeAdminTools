@@ -50,7 +50,7 @@ public class CommentEntry {
 	public String getFormattedDate(){
 		return Core.defaultDF.format(localTime.getTime());
 	}
-	
+
 	public enum Type{
 		NOTE,
 		WARNING;

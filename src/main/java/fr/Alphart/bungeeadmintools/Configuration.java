@@ -1,7 +1,6 @@
 package fr.alphart.bungeeadmintools;
 
 import com.google.common.collect.Maps;
-import fr.alphart.bungeeadmintools.BAT;
 import lombok.Getter;
 import lombok.Setter;
 import net.cubespace.Yamler.Config.Comment;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class Configuration extends YamlConfig {
 	public Configuration(){
 		CONFIG_HEADER = new String[]{"Bungee Admin Tools - Configuration file"};
-		CONFIG_FILE = new File(BAT.getInstance().getDataFolder(), "config.yml");
+		CONFIG_FILE = new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "config.yml");
 		try {
 			init();
 			save();
@@ -66,7 +65,7 @@ public class Configuration extends YamlConfig {
 	private String mysql_port = "3306";
 	public Locale getLocale() {
 		if (language.length() != 2) {
-			BAT.getInstance().getLogger().severe("Incorrect language set ... The language was set to english.");
+			BungeeAdminToolsPlugin.getInstance().getLogger().severe("Incorrect language set ... The language was set to english.");
 			return new Locale("en");
 		}
 		return new Locale(language);

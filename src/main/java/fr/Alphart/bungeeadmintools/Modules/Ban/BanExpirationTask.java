@@ -1,7 +1,7 @@
 package fr.alphart.bungeeadmintools.modules.ban;
 
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -27,7 +27,7 @@ public class BanExpirationTask implements Runnable {
 	@Override
 	public void run() {
 		Statement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
 			if (DataSourceHandler.isSQLite()) {
 				statement.executeUpdate(SQLQueries.Ban.SQLite.updateExpiredBan);

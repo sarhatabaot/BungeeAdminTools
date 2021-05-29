@@ -1,6 +1,6 @@
 name: BungeeAdminTools
-author: Alphart
+authors: [Alphart, sarhatabaot]
 version: ${project.version}
-main: fr.Alphart.BAT.BAT
+main: fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin
 depends: ['Yamler']
 softdepends: [RedisBungee]

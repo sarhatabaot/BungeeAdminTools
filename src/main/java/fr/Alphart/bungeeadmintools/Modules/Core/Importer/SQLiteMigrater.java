@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
@@ -24,9 +24,9 @@ public class SQLiteMigrater extends Importer {
     @Override
     protected void importData(final CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, String... additionalsArgs) throws Exception {
         ResultSet res = null;
-        if(new File(BAT.getInstance().getDataFolder(), "bat_database.db").exists()){
+        if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "bat_database.db").exists()){
             progressionCallback.onMinorError("The SQLite Driver must be downloaded. The server may freeze during the download.");
-            if(!BAT.getInstance().loadSQLiteDriver()){
+            if(!BungeeAdminToolsPlugin.getInstance().loadSQLiteDriver()){
                 throw new RuntimeException("The SQLite driver can't be loaded, please check the logs.");
             }
         }else{
@@ -34,9 +34,9 @@ public class SQLiteMigrater extends Importer {
         }
         
         Connection mysqlConn;
-        try (Connection sqliteConn = DriverManager.getConnection("jdbc:sqlite:" + BAT.getInstance().getDataFolder().getAbsolutePath() 
+        try (Connection sqliteConn = DriverManager.getConnection("jdbc:sqlite:" + BungeeAdminToolsPlugin.getInstance().getDataFolder().getAbsolutePath()
                 + File.separator + "bat_database.db");){
-            mysqlConn = BAT.getConnection();
+            mysqlConn = BungeeAdminToolsPlugin.getConnection();
             // Pattern : TableName, Entry<readInstruction, writeInstruction> 
             final Map<String, Entry<String, String>> moduleImportQueries = new HashMap<>();
             moduleImportQueries.put(SQLQueries.Ban.table, new AbstractMap.SimpleEntry<String, String>(

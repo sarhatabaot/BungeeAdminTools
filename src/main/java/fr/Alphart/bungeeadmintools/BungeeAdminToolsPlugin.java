@@ -44,10 +44,10 @@ import fr.alphart.bungeeadmintools.I18n.I18n;
  * 
  * @author Alphart
  */
-public class BAT extends Plugin {
+public class BungeeAdminToolsPlugin extends Plugin {
 	// This way we can check at runtime if the required BC build (or a higher one) is installed 
 	private final int requiredBCBuild = 878;
-	private static BAT instance;
+	private static BungeeAdminToolsPlugin instance;
 	private static DataSourceHandler dsHandler;
 	private Configuration config;
 	private static String prefix;
@@ -192,6 +192,9 @@ public class BAT extends Plugin {
 		}
 	}
 
+
+	//TODO: Load using loader-utils (luck)
+	//  see https://github.com/lucko/LuckPerms/blob/master/common/loader-utils/src/main/java/me/lucko/luckperms/common/loader/JarInJarClassLoader.java
 	public boolean loadSQLiteDriver(){
 		final File driverPath = new File(getDataFolder() + File.separator + "lib" + File.separator
 				+ "sqlite_driver.jar");
@@ -240,11 +243,11 @@ public class BAT extends Plugin {
 		}
 	}
 
-	public static BAT getInstance() {
-		return BAT.instance;
+	public static BungeeAdminToolsPlugin getInstance() {
+		return BungeeAdminToolsPlugin.instance;
 	}
 
-	public static BaseComponent[] __(final String message) {
+	public static BaseComponent[] colorizeAndAddPrefix(final String message) {
 		return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix + message));
 	}
 
@@ -257,13 +260,13 @@ public class BAT extends Plugin {
 	 */
 	public static void broadcast(final String message, final String perm) {
 		noRedisBroadcast(message, perm);
-		if(BAT.getInstance().getRedis().isRedisEnabled()){
-			BAT.getInstance().getRedis().sendBroadcast(perm, message);
+		if(BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()){
+			BungeeAdminToolsPlugin.getInstance().getRedis().sendBroadcast(perm, message);
 		}
 	}
 	
 	public static void noRedisBroadcast(final String message, final String perm) {
-		final BaseComponent[] bsMsg = __(message);
+		final BaseComponent[] bsMsg = colorizeAndAddPrefix(message);
 		for (final ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			if (p.hasPermission(perm) || p.hasPermission("bat.admin")) {
 				p.sendMessage(bsMsg);

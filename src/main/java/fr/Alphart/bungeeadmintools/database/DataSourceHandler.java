@@ -29,7 +29,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.CharStreams;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class DataSourceHandler {
 	// Connection informations
@@ -61,7 +61,7 @@ public class DataSourceHandler {
 		this.username = Preconditions.checkNotNull(username);
 		this.password = Preconditions.checkNotNull(password);
 
-		BAT.getInstance().getLogger().config("Initialization of HikariCP in progress ...");
+		BungeeAdminToolsPlugin.getInstance().getLogger().config("Initialization of HikariCP in progress ...");
 		BasicConfigurator.configure(new NullAppender());
 		ds = new HikariDataSource();
 		ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + 
@@ -77,15 +77,15 @@ public class DataSourceHandler {
 		    offset = (intOffset >= 0 ? "+" : "-") + offset;
 			conn.createStatement().executeQuery("SET time_zone='" + offset + "';");
 			conn.close();
-			BAT.getInstance().getLogger().config("BoneCP is loaded !");
+			BungeeAdminToolsPlugin.getInstance().getLogger().config("BoneCP is loaded !");
 		} catch (final SQLException e) {
-			BAT.getInstance().getLogger().severe("BAT encounters a problem during the initialization of the database connection."
+			BungeeAdminToolsPlugin.getInstance().getLogger().severe("BAT encounters a problem during the initialization of the database connection."
 					+ " Please check your logins and database configuration.");
 			if(e.getCause() instanceof CommunicationsException){
-			    BAT.getInstance().getLogger().severe(e.getCause().getMessage());
+			    BungeeAdminToolsPlugin.getInstance().getLogger().severe(e.getCause().getMessage());
 			}
-			if(BAT.getInstance().getConfiguration().isDebugMode()){
-			    BAT.getInstance().getLogger().log(Level.SEVERE, e.getMessage(), e);
+			if(BungeeAdminToolsPlugin.getInstance().getConfiguration().isDebugMode()){
+			    BungeeAdminToolsPlugin.getInstance().getLogger().log(Level.SEVERE, e.getMessage(), e);
 			}
 			throw e;
 		}
@@ -107,13 +107,13 @@ public class DataSourceHandler {
 		 */
 		sqlite = true;
 		try {
-			SQLiteConn = DriverManager.getConnection("jdbc:sqlite:" + BAT.getInstance().getDataFolder().getAbsolutePath() + File.separator
+			SQLiteConn = DriverManager.getConnection("jdbc:sqlite:" + BungeeAdminToolsPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator
 					+ "bat_database.db");
 			SQLiteConn.close();
 		} catch (SQLException e) {
-			BAT.getInstance().getLogger().severe("BAT encounters a problem during the initialization of the sqlite database connection.");
+			BungeeAdminToolsPlugin.getInstance().getLogger().severe("BAT encounters a problem during the initialization of the sqlite database connection.");
 			if(e.getMessage() != null){
-				BAT.getInstance().getLogger().severe("Error message : " + e.getMessage());
+				BungeeAdminToolsPlugin.getInstance().getLogger().severe("Error message : " + e.getMessage());
 			}
 		}
 	}
@@ -123,19 +123,19 @@ public class DataSourceHandler {
 			if(sqlite){
 				// To avoid concurrency problem with SQLite, we will just use one connection. Cf : constructor above for SQLite
 				synchronized (SQLiteConn) {
-					SQLiteConn = DriverManager.getConnection("jdbc:sqlite:" + BAT.getInstance().getDataFolder().getAbsolutePath() + File.separator
+					SQLiteConn = DriverManager.getConnection("jdbc:sqlite:" + BungeeAdminToolsPlugin.getInstance().getDataFolder().getAbsolutePath() + File.separator
 								+ "bat_database.db");
 					return SQLiteConn;
 				}
 			}
 			return ds.getConnection();
 		} catch (final SQLException e) {
-			BAT.getInstance().getLogger().severe(
+			BungeeAdminToolsPlugin.getInstance().getLogger().severe(
 			        "BAT can't etablish connection with the database. Please report this and include the following lines :");
 			if(e.getCause() instanceof CommunicationsException){
-			    BAT.getInstance().getLogger().severe(e.getCause().getMessage());
+			    BungeeAdminToolsPlugin.getInstance().getLogger().severe(e.getCause().getMessage());
 			}
-            if (BAT.getInstance().getConfiguration().isDebugMode()) {
+            if (BungeeAdminToolsPlugin.getInstance().getConfiguration().isDebugMode()) {
                 e.printStackTrace();
             }
 			return null;
@@ -157,7 +157,7 @@ public class DataSourceHandler {
 	 * @throws RuntimeException if MySQL is not used or if the creation of the backup file failed
 	 */
 	public void generateMysqlBackup(final CallbackUtils.Callback<String> onComplete) throws RuntimeException{
-		ProxyServer.getInstance().getScheduler().runAsync(BAT.getInstance(), new Runnable(){
+		ProxyServer.getInstance().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), new Runnable(){
 			@Override
 			public void run() {
 				try {
@@ -172,7 +172,7 @@ public class DataSourceHandler {
 					onComplete.done("The backup can't be achieved because mysqldump is nowhere to be found.", null);
 					return;
 				}
-				final File backupDirectory = new File(BAT.getInstance().getDataFolder().getAbsolutePath() 
+				final File backupDirectory = new File(BungeeAdminToolsPlugin.getInstance().getDataFolder().getAbsolutePath()
 						+ File.separator + "databaseBackups");
 				backupDirectory.mkdir();
 				File backupFile = new File(backupDirectory.getAbsolutePath() + File.separator + "backup" +
@@ -215,9 +215,9 @@ public class DataSourceHandler {
 						onComplete.done(format("The backup file (%s) has been sucessfully generated.", fileName), null);
 					}else{
 						onComplete.done("An error happens during the creation of the mysql backup. Please check the logs", null);
-						BAT.getInstance().getLogger().severe("An error happens during the creation of the mysql backup. Please report :");
+						BungeeAdminToolsPlugin.getInstance().getLogger().severe("An error happens during the creation of the mysql backup. Please report :");
 						for(final String message : errorPumper.getLines()){
-						    BAT.getInstance().getLogger().severe(message);
+						    BungeeAdminToolsPlugin.getInstance().getLogger().severe(message);
 						}
 					}
 				} catch (final Exception e) {
@@ -230,7 +230,7 @@ public class DataSourceHandler {
 	
 	// Useful methods
 	public static String handleException(final SQLException e) {
-		BAT.getInstance()
+		BungeeAdminToolsPlugin.getInstance()
 		.getLogger()
 		.severe("BAT encounters a problem with the database. Please report this and include the following lines :");
 		e.printStackTrace();
@@ -260,14 +260,14 @@ public class DataSourceHandler {
 	     * Starts a new async task and pump the inputstream
 	     */
 	    public void pump(){
-	        ProxyServer.getInstance().getScheduler().runAsync(BAT.getInstance(), new Runnable() {
+	        ProxyServer.getInstance().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), new Runnable() {
                 @Override
                 public void run() {
                     try {
                         pumpedLines = CharStreams.readLines(reader);
                         reader.close();
                     } catch (final IOException e) {
-                        BAT.getInstance().getLogger().severe("BAT encounter an error while reading the stream of subprocess. Please report this :");
+                        BungeeAdminToolsPlugin.getInstance().getLogger().severe("BAT encounter an error while reading the stream of subprocess. Please report this :");
                         e.printStackTrace();
                     }
                 }

@@ -4,14 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import net.cubespace.Yamler.Config.YamlConfig;
 
 public abstract class ModuleConfiguration extends YamlConfig {
@@ -31,7 +30,7 @@ public abstract class ModuleConfiguration extends YamlConfig {
 	 */
 	public void initThrowingExceptions(final String moduleName) throws InvalidConfigurationException{
 	    CONFIG_HEADER = new String[] { "BungeeAdminTools - " + moduleName + " configuration file" };
-	    CONFIG_FILE = new File(BAT.getInstance().getDataFolder(), moduleName + ".yml");
+	    CONFIG_FILE = new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), moduleName + ".yml");
         init();
         load();
 	}

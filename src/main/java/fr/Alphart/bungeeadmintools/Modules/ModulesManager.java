@@ -19,7 +19,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Listener;
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.comment.Comment;
 
 
@@ -32,7 +32,7 @@ public class ModulesManager {
 	private Map<String, IModule> cmdsModules;
 
 	public ModulesManager() {
-		log = BAT.getInstance().getLogger();
+		log = BungeeAdminToolsPlugin.getInstance().getLogger();
 		sb = new StringBuilder();
 		modules = new LinkedHashMap<>();
 		modulesNames = new HashMap<>();
@@ -71,7 +71,7 @@ public class ModulesManager {
 		modules.put(new Mute(), IModule.OFF_STATE);
 		modules.put(new Kick(), IModule.OFF_STATE);
 		modules.put(new Comment(), IModule.OFF_STATE);
-		cmdsModules = new HashMap<String, IModule>();
+		cmdsModules = new HashMap<>();
 		for (final IModule module : modules.keySet()) {
 			// The core doesn't have settings to enable or disable it
 			if (!module.getName().equals("core")) {
@@ -85,12 +85,12 @@ public class ModulesManager {
 				modules.put(module, IModule.ON_STATE);
 
 				if (module instanceof Listener) {
-					ProxyServer.getInstance().getPluginManager().registerListener(BAT.getInstance(), (Listener) module);
+					ProxyServer.getInstance().getPluginManager().registerListener(BungeeAdminToolsPlugin.getInstance(), (Listener) module);
 				}
 
 				for (final BATCommand cmd : module.getCommands()) {
 					cmdsModules.put(cmd.getName(), module);
-					ProxyServer.getInstance().getPluginManager().registerCommand(BAT.getInstance(), cmd);
+					ProxyServer.getInstance().getPluginManager().registerCommand(BungeeAdminToolsPlugin.getInstance(), cmd);
 				}
 				if(module.getConfig() != null){
 					try {
@@ -113,7 +113,7 @@ public class ModulesManager {
 			}
 			modules.put(module, IModule.OFF_STATE);
 		}
-		ProxyServer.getInstance().getPluginManager().unregisterCommands(BAT.getInstance());
+		ProxyServer.getInstance().getPluginManager().unregisterCommands(BungeeAdminToolsPlugin.getInstance());
 		modules.clear();
 	}
 
@@ -145,7 +145,7 @@ public class ModulesManager {
 				return (Core) module;
 			}
 		} catch (final InvalidModuleException e) {
-			BAT.getInstance().getLogger()
+			BungeeAdminToolsPlugin.getInstance().getLogger()
 			.severe("The core module encountered a problem. Please report this to the developper :");
 			e.printStackTrace();
 		}

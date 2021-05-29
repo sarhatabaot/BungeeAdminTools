@@ -2,7 +2,7 @@ package fr.alphart.bungeeadmintools.utils;
 
 import java.util.UUID;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,10 +22,10 @@ public class RedisUtils implements Listener {
 
     public RedisUtils(final boolean enable) {
         if (enable) {
-            if (BAT.getInstance().getProxy().getPluginManager().getPlugin("RedisBungee") != null && RedisBungee.getApi() != null) {
-                BAT.getInstance().getLogger().info("Detected RedisBungee.  Enabling experimental RedisBungee support.  This currently only supports RedisBungee 0.3.3 or higher (but not 0.4).");
-                BAT.getInstance().getProxy().getPluginManager()
-                        .registerListener(BAT.getInstance(), this);
+            if (BungeeAdminToolsPlugin.getInstance().getProxy().getPluginManager().getPlugin("RedisBungee") != null && RedisBungee.getApi() != null) {
+                BungeeAdminToolsPlugin.getInstance().getLogger().info("Detected RedisBungee.  Enabling experimental RedisBungee support.  This currently only supports RedisBungee 0.3.3 or higher (but not 0.4).");
+                BungeeAdminToolsPlugin.getInstance().getProxy().getPluginManager()
+                        .registerListener(BungeeAdminToolsPlugin.getInstance(), this);
                 RedisBungee.getApi().registerPubSubChannels(channel);
                 redis = true;
             } else {
@@ -52,7 +52,7 @@ public class RedisUtils implements Listener {
             case "broadcast" -> recieveBroadcast(message[2], message[3]);
             case "muteupdate" -> recieveMuteUpdatePlayer(message[2], message[3]);
             case "movedefaultserver" -> recieveMoveDefaultServerPlayer(message[2]);
-            default -> BAT.getInstance().getLogger().warning("Undeclared BungeeAdminTool redis message recieved: " + messageType);
+            default -> BungeeAdminToolsPlugin.getInstance().getLogger().warning("Undeclared BungeeAdminTool redis message recieved: " + messageType);
         }
     }
 
@@ -66,7 +66,7 @@ public class RedisUtils implements Listener {
     }
 
     private void recieveMessagePlayer(String sUUID, String message) {
-        ProxiedPlayer player = BAT.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
+        ProxiedPlayer player = BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
         if (player != null) {
             player.sendMessage(TextComponent.fromLegacyText(message));
         }
@@ -78,10 +78,10 @@ public class RedisUtils implements Listener {
     }
 
     private void recieveGKickPlayer(String sUUID, String reason) {
-        if (BAT.getInstance().getModules().isLoaded("ban") || BAT.getInstance().getModules().isLoaded("kick")) {
-            ProxiedPlayer player = BAT.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
+        if (BungeeAdminToolsPlugin.getInstance().getModules().isLoaded("ban") || BungeeAdminToolsPlugin.getInstance().getModules().isLoaded("kick")) {
+            ProxiedPlayer player = BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
             if (player != null) {
-                BAT.kick(player, reason);
+                BungeeAdminToolsPlugin.kick(player, reason);
             }
         } else {
             throw new IllegalStateException("Neither the ban nor the kick module are enabled. The gkick message can't be handled.");
@@ -94,7 +94,7 @@ public class RedisUtils implements Listener {
     }
 
     private void recieveBroadcast(String permission, String broadcast) {
-        BAT.noRedisBroadcast(broadcast, permission);
+        BungeeAdminToolsPlugin.noRedisBroadcast(broadcast, permission);
     }
 
     public void sendMuteUpdatePlayer(UUID pUUID, String server) {
@@ -103,11 +103,11 @@ public class RedisUtils implements Listener {
     }
 
     private void recieveMuteUpdatePlayer(String sUUID, String server) {
-        if (BAT.getInstance().getModules().isLoaded("mute")) {
-            ProxiedPlayer player = BAT.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
+        if (BungeeAdminToolsPlugin.getInstance().getModules().isLoaded("mute")) {
+            ProxiedPlayer player = BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
             if (player != null) {
                 try {
-                    BAT.getInstance().getModules().getMuteModule().updateMuteData(player.getName());
+                    BungeeAdminToolsPlugin.getInstance().getModules().getMuteModule().updateMuteData(player.getName());
                 } catch (InvalidModuleException ignored) {
                 }
             }
@@ -122,7 +122,7 @@ public class RedisUtils implements Listener {
     }
 
     private void recieveMoveDefaultServerPlayer(String sUUID) {
-        ProxiedPlayer player = BAT.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
+        ProxiedPlayer player = BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(UUID.fromString(sUUID));
         if (player != null) {
             player.connect(ProxyServer.getInstance().getServerInfo(
                     player.getPendingConnection().getListener().getDefaultServer()));
@@ -138,13 +138,13 @@ public class RedisUtils implements Listener {
 
         final String message = RedisBungee.getApi().getServerId() + split + messageType + split + messageBody;
 
-        BAT.getInstance().getProxy().getScheduler().runAsync(BAT.getInstance(), () -> RedisBungee.getApi().sendChannelMessage(channel, message));
+        BungeeAdminToolsPlugin.getInstance().getProxy().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), () -> RedisBungee.getApi().sendChannelMessage(channel, message));
     }
 
     public void destroy() {
         if (!redis) return;
         RedisBungee.getApi().unregisterPubSubChannels("BungeeAdminTools");
-        BAT.getInstance().getProxy().getPluginManager()
+        BungeeAdminToolsPlugin.getInstance().getProxy().getPluginManager()
                 .unregisterListener(this);
     }
 

@@ -14,10 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
-import fr.alphart.bungeeadmintools.modules.core.importer.Importer;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
 import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
@@ -29,10 +28,10 @@ public class MinecraftPreUUIDImporter extends Importer {
     
     @Override
     protected void importData(CallbackUtils.ProgressCallback<ImportStatus> progressionCallback, final String... additionalsArgs) throws Exception {
-        try (Connection conn = BAT.getConnection()) {
+        try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             // Check if either the banned-players.txt or the banned-ips.txt file exists
-            if(!new File(BAT.getInstance().getDataFolder(), "banned-players.txt").exists() 
-                && !new File(BAT.getInstance().getDataFolder(), "banned-ips.txt").exists()){
+            if(!new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.txt").exists()
+                && !new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.txt").exists()){
                 throw new IllegalArgumentException("You must put either banned-players.txt or banned-ips.txt file into BAT folder to "
                         + "import your datas.");
             }
@@ -40,11 +39,11 @@ public class MinecraftPreUUIDImporter extends Importer {
             // Count the totalEntries which need to be converted
             int totalEntries = 0;
             final List<File> filesToConvert = new ArrayList<>();
-            if(new File(BAT.getInstance().getDataFolder(), "banned-players.txt").exists()){
-                filesToConvert.add(new File(BAT.getInstance().getDataFolder(), "banned-players.txt"));
+            if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.txt").exists()){
+                filesToConvert.add(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.txt"));
             }
-            if(new File(BAT.getInstance().getDataFolder(), "banned-ips.txt").exists()){
-                filesToConvert.add(new File(BAT.getInstance().getDataFolder(), "banned-ips.txt"));
+            if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.txt").exists()){
+                filesToConvert.add(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.txt"));
             }
             for(final File file : filesToConvert){
                 final BufferedReader br = new BufferedReader(new FileReader(file));
@@ -65,12 +64,12 @@ public class MinecraftPreUUIDImporter extends Importer {
             final PreparedStatement insertBans = conn.prepareStatement("INSERT INTO `" + SQLQueries.Ban.table
                     + "`(UUID, ban_ip, ban_staff, ban_server, ban_begin, ban_end, ban_reason) VALUES (?, ?, ?, ?, ?, ?, ?);");
             BufferedReader brPlayer = null;
-            if(new File(BAT.getInstance().getDataFolder(), "banned-players.txt").exists()){
-                brPlayer = new BufferedReader(new FileReader(new File(BAT.getInstance().getDataFolder(), "banned-players.txt")));
+            if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.txt").exists()){
+                brPlayer = new BufferedReader(new FileReader(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-players.txt")));
             }
             BufferedReader brIPs = null;
-            if(new File(BAT.getInstance().getDataFolder(), "banned-ips.txt").exists()){
-                brIPs = new BufferedReader(new FileReader(new File(BAT.getInstance().getDataFolder(), "banned-ips.txt")));
+            if(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.txt").exists()){
+                brIPs = new BufferedReader(new FileReader(new File(BungeeAdminToolsPlugin.getInstance().getDataFolder(), "banned-ips.txt")));
             }
             
             // Proccess the import
@@ -112,7 +111,7 @@ public class MinecraftPreUUIDImporter extends Importer {
             status.incrementConvertedEntries(uncomittedEntries);
             progressionCallback.done(status, null);
         }catch (final IOException e){
-            BAT.getInstance().getLogger().severe("An error related to files occured during the import of Minecraft v1.6 ban records :");
+            BungeeAdminToolsPlugin.getInstance().getLogger().severe("An error related to files occured during the import of Minecraft v1.6 ban records :");
             e.printStackTrace();
             throw new RuntimeException(e);
         }

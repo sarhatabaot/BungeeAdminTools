@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 
-import fr.alphart.bungeeadmintools.BAT;
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import net.md_5.bungee.api.ProxyServer;
@@ -28,7 +28,7 @@ public class MuteTask implements Runnable {
 	@Override
 	public void run() {
 		Statement statement = null;
-		try (Connection conn = BAT.getConnection()) {
+		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
 			if (DataSourceHandler.isSQLite()) {
 				statement.executeUpdate(SQLQueries.Mute.SQLite.updateExpiredMute);
