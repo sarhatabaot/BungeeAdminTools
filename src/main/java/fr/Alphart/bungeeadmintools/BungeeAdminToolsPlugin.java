@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -21,8 +22,15 @@ import java.util.logging.LogRecord;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import co.aikar.commands.BungeeCommandManager;
+import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
+import fr.alphart.bungeeadmintools.modules.ban.BanCommand;
 import fr.alphart.bungeeadmintools.modules.core.Core;
+import fr.alphart.bungeeadmintools.modules.core.CoreCommand;
+import fr.alphart.bungeeadmintools.modules.core.LookupCommand;
+import fr.alphart.bungeeadmintools.modules.kick.KickCommand;
+import fr.alphart.bungeeadmintools.modules.mute.MuteCommand;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
 import fr.alphart.bungeeadmintools.utils.RedisUtils;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
@@ -41,281 +49,288 @@ import fr.alphart.bungeeadmintools.I18n.I18n;
 
 /**
  * Main class BungeeAdminTools
- * 
+ *
  * @author Alphart
  */
 public class BungeeAdminToolsPlugin extends Plugin {
-	// This way we can check at runtime if the required BC build (or a higher one) is installed 
-	private final int requiredBCBuild = 878;
-	private static BungeeAdminToolsPlugin instance;
-	private static DataSourceHandler dsHandler;
-	private Configuration config;
-	private static String prefix;
-	private ModulesManager modules;
-	private RedisUtils redis;
+    // This way we can check at runtime if the required BC build (or a higher one) is installed
+    private final int requiredBCBuild = 878;
+    private static BungeeAdminToolsPlugin instance;
+    private static DataSourceHandler dsHandler;
+    private Configuration config;
+    private static String prefix;
+    private ModulesManager modules;
+    private RedisUtils redis;
 
-	@Override
-	public void onEnable() {
-		instance = this;
-		config = new Configuration();
-		getLogger().setLevel(Level.INFO);
-		if (!ProxyServer.getInstance().getName().equals("BungeeCord")) {
-		  getLogger().warning("BungeeCord version check disabled because a fork has been detected."
-              + " Make sur your fork is based on a BungeeCord build > #" + requiredBCBuild);
-		}
-		else if(getBCBuild() < requiredBCBuild && !new File(getDataFolder(), "skipversiontest").exists()){
-		  getLogger().severe("Your BungeeCord build (#" + getBCBuild() + ") is not supported. Please use at least BungeeCord #" + requiredBCBuild);
-		  getLogger().severe("If you want to skip that test, create a file named 'skipversiontest' in BAT directory.");
-          getLogger().severe("BAT is going to shutdown ...");
-          return;
-		}
-		if(config.isDebugMode()){
-		    try{
-		        final File debugFile = new File(getDataFolder(), "debug.log");
-		        if(debugFile.exists()){
-		            debugFile.delete();
-		        }
-		        // Write header into debug log
-                Files.asCharSink(debugFile, Charsets.UTF_8).writeLines(Arrays.asList("BAT log debug file"
-                        + " - If you have an error with BAT, you should post this file on BAT topic on spigotmc",
+    @Override
+    public void onEnable() {
+        instance = this;
+        config = new Configuration();
+        getLogger().setLevel(Level.INFO);
+        registerCommands();
+        if (config.isDebugMode()) {
+            try {
+                final File debugFile = new File(getDataFolder(), "debug.log");
+                if (debugFile.exists()) {
+                    debugFile.delete();
+                }
+                // Write header into debug log
+                Files.asCharSink(debugFile, StandardCharsets.UTF_8).writeLines(Arrays.asList("BAT log debug file"
+                                + " - If you have an error with BAT, you should post this file on BAT topic on spigotmc",
                         "Bungee build : " + ProxyServer.getInstance().getVersion(),
                         "BAT version : " + getDescription().getVersion(),
                         "Operating System : " + System.getProperty("os.name"),
                         "Timezone : " + TimeZone.getDefault().getID(),
                         "------------------------------------------------------------"));
-		        final FileHandler handler = new FileHandler(debugFile.getAbsolutePath(), true);
-		        handler.setFormatter(new Formatter() {
-		            private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		            private final String pattern = "time [level] message\n";
+                final FileHandler handler = new FileHandler(debugFile.getAbsolutePath(), true);
+                handler.setFormatter(new Formatter() {
+                    private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                    private final String pattern = "time [level] message\n";
+
                     @Override
                     public String format(LogRecord record) {
                         return pattern.replace("level", record.getLevel().getName())
-                                    .replace("message", record.getMessage())
-                                    .replace("[BungeeAdminTools]", "")
-                                    .replace("time", sdf.format(Calendar.getInstance().getTime()));
+                                .replace("message", record.getMessage())
+                                .replace("[BungeeAdminTools]", "")
+                                .replace("time", sdf.format(Calendar.getInstance().getTime()));
                     }
                 });
-		        getLogger().addHandler(handler);
-		        getLogger().setLevel(Level.CONFIG);
-		        getLogger().info("The debug mode is now enabled ! Log are available in debug.log file located in BAT folder");
-	            getLogger().config("Debug mode enabled ...");
-	            getLogger().setUseParentHandlers(false);
-		    }catch(final Exception e){
-		        getLogger().log(Level.SEVERE, "An exception occured during the initialization of debug logging file", e);
-		    }
-		}
-		prefix = config.getPrefix();
-		loadDB((dbState, throwable) -> {
-			if (dbState) {
-				getLogger().config("Connection to the database established");
-				// Try enabling redis support.
-				redis = new RedisUtils(config.isRedisSupport());
-				modules = new ModulesManager();
-				modules.loadModules();
-			} else {
-				getLogger().severe("BAT is gonna shutdown because it can't connect to the database.");
-				return;
-			}
-			// Init the I18n module
-			I18n.getString("global");
-		});
-	}
-	
-	public int getBCBuild(){
-		final Pattern p = Pattern.compile(".*?:(.*?:){3}(\\d*)");
-		final Matcher m = p.matcher(ProxyServer.getInstance().getVersion());
-		int BCBuild;
-		try{
-			if (m.find()) {
-			    BCBuild = Integer.parseInt(m.group(2));
-			}else{
-				throw new NumberFormatException();
-			}
-		}catch(final NumberFormatException e){
-			// We can't determine BC build, just display a message, and set the build so it doesn't trigger the security
-			getLogger().info("BC build can't be detected. If you encounter any problems, please report that message. Otherwise don't take into account");
-			BCBuild = requiredBCBuild;
-		}
-		return BCBuild;
-	}
+                getLogger().addHandler(handler);
+                getLogger().setLevel(Level.CONFIG);
+                getLogger().info("The debug mode is now enabled ! Log are available in debug.log file located in BAT folder");
+                getLogger().config("Debug mode enabled ...");
+                getLogger().setUseParentHandlers(false);
+            } catch (final Exception e) {
+                getLogger().log(Level.SEVERE, "An exception occured during the initialization of debug logging file", e);
+            }
+        }
+        prefix = config.getPrefix();
+        loadDB((dbState, throwable) -> {
+            if (dbState) {
+                getLogger().config("Connection to the database established");
+                // Try enabling redis support.
+                redis = new RedisUtils(config.isRedisSupport());
+                modules = new ModulesManager();
+                modules.loadModules();
+            } else {
+                getLogger().severe("BAT is gonna shutdown because it can't connect to the database.");
+                return;
+            }
+            // Init the I18n module
+            I18n.getString("global");
+        });
+    }
 
-	@Override
-	public void onDisable() {
-	    if(redis != null){
-	      getRedis().destroy();
-	    }
+    public int getBCBuild() {
+        final Pattern p = Pattern.compile(".*?:(.*?:){3}(\\d*)");
+        final Matcher m = p.matcher(ProxyServer.getInstance().getVersion());
+        int BCBuild;
+        try {
+            if (m.find()) {
+                BCBuild = Integer.parseInt(m.group(2));
+            } else {
+                throw new NumberFormatException();
+            }
+        } catch (final NumberFormatException e) {
+            // We can't determine BC build, just display a message, and set the build so it doesn't trigger the security
+            getLogger().info("BC build can't be detected. If you encounter any problems, please report that message. Otherwise don't take into account");
+            BCBuild = requiredBCBuild;
+        }
+        return BCBuild;
+    }
+
+    @Override
+    public void onDisable() {
+        if (redis != null) {
+            getRedis().destroy();
+        }
         modules.unloadModules();
-		instance = null;
-	}
+        instance = null;
+    }
 
-	public void loadDB(final CallbackUtils.Callback<Boolean> dbState) {
-		if (config.isMysql_enabled()) {
-		    getLogger().config("Starting connection to the mysql database ...");
-			final String username = config.getMysql_user();
-			final String password = config.getMysql_password();
-			final String database = config.getMysql_database();
-			final String port = config.getMysql_port();
-			final String host = config.getMysql_host();
-			// BoneCP can accept no database and we want to avoid that
-			Preconditions.checkArgument(!"".equals(database), "You must set the database.");
-			ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
-				@Override
-				public void run() {
-				    try{
-				        dsHandler = new DataSourceHandler(host, port, database, username, password);
-	                    final Connection c = dsHandler.getConnection();
-	                    if (c != null) {
-                            c.close();
-                            dbState.done(true, null);
-                            return;
-	                    }
-				    }catch(final SQLException handledByDatasourceHandler){}
-				    getLogger().severe("The connection pool (database connection)"
-                            + " wasn't able to be launched !");
-                    dbState.done(false, null);
-				}
-			});
-		}
-		// If MySQL is disabled, we are gonna use SQLite
-		// Before initialize the connection, we must download the sqlite driver
-		// (if it isn't already in the lib folder) and load it
-		else {
-		    getLogger().config("Starting connection to the sqlite database ...");
-			getLogger().warning("It is strongly DISRECOMMENDED to use SQLite with BAT,"
-					+ " as the SQLite implementation is less stable and much slower than the MySQL implementation.");
-			if(loadSQLiteDriver()){
-				dsHandler = new DataSourceHandler();
-				dbState.done(true, null);
-			}else{
-				dbState.done(false, null);
-			}
-		}
-	}
+    public void loadDB(final CallbackUtils.Callback<Boolean> dbState) {
+        if (config.isMysql_enabled()) {
+            getLogger().config("Starting connection to the mysql database ...");
+            final String username = config.getMysql_user();
+            final String password = config.getMysql_password();
+            final String database = config.getMysql_database();
+            final String port = config.getMysql_port();
+            final String host = config.getMysql_host();
+            // BoneCP can accept no database and we want to avoid that
+            Preconditions.checkArgument(!"".equals(database), "You must set the database.");
+            ProxyServer.getInstance().getScheduler().runAsync(this, () -> {
+                try {
+                    dsHandler = new DataSourceHandler(host, port, database, username, password);
+                    final Connection c = dsHandler.getConnection();
+                    if (c != null) {
+                        c.close();
+                        dbState.done(true, null);
+                        return;
+                    }
+                } catch (final SQLException handledByDatasourceHandler) {
+                }
+                getLogger().severe("The connection pool (database connection)"
+                        + " wasn't able to be launched !");
+                dbState.done(false, null);
+            });
+        }
+        // If MySQL is disabled, we are gonna use SQLite
+        // Before initialize the connection, we must download the sqlite driver
+        // (if it isn't already in the lib folder) and load it
+        else {
+            getLogger().config("Starting connection to the sqlite database ...");
+            getLogger().warning("It is strongly DISRECOMMENDED to use SQLite with BAT,"
+                    + " as the SQLite implementation is less stable and much slower than the MySQL implementation.");
+            if (loadSQLiteDriver()) {
+                dsHandler = new DataSourceHandler();
+                dbState.done(true, null);
+            } else {
+                dbState.done(false, null);
+            }
+        }
+    }
 
 
-	//TODO: Load using loader-utils (luck)
-	//  see https://github.com/lucko/LuckPerms/blob/master/common/loader-utils/src/main/java/me/lucko/luckperms/common/loader/JarInJarClassLoader.java
-	public boolean loadSQLiteDriver(){
-		final File driverPath = new File(getDataFolder() + File.separator + "lib" + File.separator
-				+ "sqlite_driver.jar");
-		new File(getDataFolder() + File.separator + "lib").mkdir();
+    //TODO: Load using loader-utils (luck)
+    //  see https://github.com/lucko/LuckPerms/blob/master/common/loader-utils/src/main/java/me/lucko/luckperms/common/loader/JarInJarClassLoader.java
+    public boolean loadSQLiteDriver() {
+        final File driverPath = new File(getDataFolder() + File.separator + "lib" + File.separator
+                + "sqlite_driver.jar");
+        new File(getDataFolder() + File.separator + "lib").mkdir();
 
-		// Download the driver if it doesn't exist
-		if (!new File(getDataFolder() + File.separator + "lib" + File.separator + "sqlite_driver.jar").exists()) {
-			getLogger().info("The SQLLite driver was not found. It is being downloaded, please wait ...");
+        // Download the driver if it doesn't exist
+        if (!new File(getDataFolder() + File.separator + "lib" + File.separator + "sqlite_driver.jar").exists()) {
+            getLogger().info("The SQLLite driver was not found. It is being downloaded, please wait ...");
 
-			final String driverUrl = "https://www.dropbox.com/s/ls7qoddx9m6t4vh/sqlite_driver.jar?dl=1";
-			FileOutputStream fos = null;
-			try {
-				final ReadableByteChannel rbc = Channels.newChannel(new URL(driverUrl).openStream());
-				fos = new FileOutputStream(driverPath);
-				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-			} catch (final IOException e) {
-				getLogger()
-				.severe("An error occured during the downloading of the SQLite driver. Please report this error : ");
-				e.printStackTrace();
-				return false;
-			} finally {
-				DataSourceHandler.close(fos);
-			}
+            final String driverUrl = "https://www.dropbox.com/s/ls7qoddx9m6t4vh/sqlite_driver.jar?dl=1";
+            FileOutputStream fos = null;
+            try {
+                final ReadableByteChannel rbc = Channels.newChannel(new URL(driverUrl).openStream());
+                fos = new FileOutputStream(driverPath);
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            } catch (final IOException e) {
+                getLogger()
+                        .severe("An error occured during the downloading of the SQLite driver. Please report this error : ");
+                e.printStackTrace();
+                return false;
+            } finally {
+                DataSourceHandler.close(fos);
+            }
 
-			getLogger().info("The driver has been successfully downloaded.");
-		}
+            getLogger().info("The driver has been successfully downloaded.");
+        }
 
-		// Load the driver
-		try {
-			URLClassLoader systemClassLoader;
-			URL u;
-			Class<URLClassLoader> sysclass;
-			u = driverPath.toURI().toURL();
-			systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-			sysclass = URLClassLoader.class;
-			final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-			method.setAccessible(true);
-			method.invoke(systemClassLoader, u);
+        // Load the driver
+        try {
+            URLClassLoader systemClassLoader;
+            URL u;
+            Class<URLClassLoader> sysclass;
+            u = driverPath.toURI().toURL();
+            systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            sysclass = URLClassLoader.class;
+            final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
+            method.setAccessible(true);
+            method.invoke(systemClassLoader, u);
 
-			Class.forName("org.sqlite.JDBC");
-			return true;
-		} catch (final Throwable t) {
-			getLogger().severe("The sqlite driver cannot be loaded. Please report this error : ");
-			t.printStackTrace();
-			return false;
-		}
-	}
+            Class.forName("org.sqlite.JDBC");
+            return true;
+        } catch (final Throwable t) {
+            getLogger().severe("The sqlite driver cannot be loaded. Please report this error : ");
+            t.printStackTrace();
+            return false;
+        }
+    }
 
-	public static BungeeAdminToolsPlugin getInstance() {
-		return BungeeAdminToolsPlugin.instance;
-	}
+    public static BungeeAdminToolsPlugin getInstance() {
+        return BungeeAdminToolsPlugin.instance;
+    }
 
-	public static BaseComponent[] colorizeAndAddPrefix(final String message) {
-		return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix + message));
-	}
+    public static BaseComponent[] colorizeAndAddPrefix(final String message) {
+        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix + message));
+    }
 
-	/**
-	 * Send a broadcast message to everyone with the given perm <br>
-	 * Also broadcast through Redis if it's installed that's why this method <strong>should not be called
-	 * from a Redis call</strong> otherwise it will broadcast it again and again
-	 * @param message
-	 * @param perm
-	 */
-	public static void broadcast(final String message, final String perm) {
-		noRedisBroadcast(message, perm);
-		if(BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()){
-			BungeeAdminToolsPlugin.getInstance().getRedis().sendBroadcast(perm, message);
-		}
-	}
-	
-	public static void noRedisBroadcast(final String message, final String perm) {
-		final BaseComponent[] bsMsg = colorizeAndAddPrefix(message);
-		for (final ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			if (p.hasPermission(perm) || p.hasPermission("bat.admin")) {
-				p.sendMessage(bsMsg);
-			}
-			// If he has a grantall permission, he will have the broadcast on all the servers
-			else{
-				for(final String playerPerm : Core.getCommandSenderPermission(p)){
-					if(playerPerm.startsWith("bat.grantall.")){
-						p.sendMessage(bsMsg);
-						break;
-					}
-				}
-			}
-		}
-		getInstance().getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
-	}
+    /**
+     * Send a broadcast message to everyone with the given perm <br>
+     * Also broadcast through Redis if it's installed that's why this method <strong>should not be called
+     * from a Redis call</strong> otherwise it will broadcast it again and again
+     *
+     * @param message
+     * @param perm
+     */
+    public static void broadcast(final String message, final String perm) {
+        noRedisBroadcast(message, perm);
+        if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
+            BungeeAdminToolsPlugin.getInstance().getRedis().sendBroadcast(perm, message);
+        }
+    }
 
-	public ModulesManager getModules() {
-		return modules;
-	}
+    public static void noRedisBroadcast(final String message, final String perm) {
+        final BaseComponent[] bsMsg = colorizeAndAddPrefix(message);
+        for (final ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+            if (p.hasPermission(perm) || p.hasPermission("bat.admin")) {
+                p.sendMessage(bsMsg);
+            }
+            // If he has a grantall permission, he will have the broadcast on all the servers
+            else {
+                for (final String playerPerm : Core.getCommandSenderPermission(p)) {
+                    if (playerPerm.startsWith("bat.grantall.")) {
+                        p.sendMessage(bsMsg);
+                        break;
+                    }
+                }
+            }
+        }
+        getInstance().getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
+    }
 
-	public Configuration getConfiguration() {
-		return config;
-	}
+    public ModulesManager getModules() {
+        return modules;
+    }
 
-	public static Connection getConnection() {
-		return dsHandler.getConnection();
-	}
+    public Configuration getConfiguration() {
+        return config;
+    }
 
-	public DataSourceHandler getDsHandler() {
-		return dsHandler;
-	}
+    public static Connection getConnection() {
+        return dsHandler.getConnection();
+    }
 
-	public RedisUtils getRedis() {
-	    return redis;
-	}
+    public DataSourceHandler getDsHandler() {
+        return dsHandler;
+    }
 
-	/**
-	 * Kick a player from the proxy for a specified reason
-	 * 
-	 * @param player
-	 * @param reason
-	 */
-	public static void kick(final ProxiedPlayer player, final String reason) {
-		if (reason == null || reason.equals("")) {
-			player.disconnect(TextComponent.fromLegacyText("You have been disconnected of the server."));
-		} else {
-			player.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', reason)));
-		}
-	}
+    public RedisUtils getRedis() {
+        return redis;
+    }
+
+    private void registerCommands() {
+        BungeeCommandManager commandManager = new BungeeCommandManager(this);
+        commandManager.enableUnstableAPI("help");
+        commandManager.registerCommand(new CoreCommand());
+        try {
+            commandManager.registerCommand(new MuteCommand(modules.getMuteModule()));
+            commandManager.registerCommand(new BanCommand(modules.getBanModule()));
+            commandManager.registerCommand(new KickCommand(modules.getKickModule()));
+        } catch (InvalidModuleException e) {
+            getLogger().info(e.getMessage());
+        }
+
+
+        commandManager.registerCommand(new LookupCommand());
+    }
+
+    /**
+     * Kick a player from the proxy for a specified reason
+     *
+     * @param player
+     * @param reason
+     */
+    public static void kick(final ProxiedPlayer player, final String reason) {
+        if (reason == null || reason.equals("")) {
+            player.disconnect(TextComponent.fromLegacyText("You have been disconnected of the server."));
+        } else {
+            player.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', reason)));
+        }
+    }
 
 }
