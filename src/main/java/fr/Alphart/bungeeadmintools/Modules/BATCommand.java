@@ -33,6 +33,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
+@Deprecated
 public abstract class BATCommand extends net.md_5.bungee.api.plugin.Command implements TabExecutor {
     private static final Pattern pattern = Pattern.compile("<.*?>");
     private final String name;

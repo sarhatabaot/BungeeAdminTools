@@ -160,12 +160,12 @@ public class Utils {
 			final URLConnection conn = geoApiURL.openConnection();
 			conn.setConnectTimeout(5000);
 			reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String content = "";
+			StringBuilder content = new StringBuilder();
 			String line;
 			while((line = reader.readLine()) != null){
-				content += line;
+				content.append(line);
 			}
-			final Map<String, Object> attributes = gson.fromJson(content, new TypeToken<Map<String, Object>>() {}.getType());
+			final Map<String, Object> attributes = gson.fromJson(content.toString(), new TypeToken<Map<String, Object>>() {}.getType());
 			String city = !((String)attributes.get("city")).isEmpty()
 					? (String)attributes.get("city")
 					: "unknown";

@@ -17,7 +17,7 @@ import com.google.common.base.Preconditions;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class FormatUtils {
-	private static StringBuilder sb = new StringBuilder();
+	private static final StringBuilder sb = new StringBuilder();
 
 	/**
 	 * Get the duration between the given timestamp and the current one

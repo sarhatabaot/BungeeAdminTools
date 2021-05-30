@@ -6,6 +6,7 @@ import java.util.List;
 
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
+@Deprecated
 public abstract class CommandHandler {
 	private final IModule module;
 	private final List<BATCommand> commands;
