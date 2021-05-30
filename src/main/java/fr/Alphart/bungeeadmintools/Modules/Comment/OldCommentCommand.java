@@ -22,7 +22,7 @@ import com.google.common.base.Joiner;
 
 
 
-
+@Deprecated
 public class OldCommentCommand extends CommandHandler {
 	private static Comment comment;
 	
