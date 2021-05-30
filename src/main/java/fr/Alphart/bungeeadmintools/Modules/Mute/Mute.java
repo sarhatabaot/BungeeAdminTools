@@ -3,6 +3,7 @@ package fr.alphart.bungeeadmintools.modules.mute;
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.BATCommand;
@@ -56,13 +58,19 @@ public class Mute implements IModule, Listener {
 	private CommandHandler commandHandler;
 	private ScheduledTask task;
 	private final MuteConfig config;
+	private BaseCommand muteCommand;
 
 	public Mute() {
 		config = new MuteConfig();
 	}
 
 	@Override
-	public List<BATCommand> getCommands() {
+	public BaseCommand getCommand() {
+		return muteCommand;
+	}
+
+	@Override
+	public List<BATCommand> getOldCommand() {
 		return commandHandler.getCommands();
 	}
 
@@ -102,8 +110,9 @@ public class Mute implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new OldMuteCommand(this);
-		commandHandler.loadCommands();
+		muteCommand = new MuteCommand(this);
+		//commandHandler = new OldMuteCommand(this);
+		//commandHandler.loadCommands();
 
 		mutedPlayers = new ConcurrentHashMap<>();
 
@@ -126,7 +135,8 @@ public class Mute implements IModule, Listener {
 		
 		@Comment("Forbidden commands when a player is mute")
 		@Getter
-		private List<String> forbiddenCmds = new ArrayList<String>(){
+		private List<String> forbiddenCmds = new ArrayList<>(){
+			@Serial
 			private static final long serialVersionUID = 1L;
 
 		{

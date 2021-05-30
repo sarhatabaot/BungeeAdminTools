@@ -43,7 +43,7 @@ public class OldCommentCommand extends CommandHandler {
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd) throws IllegalArgumentException {
 			if (args[0].equals("help")) {
 				try {
-					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("comment").getCommands(),
+					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("comment").getOldCommand(),
 							sender, "COMMENT");
 				} catch (final InvalidModuleException e) {
 					e.printStackTrace();

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
@@ -89,6 +90,7 @@ public class Core implements IModule, Listener {
     private final String name = "core";
     private List<BATCommand> cmds;
     private Gson gson = new Gson();
+    private BaseCommand coreCommand;
     public static EnhancedDateFormat defaultDF = new EnhancedDateFormat(false);
 
     @Override
@@ -122,8 +124,9 @@ public class Core implements IModule, Listener {
         }
 
         // Register commands
-        cmds = new ArrayList<>();
-        cmds.add(new OldCoreCommand(this)); // Most of the job is done in the constructor of CoreCommand
+        coreCommand = new CoreCommand();
+        //cmds = new ArrayList<>();
+        //cmds.add(new OldCoreCommand(this)); // Most of the job is done in the constructor of CoreCommand
 
         // Update the date format (if translation has been changed)
         defaultDF = new EnhancedDateFormat(BungeeAdminToolsPlugin.getInstance().getConfiguration().isLitteralDate());
@@ -138,8 +141,13 @@ public class Core implements IModule, Listener {
     }
 
     @Override
-    public List<BATCommand> getCommands() {
+    public List<BATCommand> getOldCommand() {
         return cmds;
+    }
+
+    @Override
+    public BaseCommand getCommand() {
+        return coreCommand;
     }
 
     @Override
