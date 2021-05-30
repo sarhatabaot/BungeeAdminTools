@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
+import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.modules.core.Core;
@@ -47,6 +48,7 @@ public class Ban implements IModule, Listener {
 	private final String name = "ban";
 	private ScheduledTask task;
 	private OldBanCommand commandHandler;
+	private BanCommand banCommand;
 	private final BanConfig config;
 
 	public Ban(){
@@ -54,7 +56,7 @@ public class Ban implements IModule, Listener {
 	}
 
 	@Override
-	public List<BATCommand> getCommands() {
+	public List<BATCommand> getOldCommand() {
 		return commandHandler.getCommands();
 	}
 
@@ -71,6 +73,11 @@ public class Ban implements IModule, Listener {
 	@Override
 	public ModuleConfiguration getConfig() {
 		return config;
+	}
+
+	@Override
+	public BaseCommand getCommand() {
+		return banCommand;
 	}
 
 	@Override
@@ -91,8 +98,9 @@ public class Ban implements IModule, Listener {
 		}
 
 		// Register commands
-		commandHandler = new OldBanCommand(this);
-		commandHandler.loadCommands();
+		banCommand = new BanCommand(this);
+		//commandHandler = new OldBanCommand(this);
+		//commandHandler.loadCommands();
 
 		// Launch tempban task
 		final BanExpirationTask banExpirationTask = new BanExpirationTask(this);
@@ -603,12 +611,7 @@ public class Ban implements IModule, Listener {
 				if(e.getPlayer().getServer() == null){
 					e.setCancelled(true);
 					// Need to delay for avoiding the "bit cannot be cast to fm exception" and to annoy the banned player :p
-					ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), new Runnable() {
-						@Override
-						public void run() {
-							e.getPlayer().disconnect(getBanMessage(player.getPendingConnection(), target));
-						}
-					}, 500, TimeUnit.MILLISECONDS);
+					ProxyServer.getInstance().getScheduler().schedule(BungeeAdminToolsPlugin.getInstance(), () -> e.getPlayer().disconnect(getBanMessage(player.getPendingConnection(), target)), 500, TimeUnit.MILLISECONDS);
 				}else{
 					e.setCancelled(true);
 					e.getPlayer().sendMessage(getBanMessage(player.getPendingConnection(), target));
@@ -627,43 +630,40 @@ public class Ban implements IModule, Listener {
 	@EventHandler
 	public void onPlayerLogin(final LoginEvent ev) {
 		ev.registerIntent(BungeeAdminToolsPlugin.getInstance());
-	    BungeeAdminToolsPlugin.getInstance().getProxy().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), new Runnable()
-	    {
-	      public void run() {
-	        boolean isBanPlayer = false;
+	    BungeeAdminToolsPlugin.getInstance().getProxy().getScheduler().runAsync(BungeeAdminToolsPlugin.getInstance(), () -> {
+		  boolean isBanPlayer = false;
 
-	        PreparedStatement statement = null;
-	        ResultSet resultSet = null;
-	        UUID uuid = null;
-	        try(Connection conn = BungeeAdminToolsPlugin.getConnection()){
-	        	statement = conn.prepareStatement("SELECT ban_id FROM `BAT_ban` WHERE ban_state = 1 AND UUID = ? AND ban_server = '" + GLOBAL_SERVER + "';");
-	        	// If this is an online mode server, the uuid will be already set
-	        	if(ev.getConnection().getUniqueId() != null){
-	        		uuid = ev.getConnection().getUniqueId();
-	        	}
-	        	// Otherwise it's an offline mode server, so we're gonna generate the UUID using player name (hashing)
-	        	else{
-	        		uuid = java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + ev.getConnection().getName() ).getBytes(Charsets.UTF_8));
-	        	}
-	            statement.setString(1, uuid.toString().replaceAll( "-", "" ));
-	        	
-	            resultSet = statement.executeQuery();
-	            if (resultSet.next()){
-	              isBanPlayer = true;
-	            }
-	        } catch (SQLException e) { 
-	        	DataSourceHandler.handleException(e);
-	        } finally {
-	          DataSourceHandler.close(statement, resultSet);
-	        }
+		  PreparedStatement statement = null;
+		  ResultSet resultSet = null;
+		  UUID uuid = null;
+		  try(Connection conn = BungeeAdminToolsPlugin.getConnection()){
+			  statement = conn.prepareStatement("SELECT ban_id FROM `BAT_ban` WHERE ban_state = 1 AND UUID = ? AND ban_server = '" + GLOBAL_SERVER + "';");
+			  // If this is an online mode server, the uuid will be already set
+			  if(ev.getConnection().getUniqueId() != null){
+				  uuid = ev.getConnection().getUniqueId();
+			  }
+			  // Otherwise it's an offline mode server, so we're gonna generate the UUID using player name (hashing)
+			  else{
+				  uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + ev.getConnection().getName() ).getBytes(Charsets.UTF_8));
+			  }
+			  statement.setString(1, uuid.toString().replaceAll( "-", "" ));
 
-	        if ((isBanPlayer) || (isBan(ev.getConnection().getAddress().getAddress().getHostAddress(), GLOBAL_SERVER))) {
-	          BaseComponent[] bM = getBanMessage(ev.getConnection(), GLOBAL_SERVER);
-	          ev.setCancelReason(TextComponent.toLegacyText(bM));
-	          ev.setCancelled(true);
-	        }
-	        ev.completeIntent(BungeeAdminToolsPlugin.getInstance());
-	      }
-	    });
+			  resultSet = statement.executeQuery();
+			  if (resultSet.next()){
+				isBanPlayer = true;
+			  }
+		  } catch (SQLException e) {
+			  DataSourceHandler.handleException(e);
+		  } finally {
+			DataSourceHandler.close(statement, resultSet);
+		  }
+
+		  if ((isBanPlayer) || (isBan(ev.getConnection().getAddress().getAddress().getHostAddress(), GLOBAL_SERVER))) {
+			BaseComponent[] bM = getBanMessage(ev.getConnection(), GLOBAL_SERVER);
+			ev.setCancelReason(TextComponent.toLegacyText(bM));
+			ev.setCancelled(true);
+		  }
+		  ev.completeIntent(BungeeAdminToolsPlugin.getInstance());
+		});
 	}
 }

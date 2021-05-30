@@ -60,6 +60,7 @@ public class BungeeAdminToolsPlugin extends Plugin {
     private Configuration config;
     private static String prefix;
     private ModulesManager modules;
+    private BungeeCommandManager commandManager;
     private RedisUtils redis;
 
     @Override
@@ -67,6 +68,8 @@ public class BungeeAdminToolsPlugin extends Plugin {
         instance = this;
         config = new Configuration();
         getLogger().setLevel(Level.INFO);
+        this.commandManager = new BungeeCommandManager(this);
+        this.commandManager.enableUnstableAPI("help");
         registerCommands();
         if (config.isDebugMode()) {
             try {

@@ -41,7 +41,7 @@ public class OldMuteCommand extends CommandHandler {
 				throws IllegalArgumentException {
 			if (args[0].equals("help")) {
 				try {
-					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("mute").getCommands(),
+					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("mute").getOldCommand(),
 							sender, "MUTE");
 				} catch (final InvalidModuleException e) {
 					e.printStackTrace();

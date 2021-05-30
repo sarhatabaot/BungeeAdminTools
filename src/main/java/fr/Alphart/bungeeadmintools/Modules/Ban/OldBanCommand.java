@@ -47,7 +47,7 @@ public class OldBanCommand extends CommandHandler {
 				throws IllegalArgumentException {
 			if (args[0].equals("help")) {
 				try {
-					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("ban").getCommands(),
+					FormatUtils.showFormattedHelp(BungeeAdminToolsPlugin.getInstance().getModules().getModule("ban").getOldCommand(),
 							sender, "BAN");
 				} catch (final InvalidModuleException e) {
 					e.printStackTrace();

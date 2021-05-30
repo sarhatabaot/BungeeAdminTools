@@ -1,6 +1,7 @@
 package fr.alphart.bungeeadmintools.modules.comment;
 
 import java.io.File;
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 
+import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
@@ -35,6 +37,7 @@ import com.google.common.collect.Lists;
 public class Comment implements IModule {
     private final String name = "comment";
     private OldCommentCommand commandHandler;
+    private BaseCommand commentCommand;
     private final CommentConfig config;
 
     public Comment() {
@@ -42,13 +45,18 @@ public class Comment implements IModule {
     }
 
     @Override
-    public List<BATCommand> getCommands() {
+    public List<BATCommand> getOldCommand() {
         return commandHandler.getCommands();
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public BaseCommand getCommand() {
+        return commentCommand;
     }
 
     @Override
@@ -82,8 +90,9 @@ public class Comment implements IModule {
         }
 
         // Register commands
-        commandHandler = new OldCommentCommand(this);
-        commandHandler.loadCommands();
+        commentCommand = new CommentCommand();
+        //commandHandler = new OldCommentCommand(this);
+        //commandHandler.loadCommands();
 
         return true;
     }
@@ -133,6 +142,7 @@ public class Comment implements IModule {
                 "  triggerNumber: the number at which this triggers"})
         @Getter
         private final Map<String, Trigger> triggers = new HashMap<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             {

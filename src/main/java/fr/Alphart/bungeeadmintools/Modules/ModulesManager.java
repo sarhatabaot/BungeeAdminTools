@@ -88,7 +88,7 @@ public class ModulesManager {
 					ProxyServer.getInstance().getPluginManager().registerListener(BungeeAdminToolsPlugin.getInstance(), (Listener) module);
 				}
 
-				for (final BATCommand cmd : module.getCommands()) {
+				for (final BATCommand cmd : module.getOldCommand()) {
 					cmdsModules.put(cmd.getName(), module);
 					ProxyServer.getInstance().getPluginManager().registerCommand(BungeeAdminToolsPlugin.getInstance(), cmd);
 				}

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
@@ -29,16 +30,23 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 public class Kick implements IModule {
 	private final String name = "kick";
+	@Deprecated
 	private OldKickCommand commandHandler;
 	private final KickConfig config;
+	private BaseCommand kickCommand;
 
 	public Kick(){
 		config = new KickConfig();
 	}
 
 	@Override
-	public List<BATCommand> getCommands() {
+	public List<BATCommand> getOldCommand() {
 		return commandHandler.getCommands();
+	}
+
+	@Override
+	public BaseCommand getCommand() {
+		return kickCommand;
 	}
 
 	@Override
@@ -77,8 +85,9 @@ public class Kick implements IModule {
 		}
 
 		// Register commands
-		commandHandler = new OldKickCommand(this);
-		commandHandler.loadCommands();
+		kickCommand = new KickCommand(this);
+		//commandHandler = new OldKickCommand(this);
+		//commandHandler.loadCommands();
 
 		return true;
 	}

@@ -1,5 +1,7 @@
 package fr.alphart.bungeeadmintools.modules;
 
+import co.aikar.commands.BaseCommand;
+
 import java.util.List;
 
 public interface IModule {
@@ -48,5 +50,8 @@ public interface IModule {
 	 * 
 	 * @return list of commands
 	 */
-	List<BATCommand> getCommands();
+	@Deprecated
+	List<BATCommand> getOldCommand();
+
+	BaseCommand getCommand();
 }

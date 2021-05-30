@@ -164,7 +164,7 @@ public class OldCoreCommand extends BATCommand {
 		public void onCommand(final CommandSender sender, final String[] args, final boolean confirmedCmd)
 				throws IllegalArgumentException {
 			final List<BATCommand> cmdsList = new ArrayList<>();
-			for (final BATCommand cmd : BungeeAdminToolsPlugin.getInstance().getModules().getCore().getCommands()) {
+			for (final BATCommand cmd : BungeeAdminToolsPlugin.getInstance().getModules().getCore().getOldCommand()) {
 				if (cmd instanceof OldCoreCommand) {
 					cmdsList.addAll(((OldCoreCommand) cmd).getSubCmd());
 				}else{
