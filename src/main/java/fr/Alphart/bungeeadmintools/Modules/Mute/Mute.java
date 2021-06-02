@@ -693,7 +693,7 @@ public class Mute implements IModule, Listener {
 			pMuteData.clearServers();
 			pMuteData.unsetGlobal();
 		} else {
-			pMuteData = new PlayerMuteData(pName, new ArrayList<String>());
+			pMuteData = new PlayerMuteData(pName, new ArrayList<>());
 		}
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -766,7 +766,7 @@ public class Mute implements IModule, Listener {
 				}
 
 				
-				// Make it compatible with sqlite (date: get an int with the sfrt and then construct a tiemstamp)
+				// Make it compatible with sqlite (date: get an int with the sfrt and then construct a timestamp)
 				final String server = resultSet.getString("mute_server");
 				String reason = resultSet.getString("mute_reason");
 				if(reason == null){

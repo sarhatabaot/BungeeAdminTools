@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>fr.Alphart</groupId>
+    <groupId>fr.alphart</groupId>
     <artifactId>bungeeadmintools</artifactId>
     <name>BungeeAdminTools</name>
 
@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>16</java.version>
     </properties>
-    <version>1.6.0</version>
+    <version>1.6.0-SNAPSHOT</version>
     <description>Bungee plugin which handles ban, mute and kick management</description>
     <repositories>
         <repository>
@@ -23,6 +23,10 @@
         <repository>
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -92,6 +96,12 @@
             <groupId>co.aikar</groupId>
             <artifactId>acf-bungee</artifactId>
             <version>0.5.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.lucko.luckperms</groupId>
+            <artifactId>loader-utils</artifactId>
+            <version>5.3</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

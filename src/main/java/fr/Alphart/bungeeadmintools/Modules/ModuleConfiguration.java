@@ -36,9 +36,9 @@ public abstract class ModuleConfiguration extends YamlConfig {
 	}
 
 	@Getter
-	private boolean enabled = true;
+	private final boolean enabled = true;
 
-	private Map<String, Boolean> commands = new HashMap<>();
+	private final Map<String, Boolean> commands = new HashMap<>();
 
 	/**
 	 * Get the names of the enabled commands for this module
@@ -65,9 +65,7 @@ public abstract class ModuleConfiguration extends YamlConfig {
 		Collections.sort(commands);
 		// Add new commands if there are
 		for (final String cmdName : commands) {
-			if (!this.commands.containsKey(cmdName)) {
-				this.commands.put(cmdName, true);
-			}
+			this.commands.putIfAbsent(cmdName, true);
 		}
 		// Iterate through the commands map and remove the ones who don't exist (e.g because of an update)
 		this.commands.entrySet().removeIf(cmdEntry -> !commands.contains(cmdEntry.getKey()));

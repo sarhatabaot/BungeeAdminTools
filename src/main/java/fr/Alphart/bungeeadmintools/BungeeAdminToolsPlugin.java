@@ -75,7 +75,8 @@ public class BungeeAdminToolsPlugin extends Plugin {
             try {
                 final File debugFile = new File(getDataFolder(), "debug.log");
                 if (debugFile.exists()) {
-                    debugFile.delete();
+                    java.nio.file.Files.delete(debugFile.toPath());
+                    //debugFile.delete();
                 }
                 // Write header into debug log
                 Files.asCharSink(debugFile, StandardCharsets.UTF_8).writeLines(Arrays.asList("BAT log debug file"
@@ -124,23 +125,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
         });
     }
 
-    public int getBCBuild() {
-        final Pattern p = Pattern.compile(".*?:(.*?:){3}(\\d*)");
-        final Matcher m = p.matcher(ProxyServer.getInstance().getVersion());
-        int BCBuild;
-        try {
-            if (m.find()) {
-                BCBuild = Integer.parseInt(m.group(2));
-            } else {
-                throw new NumberFormatException();
-            }
-        } catch (final NumberFormatException e) {
-            // We can't determine BC build, just display a message, and set the build so it doesn't trigger the security
-            getLogger().info("BC build can't be detected. If you encounter any problems, please report that message. Otherwise don't take into account");
-            BCBuild = requiredBCBuild;
-        }
-        return BCBuild;
-    }
 
     @Override
     public void onDisable() {
