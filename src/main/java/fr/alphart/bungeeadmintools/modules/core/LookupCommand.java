@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Optional;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
+import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
 import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
@@ -31,7 +32,7 @@ public class LookupCommand extends BaseCommand {
     }
 
     @CommandAlias("lookup")
-    @CommandPermission("bat.lookup")
+    @CommandPermission(Permissions.LOOKUP)
     public void onLookup(final CommandSender sender, final String target, final String module,@Optional int page) {
         if(page == 0) {
             for (final BaseComponent[] msg : lookupFormatter.getSummaryLookupPlayer(target,

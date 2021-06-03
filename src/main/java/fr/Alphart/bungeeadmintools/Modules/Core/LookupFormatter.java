@@ -52,7 +52,7 @@ public class LookupFormatter {
         final EntityEntry pDetails = new EntityEntry(pName);
 
         if (!pDetails.exist()) {
-            final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
+            final List<BaseComponent[]> returnedMsg = new ArrayList<>();
             returnedMsg.add(formatWithColorAndAddPrefix("playerNotFound"));
             return returnedMsg;
         }
@@ -161,7 +161,7 @@ public class LookupFormatter {
         }
         
         int commentsNumber = pDetails.getComments().size();
-        String last_comments = "";
+        StringBuilder last_comments = new StringBuilder();
         // We need to parse the number of last comments from the lookup pattern
         final Pattern lastCommentsPattern = Pattern.compile("(?:.|\n)*?\\{last_comments:(\\d*)\\}(?:.|\n)*?");
         final Matcher matcher = lastCommentsPattern.matcher(lookupPattern);
@@ -175,19 +175,19 @@ public class LookupFormatter {
             }
             int i = 0;
             for(final CommentEntry comm : pDetails.getComments()){
-                last_comments += I18n.formatWithColor("commentRow", new String[]{String.valueOf(comm.getID()),
+                last_comments.append(I18n.formatWithColor("commentRow", new String[]{String.valueOf(comm.getID()),
                         (comm.getType() == CommentEntry.Type.NOTE) ? "&eComment" : "&cWarning", comm.getContent(),
-                        comm.getFormattedDate(), comm.getAuthor()});
+                        comm.getFormattedDate(), comm.getAuthor()}));
                 i++;
                 if(i == 3){
                     break;
                 }
             }
-            if(last_comments.isEmpty()){
-                last_comments = formatWithColor("none");
+            if(last_comments.length() == 0){
+                last_comments = new StringBuilder(formatWithColor("none"));
             }
         }catch(final NumberFormatException e){
-            last_comments = "Unable to parse the number of last_comments";
+            last_comments = new StringBuilder("Unable to parse the number of last_comments");
         }
 
         return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&',
@@ -198,7 +198,7 @@ public class LookupFormatter {
                 .replace("{first_login}", first_login).replace("{last_login}", last_login).replace("{last_ip}", last_ip)
                 .replace("{bans_number}", String.valueOf(bansNumber)).replace("{mutes_number}", String.valueOf(mutesNumber))
                 .replace("{kicks_number}", String.valueOf(kicksNumber)).replace("{comments_number}", String.valueOf(commentsNumber))
-                .replace("{name_history_list}", name_history_list).replaceAll("\\{last_comments:\\d\\}", last_comments)
+                .replace("{name_history_list}", name_history_list).replaceAll("\\{last_comments:\\d\\}", last_comments.toString())
                 .replace("{player}", pName).replace("{uuid}", Core.getUUID(pName))
                 // '¤' is used as a space character, so we replace it with space and display correctly the escaped one
                 .replace("¤", " ").replace("\\¤", "¤")
@@ -208,7 +208,7 @@ public class LookupFormatter {
     public List<BaseComponent[]> getSummaryLookupIP(final String ip) {
         final EntityEntry ipDetails = new EntityEntry(ip);
         if (!ipDetails.exist()) {
-            final List<BaseComponent[]> returnedMsg = new ArrayList<BaseComponent[]>();
+            final List<BaseComponent[]> returnedMsg = new ArrayList<>();
             returnedMsg.add(formatWithColorAndAddPrefix("unknownIp"));
             return returnedMsg;
         }
