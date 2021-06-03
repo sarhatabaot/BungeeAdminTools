@@ -1,5 +1,6 @@
 package fr.alphart.bungeeadmintools.modules.core;
 
+import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -16,9 +17,9 @@ public class PermissionManager {
         UNBANIP("bat.unbanip"),
         BAN_BROADCAST("bat.ban.broadcast"),
 
-        MUTE("bat.mute"),
-        MUTEIP("bat.muteip"),
-        TEMPMUTE("bat.tempmute"),
+        MUTE(Permissions.MUTE),
+        MUTEIP(Permissions.MUTE_IP),
+        TEMPMUTE(Permissions.TEMP_MUTE),
         TEMPMUTEIP("bat.tempmuteip"),
         UNMUTE("bat.unmute"),
         UNMUTEIP("bat.unmuteip"),
@@ -72,11 +73,11 @@ public class PermissionManager {
      * @return true if he can otherwise false
      */
     public static boolean canExecuteAction(final Action action, final CommandSender executor, final String server) {
-        if (executor.hasPermission("bat.admin") || executor.hasPermission("bat." + "grantall.global")) {
+        if (executor.hasPermission(Permissions.ADMIN) || executor.hasPermission("bat.grantall.global")) {
             return true;
         }
         // If the user has global perm, check if he has some perm which negates this
-        if (executor.hasPermission("bat." + "grantall." + server) ||
+        if (executor.hasPermission("bat.grantall." + server) ||
                 ((executor.hasPermission(action.getPermission() + ".global") && // If it's for global server (or any which is the same, don't need to check the permission)
                         !(server.equals(IModule.GLOBAL_SERVER) || server.equals(IModule.ANY_SERVER))))) {
 
