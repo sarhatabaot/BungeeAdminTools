@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import fr.alphart.bungeeadmintools.modules.BATCommand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -77,7 +76,7 @@ public class FormatUtils {
 		return Joiner.on(", ").join(item);
 	}
 
-	public static void showFormattedHelp(final List<BATCommand> cmds, final CommandSender sender, final String helpName) {
+	/*public static void showFormattedHelp(final List<BATCommand> cmds, final CommandSender sender, final String helpName) {
 		final List<BaseComponent[]> msg = new ArrayList<>();
 		sb.append("&9 ---- &9Bungee&fAdmin&cTools&9 - &6");
 		sb.append(helpName);
@@ -104,7 +103,7 @@ public class FormatUtils {
 		if (msg.size() == 1) {
 			sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix("&c No command corresponding to your permission has been found"));
 		}
-	}
+	}*/
 
 	public static List<BaseComponent[]> formatNewLine(final String message) {
 		final String[] strMessageArray = message.split("\n");

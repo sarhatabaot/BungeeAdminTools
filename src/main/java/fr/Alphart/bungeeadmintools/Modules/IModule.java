@@ -45,13 +45,5 @@ public interface IModule {
 	 */
 	String getMainCommand();
 
-	/**
-	 * Get commands used by this module
-	 * 
-	 * @return list of commands
-	 */
-	@Deprecated
-	List<BATCommand> getOldCommand();
-
 	BaseCommand getCommand();
 }

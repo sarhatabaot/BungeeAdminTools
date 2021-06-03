@@ -18,7 +18,6 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
-import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.modules.core.Core;
@@ -30,8 +29,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 public class Kick implements IModule {
 	private final String name = "kick";
-	@Deprecated
-	private OldKickCommand commandHandler;
 	private final KickConfig config;
 	private BaseCommand kickCommand;
 
@@ -39,10 +36,6 @@ public class Kick implements IModule {
 		config = new KickConfig();
 	}
 
-	@Override
-	public List<BATCommand> getOldCommand() {
-		return commandHandler.getCommands();
-	}
 
 	@Override
 	public BaseCommand getCommand() {

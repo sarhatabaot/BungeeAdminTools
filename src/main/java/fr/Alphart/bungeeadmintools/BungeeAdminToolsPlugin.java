@@ -70,7 +70,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
         getLogger().setLevel(Level.INFO);
         this.commandManager = new BungeeCommandManager(this);
         this.commandManager.enableUnstableAPI("help");
-        registerCommands();
         if (config.isDebugMode()) {
             try {
                 final File debugFile = new File(getDataFolder(), "debug.log");
@@ -189,21 +188,16 @@ public class BungeeAdminToolsPlugin extends Plugin {
         if (!new File(getDataFolder() + File.separator + "lib" + File.separator + "sqlite_driver.jar").exists()) {
             getLogger().info("The SQLLite driver was not found. It is being downloaded, please wait ...");
 
-            final String driverUrl = "https://www.dropbox.com/s/ls7qoddx9m6t4vh/sqlite_driver.jar?dl=1";
-            FileOutputStream fos = null;
-            try {
+            final String driverUrl = "https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.34.0/sqlite-jdbc-3.34.0.jar";
+            try (FileOutputStream fos = new FileOutputStream(driverPath)){
                 final ReadableByteChannel rbc = Channels.newChannel(new URL(driverUrl).openStream());
-                fos = new FileOutputStream(driverPath);
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             } catch (final IOException e) {
                 getLogger()
                         .severe("An error occured during the downloading of the SQLite driver. Please report this error : ");
                 e.printStackTrace();
                 return false;
-            } finally {
-                DataSourceHandler.close(fos);
             }
-
             getLogger().info("The driver has been successfully downloaded.");
         }
 
@@ -288,22 +282,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
 
     public RedisUtils getRedis() {
         return redis;
-    }
-
-    private void registerCommands() {
-        BungeeCommandManager commandManager = new BungeeCommandManager(this);
-        commandManager.enableUnstableAPI("help");
-        commandManager.registerCommand(new CoreCommand());
-        try {
-            commandManager.registerCommand(new MuteCommand(modules.getMuteModule()));
-            commandManager.registerCommand(new BanCommand(modules.getBanModule()));
-            commandManager.registerCommand(new KickCommand(modules.getKickModule()));
-        } catch (InvalidModuleException e) {
-            getLogger().info(e.getMessage());
-        }
-
-
-        commandManager.registerCommand(new LookupCommand());
     }
 
     /**

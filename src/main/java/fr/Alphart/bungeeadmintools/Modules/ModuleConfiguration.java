@@ -14,7 +14,9 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import net.cubespace.Yamler.Config.YamlConfig;
 
 public abstract class ModuleConfiguration extends YamlConfig {
-	
+	@Getter
+	private final boolean enabled = true;
+
 	// We must use an init method because if we use the super constructor, it doesn't work properly (field of children class are overwritten)
 	public void init(final String moduleName){
        try {
@@ -35,39 +37,4 @@ public abstract class ModuleConfiguration extends YamlConfig {
         load();
 	}
 
-	@Getter
-	private final boolean enabled = true;
-
-	private final Map<String, Boolean> commands = new HashMap<>();
-
-	/**
-	 * Get the names of the enabled commands for this module
-	 * 
-	 * @return list of the enabled commands
-	 */
-	public List<String> getEnabledCmds() {
-		final List<String> enabledCmds = new ArrayList<>();
-		for (final Entry<String, Boolean> entry : commands.entrySet()) {
-			if (entry.getValue()) {
-				enabledCmds.add(entry.getKey());
-			}
-		}
-		return enabledCmds;
-	}
-
-	/**
-	 * Add commands provided by this module into the configuration file
-	 * 
-	 * @param commands
-	 *            list
-	 */
-	public void setProvidedCmds(final List<String> commands) {
-		Collections.sort(commands);
-		// Add new commands if there are
-		for (final String cmdName : commands) {
-			this.commands.putIfAbsent(cmdName, true);
-		}
-		// Iterate through the commands map and remove the ones who don't exist (e.g because of an update)
-		this.commands.entrySet().removeIf(cmdEntry -> !commands.contains(cmdEntry.getKey()));
-	}
 }

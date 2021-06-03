@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
-import fr.alphart.bungeeadmintools.modules.BATCommand;
-import fr.alphart.bungeeadmintools.modules.CommandHandler;
 import fr.alphart.bungeeadmintools.modules.core.Core;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
@@ -55,7 +53,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 public class Mute implements IModule, Listener {
 	private final String name = "mute";
 	private ConcurrentHashMap<String, PlayerMuteData> mutedPlayers;
-	private CommandHandler commandHandler;
 	private ScheduledTask task;
 	private final MuteConfig config;
 	private BaseCommand muteCommand;
@@ -69,10 +66,6 @@ public class Mute implements IModule, Listener {
 		return muteCommand;
 	}
 
-	@Override
-	public List<BATCommand> getOldCommand() {
-		return commandHandler.getCommands();
-	}
 
 	@Override
 	public String getMainCommand() {

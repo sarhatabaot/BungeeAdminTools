@@ -20,7 +20,6 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
-import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.modules.core.Core;
@@ -36,7 +35,6 @@ import com.google.common.collect.Lists;
 
 public class Comment implements IModule {
     private final String name = "comment";
-    private OldCommentCommand commandHandler;
     private BaseCommand commentCommand;
     private final CommentConfig config;
 
@@ -44,10 +42,6 @@ public class Comment implements IModule {
         config = new CommentConfig();
     }
 
-    @Override
-    public List<BATCommand> getOldCommand() {
-        return commandHandler.getCommands();
-    }
 
     @Override
     public String getName() {

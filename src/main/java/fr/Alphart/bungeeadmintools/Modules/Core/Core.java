@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
-import fr.alphart.bungeeadmintools.modules.BATCommand;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.utils.EnhancedDateFormat;
@@ -88,7 +86,6 @@ public class Core implements IModule, Listener {
                         }
                     });
     private final String name = "core";
-    private List<BATCommand> cmds;
     private Gson gson = new Gson();
     private BaseCommand coreCommand;
     public static EnhancedDateFormat defaultDF = new EnhancedDateFormat(false);
@@ -139,12 +136,6 @@ public class Core implements IModule, Listener {
 
         return true;
     }
-
-    @Override
-    public List<BATCommand> getOldCommand() {
-        return cmds;
-    }
-
     @Override
     public BaseCommand getCommand() {
         return coreCommand;
@@ -155,9 +146,9 @@ public class Core implements IModule, Listener {
         return "bat";
     }
 
-    public void addCommand(final BATCommand cmd) {
+    /*public void addCommand(final BATCommand cmd) {
         cmds.add(cmd);
-    }
+    }*/
 
     /**
      * Get the UUID of the specified player

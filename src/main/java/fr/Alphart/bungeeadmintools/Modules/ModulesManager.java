@@ -29,7 +29,6 @@ public class ModulesManager {
 	private final StringBuilder sb;
 	private final Map<IModule, Integer> modules;
 	private final Map<String, IModule> modulesNames;
-	private Map<String, IModule> cmdsModules;
 
 	public ModulesManager() {
 		log = BungeeAdminToolsPlugin.getInstance().getLogger();
@@ -71,7 +70,6 @@ public class ModulesManager {
 		modules.put(new Mute(), IModule.OFF_STATE);
 		modules.put(new Kick(), IModule.OFF_STATE);
 		modules.put(new Comment(), IModule.OFF_STATE);
-		cmdsModules = new HashMap<>();
 		for (final IModule module : modules.keySet()) {
 			// The core doesn't have settings to enable or disable it
 			if (!module.getName().equals("core")) {
@@ -88,10 +86,6 @@ public class ModulesManager {
 					ProxyServer.getInstance().getPluginManager().registerListener(BungeeAdminToolsPlugin.getInstance(), (Listener) module);
 				}
 
-				for (final BATCommand cmd : module.getOldCommand()) {
-					cmdsModules.put(cmd.getName(), module);
-					ProxyServer.getInstance().getPluginManager().registerCommand(BungeeAdminToolsPlugin.getInstance(), cmd);
-				}
 				if(module.getConfig() != null){
 					try {
 						module.getConfig().save();
