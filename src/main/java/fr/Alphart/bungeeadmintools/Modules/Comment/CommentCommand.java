@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -21,12 +22,16 @@ import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
 
 @CommandAlias("comment|note")
-@CommandPermission("bat.comment")
+@CommandPermission(Permissions.COMMENT)
 public class CommentCommand extends BaseCommand {
     private Comment comment;
 
+    public CommentCommand(final Comment comment) {
+        this.comment = comment;
+    }
+
     @Default
-    @CommandPermission("bat.comment.create")
+    @CommandPermission(Permissions.COMMENT_CREATE)
     public void onAddComment(final CommandSender sender, final String target, final String reason) {
         checkArgument(comment.hasLastcommentCooledDown(target), formatWithColor("cooldownUnfinished"));
         comment.insertComment(target, reason, CommentEntry.Type.NOTE, sender.getName());
@@ -36,7 +41,7 @@ public class CommentCommand extends BaseCommand {
     @Subcommand("clear")
     @CommandAlias("clearcomment")
     @Description("Clear all the comments and warnings or the specified one of the player.")
-    @CommandPermission("bat.comment.clear")
+    @CommandPermission(Permissions.COMMENT_CLEAR)
     public void onClearComment(final CommandSender sender, final String target, final int commentId) {
         final String commentMessage = comment.clearComments(target, commentId);
         sender.sendMessage(BungeeAdminToolsPlugin.colorizeAndAddPrefix(commentMessage));
@@ -44,7 +49,7 @@ public class CommentCommand extends BaseCommand {
 
     @CommandAlias("warn")
     @Description("Warn a player and add warning note on player's info text.")
-    @CommandPermission("bat.warn")
+    @CommandPermission(Permissions.WARN)
     public void onWarn(final CommandSender sender, final String target, final String reason) {
         final ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(target);
         if(targetPlayer == null) {

@@ -84,7 +84,7 @@ public class Comment implements IModule {
         }
 
         // Register commands
-        commentCommand = new CommentCommand();
+        commentCommand = new CommentCommand(this);
         //commandHandler = new OldCommentCommand(this);
         //commandHandler.loadCommands();
 
