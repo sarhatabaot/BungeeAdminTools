@@ -3,4 +3,3 @@ authors: [Alphart, sarhatabaot]
 version: ${project.version}
 main: fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin
 depends: ['Yamler']
-softdepends: [RedisBungee]

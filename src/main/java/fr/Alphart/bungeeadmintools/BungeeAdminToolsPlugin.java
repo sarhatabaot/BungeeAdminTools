@@ -58,7 +58,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
                 final File debugFile = new File(getDataFolder(), "debug.log");
                 if (debugFile.exists()) {
                     java.nio.file.Files.delete(debugFile.toPath());
-                    //debugFile.delete();
                 }
                 // Write header into debug log
                 Files.asCharSink(debugFile, StandardCharsets.UTF_8).writeLines(Arrays.asList("BAT log debug file"
@@ -158,10 +157,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
      * @param perm
      */
     public static void broadcast(final String message, final String perm) {
-        noRedisBroadcast(message, perm);
-    }
-
-    public static void noRedisBroadcast(final String message, final String perm) {
         final BaseComponent[] bsMsg = colorizeAndAddPrefix(message);
         for (final ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             if (p.hasPermission(perm) || p.hasPermission("bat.admin")) {
@@ -180,6 +175,7 @@ public class BungeeAdminToolsPlugin extends Plugin {
         getInstance().getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
     }
 
+
     public ModulesManager getModules() {
         return modules;
     }
@@ -192,9 +188,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
         return dsHandler.getConnection();
     }
 
-    public DataSourceHandler getDsHandler() {
-        return dsHandler;
-    }
 
 
     /**

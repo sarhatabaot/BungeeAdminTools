@@ -204,16 +204,13 @@ public class LookupFormatter {
             returnedMsg.add(formatWithColorAndAddPrefix("unknownIp"));
             return returnedMsg;
         }
-        boolean isBan = false;
         int bansNumber = 0;
         final List<String> banServers = new ArrayList<>();
-        boolean isMute = false;
         int mutesNumber = 0;
         final List<String> muteServers = new ArrayList<>();
         if (!ipDetails.getBans().isEmpty()) {
             for (final BanEntry banEntry : ipDetails.getBans()) {
                 if (banEntry.active()) {
-                    isBan = true;
                     banServers.add(banEntry.server());
                 }
             }
@@ -222,7 +219,6 @@ public class LookupFormatter {
         if (!ipDetails.getMutes().isEmpty()) {
             for (final MuteEntry muteEntry : ipDetails.getMutes()) {
                 if (muteEntry.active()) {
-                    isMute = true;
                     muteServers.add(muteEntry.server());
                 }
             }
@@ -436,7 +432,7 @@ public class LookupFormatter {
     }
     
     public List<BaseComponent[]> formatMuteLookup(final String entity, final List<MuteEntry> mutes,
-            int page, final boolean staffLookup) throws InvalidModuleException {
+            int page, final boolean staffLookup) {
         final StringBuilder msg = new StringBuilder();
 
         int totalPages = (int) Math.ceil((double)mutes.size()/entriesPerPage);
@@ -524,7 +520,7 @@ public class LookupFormatter {
     }
     
     public List<BaseComponent[]> formatKickLookup(final String entity, final List<KickEntry> kicks,
-            int page, final boolean staffLookup) throws InvalidModuleException {
+            int page, final boolean staffLookup) {
         final StringBuilder msg = new StringBuilder();
 
         int totalPages = (int) Math.ceil((double)kicks.size()/entriesPerPage);
@@ -568,7 +564,7 @@ public class LookupFormatter {
     }
     
     public List<BaseComponent[]> commentRowLookup(final String entity, final List<CommentEntry> comments,
-            int page, final boolean staffLookup) throws InvalidModuleException {
+            int page, final boolean staffLookup){
 
         final StringBuilder msg = new StringBuilder();
 

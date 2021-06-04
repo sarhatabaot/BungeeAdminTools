@@ -140,7 +140,6 @@ public class Core implements IModule, Listener {
      * @return String which is the UUID
      * @throws UuidNotFoundException
      */
-    @Nullable
     public static String getUuid(final String pName) throws UuidNotFoundException {
         try {
             return uuidCache.get(pName);
@@ -149,7 +148,7 @@ public class Core implements IModule, Listener {
                 throw (UuidNotFoundException) e.getCause();
             }
         }
-        return null;
+        return "null";
     }
 
     /**
