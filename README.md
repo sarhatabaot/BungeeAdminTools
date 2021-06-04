@@ -6,7 +6,7 @@ The BungeeAdminTools web-interface repo can be found [here](https://github.com/a
 ## For developers
 
 ### Importing the project
-BAT is a maven project so most dependencies will be automatically downloaded once you import it. However don't forget to add BungeePerms in your lib folder (because there is no maven repo available).
+BAT is a maven project, so most dependencies will be automatically downloaded once you import it. However, don't forget to add BungeePerms in your lib folder (because there is no maven repo available).
 
 ### About pull requests
 I'm very glad if you send PR, however I need you test to really test them before please :)
@@ -17,9 +17,9 @@ If you want to write unit test, go ahead but please don't mix unit tests with in
 
 As contributors and maintainers of the BungeeAdminTools project, we pledge to respect everyone who contributes by posting issues, updating documentation, submitting pull requests, providing feedback in comments, and any other activities.
 
-Communication through any of BungeeAdminTools's channels (GitHub, IRC, mailing lists, Google+, Twitter, etc.) must be constructive and never resort to personal attacks, trolling, public or private harrassment, insults, or other unprofessional conduct.
+Communication through any of BungeeAdminTools's channels (GitHub, IRC, mailing lists, Google+, Twitter, etc.) must be constructive and never resort to personal attacks, trolling, public or private harassment, insults, or other unprofessional conduct.
 
-We promise to extend courtesy and respect to everyone involved in this project regardless of gender, *gender identity*, sexual orientation, disability, age, race, ethnicity, religion, or level of experience. We expect anyone contributing to the BungeeAdminTools project to do the same.
+We promise to extend courtesy and respect to everyone involved in this project regardless of gender, *gender identity*, sexual orientation, disability, age, race, ethnicity, religion, or level of experience. We expect anyone contributes to the BungeeAdminTools project to do the same.
 
 If any member of the community violates this code of conduct, the maintainers of the BungeeAdminTools project may take action, removing issues, comments, and PRs or blocking accounts as deemed appropriate.
 
