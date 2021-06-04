@@ -8,9 +8,7 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -25,17 +23,16 @@ public class DataSourceHandler {
 	private final String port;
 	private final String host;
 
-	private Connection SQLiteConn;
 
 	/**
 	 * Constructor used for MySQL
 	 * 
-	 * @param host
-	 * @param port
-	 * @param database
-	 * @param username
-	 * @param password
-	 * @throws SQLException 
+	 * @param host host
+	 * @param port port
+	 * @param database database name
+	 * @param username username
+	 * @param password password
+	 * @throws SQLException sqlexception
 	 */
 	public DataSourceHandler(final String host, final String port, final String database, final String username, final String password) throws SQLException{
 		// Check database's informations and init connection
@@ -56,9 +53,7 @@ public class DataSourceHandler {
 		ds.setMaximumPoolSize(8);
 		try {
 			final Connection conn = ds.getConnection();
-		    int intOffset = Calendar.getInstance().getTimeZone().getOffset(Calendar.getInstance().getTimeInMillis()) / 1000;
-		    String offset = String.format("%02d:%02d", Math.abs(intOffset / 3600), Math.abs((intOffset / 60) % 60));
-		    offset = (intOffset >= 0 ? "+" : "-") + offset;
+		    String offset = calculateOffset(Calendar.getInstance().getTimeZone().getOffset(Calendar.getInstance().getTimeInMillis()) / 1000);
 			conn.createStatement().executeQuery("SET time_zone='" + offset + "';");
 			conn.close();
 			BungeeAdminToolsPlugin.getInstance().getLogger().config("BoneCP is loaded !");
@@ -73,6 +68,11 @@ public class DataSourceHandler {
 			}
 			throw e;
 		}
+	}
+
+	private String calculateOffset(int intOffset) {
+		var offset = String.format("%02d:%02d", Math.abs(intOffset / 3600), Math.abs((intOffset / 60) % 60));
+		return  (intOffset >= 0 ? "+" : "-") + offset;
 	}
 
 

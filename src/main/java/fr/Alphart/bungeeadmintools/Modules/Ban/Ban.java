@@ -37,7 +37,7 @@ import com.google.common.base.Charsets;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.utils.FormatUtils;
-import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+import fr.alphart.bungeeadmintools.utils.UuidNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
@@ -57,10 +57,6 @@ public class Ban implements IModule, Listener {
         return name;
     }
 
-    @Override
-    public String getMainCommand() {
-        return "ban";
-    }
 
     @Override
     public ModuleConfiguration getConfig() {
@@ -144,7 +140,7 @@ public class Ban implements IModule, Listener {
                 statement.setString(1, pUUID.toString().replace("-", ""));
                 statement.setString(2, pConn.getAddress().getAddress().getHostAddress());
                 statement.setString(3, server);
-            } catch (final UUIDNotFoundException e) {
+            } catch (final UuidNotFoundException e) {
                 BungeeAdminToolsPlugin.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pConn.getName() + ". Please report this error :");
                 e.printStackTrace();
             }
@@ -213,7 +209,7 @@ public class Ban implements IModule, Listener {
             }
             // If this is a player which may be banned
             else {
-                final String uuid = Core.getUUID(bannedEntity);
+                final String uuid = Core.getUuid(bannedEntity);
                 statement = conn.prepareStatement((ANY_SERVER.equals(server)) ? SQLQueries.Ban.isBan
                         : SQLQueries.Ban.isBanServer);
                 statement.setString(1, uuid);
@@ -265,7 +261,7 @@ public class Ban implements IModule, Listener {
     }
 
     private String banPlayer(final Connection conn, final String bannedEntity, final String staff, final String server, final long expirationTimestamp, final String reason) throws SQLException {
-        final String sUUID = Core.getUUID(bannedEntity);
+        final String sUUID = Core.getUuid(bannedEntity);
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(bannedEntity);
         final PreparedStatement statement = conn.prepareStatement(SQLQueries.Ban.createBan);
         statement.setString(1, sUUID);
@@ -364,7 +360,7 @@ public class Ban implements IModule, Listener {
 
             // Otherwise it's a player
             else {
-                final String UUID = Core.getUUID(bannedEntity);
+                final String UUID = Core.getUuid(bannedEntity);
                 if (ANY_SERVER.equals(server)) {
                     statement = (conn.prepareStatement(SQLQueries.Ban.unBan));
                     statement.setString(1, reason);
@@ -428,7 +424,7 @@ public class Ban implements IModule, Listener {
             // Otherwise if it's a player
             else {
                 statement = conn.prepareStatement(SQLQueries.Ban.getBan);
-                statement.setString(1, Core.getUUID(entity));
+                statement.setString(1, Core.getUuid(entity));
                 resultSet = statement.executeQuery();
             }
 

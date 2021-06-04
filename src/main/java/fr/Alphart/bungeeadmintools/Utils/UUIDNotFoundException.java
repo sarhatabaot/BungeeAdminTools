@@ -3,12 +3,12 @@ package fr.alphart.bungeeadmintools.utils;
 
 import java.io.Serial;
 
-public class UUIDNotFoundException extends RuntimeException{
+public class UuidNotFoundException extends RuntimeException{
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private final String player;
 	
-	public UUIDNotFoundException(String player){
+	public UuidNotFoundException(String player){
 		this.player = player;
 	}
 	

@@ -17,7 +17,7 @@ import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
 import fr.alphart.bungeeadmintools.modules.comment.CommentEntry;
 import fr.alphart.bungeeadmintools.modules.kick.KickEntry;
 import fr.alphart.bungeeadmintools.modules.mute.MuteEntry;
-import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+import fr.alphart.bungeeadmintools.utils.UuidNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -60,7 +60,7 @@ public class EntityEntry {
 			try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 				statement = (conn
 						.prepareStatement(SQLQueries.Core.getPlayerData));
-						statement.setString(1, Core.getUUID(entity));
+						statement.setString(1, Core.getUuid(entity));
 
 						resultSet = statement.executeQuery();
 
@@ -126,8 +126,8 @@ public class EntityEntry {
 			if(modules.isLoaded("comment")){
 				comments.addAll(modules.getCommentModule().getComments(entity));
 			}		
-		} catch (final InvalidModuleException | UUIDNotFoundException e) {
-			if(e instanceof UUIDNotFoundException){
+		} catch (final InvalidModuleException | UuidNotFoundException e) {
+			if(e instanceof UuidNotFoundException){
 				exist = false;
 			}
 		}

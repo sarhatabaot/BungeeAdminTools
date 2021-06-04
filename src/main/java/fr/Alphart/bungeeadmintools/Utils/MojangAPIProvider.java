@@ -66,7 +66,7 @@ public class MojangAPIProvider {
       // Fetch player's name history from Mojang servers
       BufferedReader reader = null;
       try{
-          final URL mojangURL = new URL("https://api.mojang.com/user/profiles/" + Core.getUUID(pName) + "/names");
+          final URL mojangURL = new URL("https://api.mojang.com/user/profiles/" + Core.getUuid(pName) + "/names");
           final URLConnection conn = mojangURL.openConnection();
           reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
           StringBuilder content = new StringBuilder();

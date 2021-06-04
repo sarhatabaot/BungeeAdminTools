@@ -188,7 +188,7 @@ public class LookupFormatter {
                 .replace("{bans_number}", String.valueOf(bansNumber)).replace("{mutes_number}", String.valueOf(mutesNumber))
                 .replace("{kicks_number}", String.valueOf(kicksNumber)).replace("{comments_number}", String.valueOf(commentsNumber))
                 .replace("{name_history_list}", name_history_list).replaceAll("\\{last_comments:\\d}", last_comments.toString())
-                .replace("{player}", pName).replace("{uuid}", Core.getUUID(pName))
+                .replace("{player}", pName).replace("{uuid}", Core.getUuid(pName))
                 // '¤' is used as a space character, so we replace it with space and display correctly the escaped one
                 .replace("¤", " ").replace("\\¤", "¤")
                 ));
@@ -203,10 +203,10 @@ public class LookupFormatter {
         }
         boolean isBan = false;
         int bansNumber = 0;
-        final List<String> banServers = new ArrayList<String>();
+        final List<String> banServers = new ArrayList<>();
         boolean isMute = false;
         int mutesNumber = 0;
-        final List<String> muteServers = new ArrayList<String>();
+        final List<String> muteServers = new ArrayList<>();
         if (!ipDetails.getBans().isEmpty()) {
             for (final BanEntry banEntry : ipDetails.getBans()) {
                 if (banEntry.active()) {
@@ -318,11 +318,21 @@ public class LookupFormatter {
                 .replace("{kicks_number}", String.valueOf(kicks_number))
                 .replace("{comments_number}", String.valueOf(comments_number))
                 .replace("{warnings_number}", String.valueOf(warnings_number))
-                .replace("{staff}", staff).replace("{uuid}", Core.getUUID(staff))
+                .replace("{staff}", staff).replace("{uuid}", Core.getUuid(staff))
                 .replace("¤", " ").replace("\\¤", "¤")
                 ));
     }
-    
+
+    private boolean isBanned(final List<BanEntry> bans) {
+        for (final BanEntry banEntry : bans) {
+            if (banEntry.active()) {
+                return true;
+
+            }
+        }
+        return false;
+    }
+
     public List<BaseComponent[]> formatBanLookup(final String entity, final List<BanEntry> bans, 
             int page, final boolean staffLookup) throws InvalidModuleException {
         final StringBuilder msg = new StringBuilder();
@@ -343,17 +353,10 @@ public class LookupFormatter {
         }
         msg.append(lookupHeader.replace("{entity}", entity).replace("{module}", "Ban")
                 .replace("{page}", page + "/" + totalPages));
-        
-        boolean isBan = false;
-        for (final BanEntry banEntry : bans) {
-            if (banEntry.active()) {
-                isBan = true;
-                break;
-            }
-        }
+
 
         // We begin with active ban
-        if(isBan){
+        if(isBanned(bans)){
             msg.append("&6&lActive bans: &e");
             final Iterator<BanEntry> it = bans.iterator();
             while(it.hasNext()){
@@ -419,6 +422,15 @@ public class LookupFormatter {
 
         return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&', msg.toString()));
     }
+
+    private boolean isMuted(final List<MuteEntry> muteEntries) {
+        for (final MuteEntry muteEntry : muteEntries) {
+            if (muteEntry.active()) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public List<BaseComponent[]> formatMuteLookup(final String entity, final List<MuteEntry> mutes,
             int page, final boolean staffLookup) throws InvalidModuleException {
@@ -440,17 +452,9 @@ public class LookupFormatter {
         }
         msg.append(lookupHeader.replace("{entity}", entity).replace("{module}", "Mute")
                 .replace("{page}", page + "/" + totalPages));
-        
-        boolean isMute = false;
-        for (final MuteEntry muteEntry : mutes) {
-            if (muteEntry.active()) {
-                isMute = true;
-                break;
-            }
-        }
 
         // We begin with active ban
-        if(isMute){
+        if(isMuted(mutes)){
             msg.append("&6&lActive mutes: &e");
             final Iterator<MuteEntry> it = mutes.iterator();
             while(it.hasNext()){
@@ -561,7 +565,8 @@ public class LookupFormatter {
     }
     
     public List<BaseComponent[]> commentRowLookup(final String entity, final List<CommentEntry> comments,
-            int page, final boolean staffLookup) throws InvalidModuleException {{
+            int page, final boolean staffLookup) throws InvalidModuleException {
+
         final StringBuilder msg = new StringBuilder();
 
         int totalPages = (int) Math.ceil((double)comments.size()/entriesPerPage);
@@ -601,7 +606,6 @@ public class LookupFormatter {
                 .replace("{page}", page + "/" + totalPages));
 
         return FormatUtils.formatNewLine(ChatColor.translateAlternateColorCodes('&', msg.toString()));
+
     }
-    
-}
 }

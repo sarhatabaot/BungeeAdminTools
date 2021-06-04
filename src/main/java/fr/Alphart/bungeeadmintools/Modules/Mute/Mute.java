@@ -9,7 +9,7 @@ import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.modules.core.Core;
 import fr.alphart.bungeeadmintools.utils.FormatUtils;
-import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+import fr.alphart.bungeeadmintools.utils.UuidNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.Comment;
@@ -44,7 +44,6 @@ import java.util.concurrent.TimeUnit;
  * The mute data of online players are <b>cached</b> in order to avoid lag.
  */
 public class Mute implements IModule, Listener {
-    private final String name = "mute";
     private ConcurrentHashMap<String, PlayerMuteData> mutedPlayers;
     private ScheduledTask task;
     private final MuteConfig config;
@@ -59,12 +58,6 @@ public class Mute implements IModule, Listener {
         return muteCommand;
     }
 
-
-    @Override
-    public String getMainCommand() {
-        return "mute";
-    }
-
     @Override
     public ModuleConfiguration getConfig() {
         return config;
@@ -72,7 +65,7 @@ public class Mute implements IModule, Listener {
 
     @Override
     public String getName() {
-        return name;
+        return "mute";
     }
 
     @Override
@@ -93,8 +86,6 @@ public class Mute implements IModule, Listener {
 
         // Register commands
         muteCommand = new MuteCommand(this);
-        //commandHandler = new OldMuteCommand(this);
-        //commandHandler.loadCommands();
 
         mutedPlayers = new ConcurrentHashMap<>();
 
@@ -112,7 +103,7 @@ public class Mute implements IModule, Listener {
 
     public class MuteConfig extends ModuleConfiguration {
         public MuteConfig() {
-            init(name);
+            init(getName());
         }
 
         @Comment("Forbidden commands when a player is mute")
@@ -141,10 +132,10 @@ public class Mute implements IModule, Listener {
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.prepareStatement(SQLQueries.Mute.getMuteMessage);
             try {
-                statement.setString(1, Core.getUUID(pName));
+                statement.setString(1, Core.getUuid(pName));
                 statement.setString(2, Core.getPlayerIP(pName));
                 statement.setString(3, server);
-            } catch (final UUIDNotFoundException e) {
+            } catch (final UuidNotFoundException e) {
                 BungeeAdminToolsPlugin.getInstance().getLogger().severe("Error during retrieving of the UUID of " + pName + ". Please report this error :");
                 e.printStackTrace();
             }
@@ -241,7 +232,7 @@ public class Mute implements IModule, Listener {
             else {
                 statement = conn.prepareStatement((ANY_SERVER.equals(server)) ? SQLQueries.Mute.isMute
                         : SQLQueries.Mute.isMuteServer);
-                statement.setString(1, Core.getUUID(mutedEntity));
+                statement.setString(1, Core.getUuid(mutedEntity));
                 if (!ANY_SERVER.equals(server)) {
                     statement.setString(2, server);
                 }
@@ -312,7 +303,7 @@ public class Mute implements IModule, Listener {
             else {
                 final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(mutedEntity);
                 statement = conn.prepareStatement(SQLQueries.Mute.createMute);
-                statement.setString(1, Core.getUUID(mutedEntity));
+                statement.setString(1, Core.getUuid(mutedEntity));
                 statement.setString(2, staff);
                 statement.setString(3, server);
                 statement.setTimestamp(4, (expirationTimestamp > 0) ? new Timestamp(expirationTimestamp) : null);
@@ -394,13 +385,13 @@ public class Mute implements IModule, Listener {
                     statement = (conn.prepareStatement(SQLQueries.Mute.unMute));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
-                    statement.setString(3, Core.getUUID(mutedEntity));
+                    statement.setString(3, Core.getUuid(mutedEntity));
                 } else {
                     statement = (conn
                             .prepareStatement(SQLQueries.Mute.unMuteServer));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
-                    statement.setString(3, Core.getUUID(mutedEntity));
+                    statement.setString(3, Core.getUuid(mutedEntity));
                     statement.setString(4, server);
                 }
                 statement.executeUpdate();
@@ -464,7 +455,7 @@ public class Mute implements IModule, Listener {
             // Otherwise if it's a player
             else {
                 statement = conn.prepareStatement(SQLQueries.Mute.getMute);
-                statement.setString(1, Core.getUUID(entity));
+                statement.setString(1, Core.getUuid(entity));
                 resultSet = statement.executeQuery();
             }
 
@@ -612,7 +603,7 @@ public class Mute implements IModule, Listener {
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.prepareStatement("SELECT mute_server FROM `BAT_mute` WHERE UUID = ? AND mute_state = 1;");
-            statement.setString(1, Core.getUUID(pName));
+            statement.setString(1, Core.getUuid(pName));
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 final String server = resultSet.getString("mute_server");

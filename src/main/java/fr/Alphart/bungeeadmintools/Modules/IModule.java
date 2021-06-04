@@ -38,12 +38,5 @@ public interface IModule {
 	 */
 	boolean unload();
 
-	/**
-	 * Get main command name
-	 * 
-	 * @return name of the main command without a slash
-	 */
-	String getMainCommand();
-
 	BaseCommand getCommand();
 }

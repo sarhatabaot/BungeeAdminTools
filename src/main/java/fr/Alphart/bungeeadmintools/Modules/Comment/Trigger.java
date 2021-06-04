@@ -9,19 +9,18 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.cubespace.Yamler.Config.YamlConfig;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.PluginManager;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class Trigger extends YamlConfig {
 	@Getter
-	private final int triggerNumber = 3;
+	private int triggerNumber = 3;
 	@Getter
-	private final List<String> pattern = Collections.singletonList("");
-	private final List<String> commands = Arrays.asList("alert {player} sparks a trigger. Reason: {reason}","gtempmute {player} 30m");
+	private List<String> pattern = Collections.singletonList("");
+	private List<String> commands = Arrays.asList("alert {player} sparks a trigger. Reason: {reason}","gtempmute {player} 30m");
 	
 	public void onTrigger(final String pName, final String reason){
 		final PluginManager pm = ProxyServer.getInstance().getPluginManager();
@@ -32,5 +31,13 @@ public class Trigger extends YamlConfig {
 		    delay += 500;
 		}
 	}
-	
+
+	public Trigger() {
+	}
+
+	public Trigger(final int triggerNumber, final List<String> pattern, final List<String> commands) {
+		this.triggerNumber = triggerNumber;
+		this.pattern = pattern;
+		this.commands = commands;
+	}
 }

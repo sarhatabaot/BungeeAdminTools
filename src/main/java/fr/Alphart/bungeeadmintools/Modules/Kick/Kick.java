@@ -41,10 +41,6 @@ public class Kick implements IModule {
 		return kickCommand;
 	}
 
-	@Override
-	public String getMainCommand() {
-		return "kick";
-	}
 
 	@Override
 	public String getName() {
@@ -164,7 +160,7 @@ public class Kick implements IModule {
 		ResultSet resultSet = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.prepareStatement(SQLQueries.Kick.getKick);
-			statement.setString(1, Core.getUUID(pName));
+			statement.setString(1, Core.getUuid(pName));
 			resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {

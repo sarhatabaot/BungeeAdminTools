@@ -53,10 +53,6 @@ public class Comment implements IModule {
         return commentCommand;
     }
 
-    @Override
-    public String getMainCommand() {
-        return "comment";
-    }
 
     @Override
     public CommentConfig getConfig() {
@@ -159,7 +155,7 @@ public class Comment implements IModule {
             if (Utils.validIP(entity)) {
                 statement.setString(1, entity);
             } else {
-                statement.setString(1, Core.getUUID(entity));
+                statement.setString(1, Core.getUuid(entity));
             }
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -209,7 +205,7 @@ public class Comment implements IModule {
         PreparedStatement statement = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.prepareStatement(SQLQueries.Comments.insertEntry);
-            statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUUID(entity));
+            statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUuid(entity));
             statement.setString(2, comment);
             statement.setString(3, type.name());
             statement.setString(4, author);
@@ -223,7 +219,7 @@ public class Comment implements IModule {
                         statement = conn.prepareStatement((pattern.isEmpty())
                                 ? SQLQueries.Comments.simpleTriggerCheck
                                 : SQLQueries.Comments.patternTriggerCheck);
-                        statement.setString(1, Core.getUUID(entity));
+                        statement.setString(1, Core.getUuid(entity));
                         if (!pattern.isEmpty()) {
                             statement.setString(2, '%' + pattern + '%');
                         }
@@ -264,10 +260,10 @@ public class Comment implements IModule {
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             if (commentID == -1) {
                 statement = conn.prepareStatement(SQLQueries.Comments.clearEntries);
-                statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUUID(entity));
+                statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUuid(entity));
             } else {
                 statement = conn.prepareStatement(SQLQueries.Comments.clearByID);
-                statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUUID(entity));
+                statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUuid(entity));
                 statement.setInt(2, commentID);
             }
             // Check if it was successfully deleted, will be used if tried to delete an specific id comment
@@ -291,7 +287,7 @@ public class Comment implements IModule {
     boolean hasLastcommentCooledDown(final String entity) throws RuntimeException {
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(SQLQueries.Comments.getMostRecentCommentDate);
-            statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUUID(entity));
+            statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUuid(entity));
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 return new Date(result.getTimestamp("date").getTime()).before(new Date(System.currentTimeMillis() - getConfig().getCooldown() * 1000L));

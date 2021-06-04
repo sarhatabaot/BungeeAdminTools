@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +19,7 @@ import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.utils.EnhancedDateFormat;
 import fr.alphart.bungeeadmintools.utils.MojangAPIProvider;
-import fr.alphart.bungeeadmintools.utils.UUIDNotFoundException;
+import fr.alphart.bungeeadmintools.utils.UuidNotFoundException;
 import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -34,6 +33,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import javax.annotation.Nullable;
+
 
 public class Core implements IModule, Listener {
     private static final LoadingCache<String, String> uuidCache = CacheBuilder.newBuilder()
@@ -41,7 +42,7 @@ public class Core implements IModule, Listener {
             .expireAfterAccess(30, TimeUnit.MINUTES)
             .build(
                     new CacheLoader<>() {
-                        public String load(final String pName) throws UUIDNotFoundException {
+                        public String load(final String pName) throws UuidNotFoundException {
                             final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(pName);
                             if (player != null) {
                                 // Note: if it's an offline server, the UUID will be generated using
@@ -54,14 +55,14 @@ public class Core implements IModule, Listener {
 
                             PreparedStatement statement = null;
                             ResultSet resultSet = null;
-                            String UUID = "";
+                            String uuid = "";
                             // Try to get the UUID from the BAT db
                             try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
                                 statement = conn.prepareStatement(SQLQueries.Core.getUUID);
                                 statement.setString(1, pName);
                                 resultSet = statement.executeQuery();
                                 if (resultSet.next()) {
-                                    UUID = resultSet.getString("UUID");
+                                    uuid = resultSet.getString("UUID");
                                 }
                             } catch (final SQLException e) {
                                 DataSourceHandler.handleException(e);
@@ -70,18 +71,18 @@ public class Core implements IModule, Listener {
                             }
 
                             // If online server, retrieve the UUID from the mojang server
-                            if (UUID.isEmpty() && ProxyServer.getInstance().getConfig().isOnlineMode()) {
-                                UUID = MojangAPIProvider.getUUID(pName);
-                                if (UUID == null) {
-                                    throw new UUIDNotFoundException(pName);
+                            if (uuid.isEmpty() && ProxyServer.getInstance().getConfig().isOnlineMode()) {
+                                uuid = MojangAPIProvider.getUUID(pName);
+                                if (uuid == null) {
+                                    throw new UuidNotFoundException(pName);
                                 }
                             }
                             // If offline server, generate the UUID
-                            else if (UUID.isEmpty()) {
-                                UUID = java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + pName).getBytes(StandardCharsets.UTF_8)).toString().replaceAll("-", "");
+                            else if (uuid.isEmpty()) {
+                                uuid = java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + pName).getBytes(StandardCharsets.UTF_8)).toString().replaceAll("-", "");
                             }
 
-                            return UUID;
+                            return uuid;
                         }
                     });
     private BaseCommand coreCommand;
@@ -130,10 +131,6 @@ public class Core implements IModule, Listener {
         return coreCommand;
     }
 
-    @Override
-    public String getMainCommand() {
-        return "bat";
-    }
 
 
     /**
@@ -141,14 +138,15 @@ public class Core implements IModule, Listener {
      *
      * @param pName
      * @return String which is the UUID
-     * @throws UUIDNotFoundException
+     * @throws UuidNotFoundException
      */
-    public static String getUUID(final String pName) {
+    @Nullable
+    public static String getUuid(final String pName) throws UuidNotFoundException {
         try {
             return uuidCache.get(pName);
         } catch (final ExecutionException e) {
-            if (e.getCause() instanceof UUIDNotFoundException) {
-                throw (UUIDNotFoundException) e.getCause();
+            if (e.getCause() instanceof UuidNotFoundException) {
+                throw (UuidNotFoundException) e.getCause();
             }
         }
         return null;
@@ -225,7 +223,7 @@ public class Core implements IModule, Listener {
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.prepareStatement(SQLQueries.Core.getIP);
-            statement.setString(1, getUUID(pName));
+            statement.setString(1, getUuid(pName));
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getString("lastip");
