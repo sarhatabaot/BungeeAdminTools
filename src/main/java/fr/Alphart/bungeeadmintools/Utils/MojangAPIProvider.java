@@ -3,14 +3,17 @@ package fr.alphart.bungeeadmintools.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
 import fr.alphart.bungeeadmintools.modules.core.Core;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 
 import com.google.common.collect.Lists;
@@ -57,42 +60,46 @@ public class MojangAPIProvider {
   /**
    * Fetch a player's name history from <b>Mojang's server : high latency</b>
    * @param pName
-   * @throws RuntimeException | if any error is met or if the server is offline mode
+   * @throws IOException | if any error is met or if the server is offline mode
    */
-  public static List<String> getPlayerNameHistory(final String pName) throws RuntimeException{
+  public static List<String> getPlayerNameHistory(final String pName) throws IOException, OfflineServerException {
       if(!ProxyServer.getInstance().getConfig().isOnlineMode()){
-          throw new RuntimeException("Can't get player name history from an offline server !");
+          throw new OfflineServerException("Can't get player name history from an offline server!");
       }
       // Fetch player's name history from Mojang servers
-      BufferedReader reader = null;
-      try{
+      try {
           final URL mojangURL = new URL("https://api.mojang.com/user/profiles/" + Core.getUuid(pName) + "/names");
           final URLConnection conn = mojangURL.openConnection();
-          reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-          StringBuilder content = new StringBuilder();
-          String line;
-          while((line = reader.readLine()) != null){
-              content.append(line);
-          }
-          final List<String> names = Lists.newArrayList();
-          for(final Map<String, Object> entry : 
-                  (Set<Map<String, Object>>) gson.fromJson(content.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType())){
-              names.add((String)entry.get("name"));
-          }
-          return names;
-      }catch(final IOException e){
-          throw new RuntimeException(e);
-      }finally{
-          if(reader != null){
-              try {
-                  reader.close();
-              } catch (IOException e) {
-                  throw new RuntimeException(e);
+
+          try (final BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+              final StringBuilder content = new StringBuilder();
+              String line;
+              while((line = reader.readLine()) != null){
+                  content.append(line);
               }
+              final List<String> names = Lists.newArrayList();
+              for(final Map<String, Object> entry :
+                      (Set<Map<String, Object>>) gson.fromJson(content.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType())){
+                  names.add((String)entry.get("name"));
+              }
+              return names;
           }
+      } catch (IOException|UuidNotFoundException e) {
+          e.printStackTrace();
+      }
+
+      return Collections.emptyList();
+  }
+  public static class OfflineServerException extends Exception {
+      @Serial
+      private static final long serialVersionUID = 1L;
+      @Getter
+      private final String message;
+
+      public OfflineServerException (final String message){
+          this.message = message;
       }
   }
-  
   private static class MojangUUIDProfile{
     String id;
     String name;

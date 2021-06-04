@@ -2,6 +2,7 @@ package fr.alphart.bungeeadmintools.modules.core;
 
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -134,16 +135,18 @@ public class LookupFormatter {
                 ? ((displayIP) ? pDetails.getLastIP() : formatWithColor("hiddenIp"))
                 : formatWithColor("unknownIp");
                 
-        String name_history_list;
+        String name_history_list = "";
         // Create a function for that or something better than a big chunk of code inside the lookup
         if(ProxyServer.getInstance().getConfig().isOnlineMode()){
             try{
                 name_history_list = Joiner.on("&e, &a").join(MojangAPIProvider.getPlayerNameHistory(pName));
-            }catch(final RuntimeException e){
+            }catch(final IOException e){
                 name_history_list = "unable to fetch player's name history. Check the logs";
                 BungeeAdminToolsPlugin.getInstance().getLogger().severe("An error occured while fetching " + pName + "'s name history from mojang servers."
                         + "Please report this : ");
                 e.printStackTrace();
+            } catch (final MojangAPIProvider.OfflineServerException e){
+                BungeeAdminToolsPlugin.getInstance().getLogger().severe("Cannot fetch information while server is offline.");
             }
         }else{
             name_history_list = "offline server";
