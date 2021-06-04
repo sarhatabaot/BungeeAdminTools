@@ -3,9 +3,6 @@ package fr.alphart.bungeeadmintools.modules.mute;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 public final class MuteEntry {
 	private final String entity;
 	private final String server;

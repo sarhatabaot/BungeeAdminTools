@@ -1,17 +1,11 @@
 package fr.alphart.bungeeadmintools.modules;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import net.cubespace.Yamler.Config.YamlConfig;
+
+import java.io.File;
 
 public abstract class ModuleConfiguration extends YamlConfig {
 	@Getter//TODO

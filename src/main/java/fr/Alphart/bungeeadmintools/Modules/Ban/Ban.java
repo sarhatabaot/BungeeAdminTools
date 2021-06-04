@@ -81,8 +81,6 @@ public class Ban implements IModule, Listener {
 
         // Register commands
         banCommand = new BanCommand(this);
-        //commandHandler = new OldBanCommand(this);
-        //commandHandler.loadCommands();
 
         // Launch tempban task
         final BanExpirationTask banExpirationTask = new BanExpirationTask(this);

@@ -2,8 +2,6 @@ package fr.alphart.bungeeadmintools.modules;
 
 import co.aikar.commands.BaseCommand;
 
-import java.util.List;
-
 public interface IModule {
 	// Constants
 	// Server groups related
