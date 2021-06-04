@@ -107,7 +107,7 @@ public class LookupCommand extends BaseCommand {
     }
 
     @CommandAlias("stafflookup")
-    @CommandPermission("bat.stafflookup")
+    @CommandPermission(Permissions.LOOKUP_STAFF)
     public void onStaffLookup(final CommandSender sender, final String staff, final String module,@Optional int page) {
         if(page == 0) {
             for (final BaseComponent[] msg : lookupFormatter.getSummaryStaffLookup(staff,

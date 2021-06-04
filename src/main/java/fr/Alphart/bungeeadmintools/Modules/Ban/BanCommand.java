@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import com.google.common.base.Preconditions;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
+import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.IModule;
 import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import fr.alphart.bungeeadmintools.utils.Utils;
@@ -23,7 +24,7 @@ public class BanCommand extends BaseCommand {
     }
 
     @CommandAlias("ban")
-    @CommandPermission("bat.ban")
+    @CommandPermission(Permissions.BAN)
     public void onBan(final CommandSender sender, final String target, final String reason) {
         final ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(target);
 
@@ -34,7 +35,7 @@ public class BanCommand extends BaseCommand {
         BungeeAdminToolsPlugin.broadcast(banMessage,PermissionManager.Action.BAN_BROADCAST.getPermission());
     }
     @CommandAlias("banip")
-    @CommandPermission("bat.ban.ip")
+    @CommandPermission(Permissions.BAN_IP)
     public void onBanIP(final CommandSender sender, final String ip, final String reason) {
         if(BungeeAdminToolsPlugin.getInstance().getConfiguration().getWhitelistedIp().contains(ip)) {
             sender.sendMessage("You cannot ban this ip.");
@@ -46,7 +47,7 @@ public class BanCommand extends BaseCommand {
     }
 
     @CommandAlias("tempban")
-    @CommandPermission("bat.tempban")
+    @CommandPermission(Permissions.TEMP_BAN)
     public void onTempBan(final CommandSender sender, final String target, final String duration, final String reason) {
         final ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(target);
         final long expirationTimestamp = Utils.parseDuration(duration);
@@ -59,7 +60,7 @@ public class BanCommand extends BaseCommand {
     }
 
     @CommandAlias("tempbanip")
-    @CommandPermission("bat.tempbanip")
+    @CommandPermission(Permissions.TEMP_BAN_IP)
     public void onTempBanIp(final CommandSender sender, final String ip, final String duration, final String reason) {
         if(BungeeAdminToolsPlugin.getInstance().getConfiguration().getWhitelistedIp().contains(ip)) {
             sender.sendMessage("You cannot ban this ip.");
@@ -72,14 +73,14 @@ public class BanCommand extends BaseCommand {
     }
 
     @CommandAlias("unban|pardon")
-    @CommandPermission("bat.unban")
+    @CommandPermission(Permissions.UNBAN)
     public void onUnban(final CommandSender sender, final String target, final String reason) {
         final String banMessage = ban.unBan(target, IModule.GLOBAL_SERVER, sender.getName(), reason);
         BungeeAdminToolsPlugin.broadcast(banMessage, PermissionManager.Action.BAN_BROADCAST.getPermission());
     }
 
     @CommandAlias("unbanip|pardonip")
-    @CommandPermission("bat.unbanip")
+    @CommandPermission(Permissions.UNBAN_IP)
     public void onUnbanIp(final CommandSender sender, final String ip, final String reason){
         final String banMessage = ban.unBanIP(ip, IModule.GLOBAL_SERVER, sender.getName(), reason);
         BungeeAdminToolsPlugin.broadcast(banMessage, PermissionManager.Action.BAN_BROADCAST.getPermission());

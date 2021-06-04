@@ -1,6 +1,7 @@
 package fr.alphart.bungeeadmintools.modules.core;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.HelpCommand;
@@ -15,6 +16,11 @@ import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
 
 @CommandAlias("bat")
 public class CoreCommand extends BaseCommand {
+    private final BungeeAdminToolsPlugin plugin;
+
+    public CoreCommand(final BungeeAdminToolsPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Subcommand("reload")
     @CommandPermission(Permissions.RELOAD)
@@ -31,28 +37,15 @@ public class CoreCommand extends BaseCommand {
         sender.sendMessage(formatWithColorAndAddPrefix("Reload successfully executed ..."));
     }
 
-    @Subcommand("modules")
-    @CommandPermission(Permissions.MODULES)
-    public void onModules() {
-
-    }
-
     @Subcommand("version")
     @CommandPermission(Permissions.VERSION)
-    public void onVersion() {
-
-    }
-
-    @Subcommand("backup")
-    @CommandPermission(Permissions.BACKUP)
-    public void onBackup() {
-
+    public void onVersion(final CommandSender sender) {
+        sender.sendMessage("BAT version "+plugin.getDescription().getVersion());
     }
 
     @HelpCommand
     @CommandPermission(Permissions.HELP)
-    public void onHelp(){
-
-
+    public void onHelp(CommandHelp help){
+        help.showHelp();
     }
 }

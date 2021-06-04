@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import co.aikar.commands.BaseCommand;
@@ -32,11 +33,10 @@ import net.md_5.bungee.event.EventHandler;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
 
 
 public class Core implements IModule, Listener {
-    private static LoadingCache<String, String> uuidCache = CacheBuilder.newBuilder()
+    private static final LoadingCache<String, String> uuidCache = CacheBuilder.newBuilder()
             .maximumSize(10000)
             .expireAfterAccess(30, TimeUnit.MINUTES)
             .build(
@@ -84,14 +84,12 @@ public class Core implements IModule, Listener {
                             return UUID;
                         }
                     });
-    private final String name = "core";
-    private Gson gson = new Gson();
     private BaseCommand coreCommand;
     public static EnhancedDateFormat defaultDF = new EnhancedDateFormat(false);
 
     @Override
     public String getName() {
-        return name;
+        return "core";
     }
 
     @Override
@@ -120,12 +118,10 @@ public class Core implements IModule, Listener {
         }
 
         // Register commands
-        coreCommand = new CoreCommand();
-        //cmds = new ArrayList<>();
-        //cmds.add(new OldCoreCommand(this)); // Most of the job is done in the constructor of CoreCommand
+        coreCommand = new CoreCommand(BungeeAdminToolsPlugin.getInstance());
 
         // Update the date format (if translation has been changed)
-        defaultDF = new EnhancedDateFormat(BungeeAdminToolsPlugin.getInstance().getConfiguration().isLitteralDate());
+        Core.defaultDF = new EnhancedDateFormat(BungeeAdminToolsPlugin.getInstance().getConfiguration().isLitteralDate());
 
         return true;
     }
@@ -145,9 +141,6 @@ public class Core implements IModule, Listener {
         return "bat";
     }
 
-    /*public void addCommand(final BATCommand cmd) {
-        cmds.add(cmd);
-    }*/
 
     /**
      * Get the UUID of the specified player
@@ -159,7 +152,7 @@ public class Core implements IModule, Listener {
     public static String getUUID(final String pName) {
         try {
             return uuidCache.get(pName);
-        } catch (final Exception e) {
+        } catch (final ExecutionException e) {
             if (e.getCause() instanceof UUIDNotFoundException) {
                 throw (UUIDNotFoundException) e.getCause();
             }

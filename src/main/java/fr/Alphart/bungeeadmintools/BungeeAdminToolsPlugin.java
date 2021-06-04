@@ -152,12 +152,14 @@ public class BungeeAdminToolsPlugin extends Plugin {
             getLogger().config("Starting connection to the sqlite database ...");
             getLogger().warning("It is strongly DISRECOMMENDED to use SQLite with BAT,"
                     + " as the SQLite implementation is less stable and much slower than the MySQL implementation.");
-            if (loadSQLiteDriver()) {
+            /*if (loadSQLiteDriver()) {
                 dsHandler = new DataSourceHandler();
                 dbState.done(true, null);
             } else {
                 dbState.done(false, null);
-            }
+            }*/
+            dsHandler = new DataSourceHandler();
+            dbState.done(true, null);
         }
     }
 

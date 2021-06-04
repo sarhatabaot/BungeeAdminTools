@@ -20,4 +20,15 @@ public class Permissions {
     public static final String BACKUP = "bat.backup";
     public static final String HELP = "bat.help";
     public static final String LOOKUP = "bat.lookup";
+    public static final String BAN = "bat.ban";
+    public static final String BAN_IP = "bat.ban.ip";
+    public static final String TEMP_BAN = "bat.tempban";
+    public static final String TEMP_BAN_IP = "bat.tempbanip";
+    public static final String UNBAN = "bat.unban";
+    public static final String UNBAN_IP = "bat.unbanip";
+    public static final String MUTE_BROADCAST = "bat.mute.broadcast";
+    public static final String WARN_BROADCAST = "bat.warn.broadcast";
+    public static final String KICK_BROADCAST = "bat.kick.broadcast";
+    public static final String BAN_BROADCAST = "bat.ban.broadcast";
+    public static final String LOOKUP_STAFF = "bat.stafflookup";
 }

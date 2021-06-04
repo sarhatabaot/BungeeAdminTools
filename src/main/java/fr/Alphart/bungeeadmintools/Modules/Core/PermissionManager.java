@@ -9,28 +9,28 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class PermissionManager {
 
     public enum Action {
-        BAN("bat.ban"),
-        BANIP("bat.banip"),
-        TEMPBAN("bat.tempban"),
-        TEMPBANIP("bat.tempbanip"),
-        UNBAN("bat.unban"),
-        UNBANIP("bat.unbanip"),
-        BAN_BROADCAST("bat.ban.broadcast"),
+        BAN(Permissions.BAN),
+        BANIP(Permissions.BAN_IP),
+        TEMPBAN(Permissions.TEMP_BAN),
+        TEMPBANIP(Permissions.TEMP_BAN_IP),
+        UNBAN(Permissions.UNBAN),
+        UNBANIP(Permissions.UNBAN_IP),
+        BAN_BROADCAST(Permissions.BAN_BROADCAST),
 
         MUTE(Permissions.MUTE),
         MUTEIP(Permissions.MUTE_IP),
         TEMPMUTE(Permissions.TEMP_MUTE),
-        TEMPMUTEIP("bat.tempmuteip"),
-        UNMUTE("bat.unmute"),
-        UNMUTEIP("bat.unmuteip"),
-        MUTE_BROADCAST("bat.mute.broadcast"),
+        TEMPMUTEIP(Permissions.TEMP_MUTE_IP),
+        UNMUTE(Permissions.UN_MUTE),
+        UNMUTEIP(Permissions.UN_MUTE_IP),
+        MUTE_BROADCAST(Permissions.MUTE_BROADCAST),
 
-        KICK("bat.kick"),
-        WARN("bat.warn"),
-        WARN_BROADCAST("bat.warn.broadcast"),
-        KICK_BROADCAST("bat.kick.broadcast"),
+        KICK(Permissions.KICK),
+        WARN(Permissions.WARN),
+        WARN_BROADCAST(Permissions.WARN_BROADCAST),
+        KICK_BROADCAST(Permissions.KICK_BROADCAST),
 
-        LOOKUP("bat.lookup");
+        LOOKUP(Permissions.LOOKUP);
 
         String permission;
 
@@ -105,14 +105,14 @@ public class PermissionManager {
     public static boolean isExemptFrom(final Action action, final String target) {
         final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(target);
         if (player != null) {
-            return (!player.hasPermission("bat.admin") && !player.hasPermission(action.getPermission() + ".exempt"));
+            return (!player.hasPermission(Permissions.ADMIN) && !player.hasPermission(action.getPermission() + ".exempt"));
         }
         return true;
     }
 
     public static boolean isExemptFrom(final Action action, final ProxiedPlayer target) {
         if (target != null) {
-            return (!target.hasPermission("bat.admin") && !target.hasPermission(action.getPermission() + ".exempt"));
+            return (!target.hasPermission(Permissions.ADMIN) && !target.hasPermission(action.getPermission() + ".exempt"));
         }
         return true;
     }
