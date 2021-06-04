@@ -16,12 +16,11 @@ import com.google.common.base.Preconditions;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class FormatUtils {
-	private static final StringBuilder sb = new StringBuilder();
 
 	/**
 	 * Get the duration between the given timestamp and the current one
 	 * 
-	 * @param timestamp
+	 * @param futureTimestamp
 	 *            in milliseconds which must be superior to the current
 	 *            timestamp
 	 * @return readable duration

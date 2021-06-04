@@ -81,6 +81,7 @@ public class ModulesManager {
 			if (module.load()) {
 				modulesNames.put(module.getName(), module);
 				modules.put(module, IModule.ON_STATE);
+				BungeeAdminToolsPlugin.getInstance().getCommandManager().registerCommand(module.getCommand());
 
 				if (module instanceof Listener) {
 					ProxyServer.getInstance().getPluginManager().registerListener(BungeeAdminToolsPlugin.getInstance(), (Listener) module);

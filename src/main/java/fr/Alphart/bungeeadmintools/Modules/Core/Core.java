@@ -103,13 +103,7 @@ public class Core implements IModule, Listener {
         Statement statement = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.createStatement();
-            if (DataSourceHandler.isSQLite()) {
-                for (final String coreQuery : SQLQueries.Core.SQLite.createTable) {
-                    statement.executeUpdate(coreQuery);
-                }
-            } else {
-                statement.executeUpdate(SQLQueries.Core.createTable);
-            }
+            statement.executeUpdate(SQLQueries.Core.createTable);
             statement.close();
         } catch (final SQLException e) {
             DataSourceHandler.handleException(e);
@@ -206,15 +200,12 @@ public class Core implements IModule, Listener {
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             final String ip = Utils.getPlayerIP(player);
             final String UUID = player.getUniqueId().toString().replaceAll("-", "");
-            statement = (DataSourceHandler.isSQLite()) ? conn.prepareStatement(SQLQueries.Core.SQLite.updateIPUUID)
-                    : conn.prepareStatement(SQLQueries.Core.updateIPUUID);
+            statement = (conn.prepareStatement(SQLQueries.Core.updateIPUUID));
             statement.setString(1, player.getName());
             statement.setString(2, ip);
             statement.setString(3, UUID);
-            statement.setString(4, (DataSourceHandler.isSQLite()) ? UUID : ip);
-            if (!DataSourceHandler.isSQLite()) {
-                statement.setString(5, player.getName());
-            }
+            statement.setString(4, ip);
+            statement.setString(5, player.getName());
             statement.executeUpdate();
         } catch (final SQLException e) {
             DataSourceHandler.handleException(e);

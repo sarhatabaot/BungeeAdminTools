@@ -7,7 +7,7 @@ import java.util.TimeZone;
 
 
 public class CommentEntry {
-	private Calendar localTime = Calendar.getInstance(TimeZone.getDefault());
+	private final Calendar localTime = Calendar.getInstance(TimeZone.getDefault());
 	private final int id;
 	private final String entity;
 	private final String content;
@@ -53,6 +53,6 @@ public class CommentEntry {
 
 	public enum Type{
 		NOTE,
-		WARNING;
-	}
+		WARNING
+    }
 }

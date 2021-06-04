@@ -1,13 +1,6 @@
 package fr.alphart.bungeeadmintools;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,6 +18,7 @@ import fr.alphart.bungeeadmintools.modules.ModulesManager;
 import fr.alphart.bungeeadmintools.modules.core.Core;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -35,7 +29,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 
 /**
  * Main class BungeeAdminTools
@@ -44,12 +38,12 @@ import fr.alphart.bungeeadmintools.I18n.I18n;
  */
 public class BungeeAdminToolsPlugin extends Plugin {
     // This way we can check at runtime if the required BC build (or a higher one) is installed
-    private final int requiredBCBuild = 878;
     private static BungeeAdminToolsPlugin instance;
     private static DataSourceHandler dsHandler;
     private Configuration config;
     private static String prefix;
     private ModulesManager modules;
+    @Getter
     private BungeeCommandManager commandManager;
 
     @Override
@@ -120,93 +114,31 @@ public class BungeeAdminToolsPlugin extends Plugin {
     }
 
     public void loadDB(final CallbackUtils.Callback<Boolean> dbState) {
-        if (config.isMysql_enabled()) {
-            getLogger().config("Starting connection to the mysql database ...");
-            final String username = config.getMysql_user();
-            final String password = config.getMysql_password();
-            final String database = config.getMysql_database();
-            final String port = config.getMysql_port();
-            final String host = config.getMysql_host();
-            // BoneCP can accept no database and we want to avoid that
-            Preconditions.checkArgument(!"".equals(database), "You must set the database.");
-            ProxyServer.getInstance().getScheduler().runAsync(this, () -> {
-                try {
-                    dsHandler = new DataSourceHandler(host, port, database, username, password);
-                    final Connection c = dsHandler.getConnection();
-                    if (c != null) {
-                        c.close();
-                        dbState.done(true, null);
-                        return;
-                    }
-                } catch (final SQLException handledByDatasourceHandler) {
+
+        getLogger().config("Starting connection to the mysql database ...");
+        final String username = config.getMysql_user();
+        final String password = config.getMysql_password();
+        final String database = config.getMysql_database();
+        final String port = config.getMysql_port();
+        final String host = config.getMysql_host();
+        // BoneCP can accept no database and we want to avoid that
+        Preconditions.checkArgument(!"".equals(database), "You must set the database.");
+        ProxyServer.getInstance().getScheduler().runAsync(this, () -> {
+            try {
+                dsHandler = new DataSourceHandler(host, port, database, username, password);
+                final Connection c = dsHandler.getConnection();
+                if (c != null) {
+                    c.close();
+                    dbState.done(true, null);
+                    return;
                 }
-                getLogger().severe("The connection pool (database connection)"
-                        + " wasn't able to be launched !");
-                dbState.done(false, null);
-            });
-        }
-        // If MySQL is disabled, we are gonna use SQLite
-        // Before initialize the connection, we must download the sqlite driver
-        // (if it isn't already in the lib folder) and load it
-        else {
-            getLogger().config("Starting connection to the sqlite database ...");
-            getLogger().warning("It is strongly DISRECOMMENDED to use SQLite with BAT,"
-                    + " as the SQLite implementation is less stable and much slower than the MySQL implementation.");
-            /*if (loadSQLiteDriver()) {
-                dsHandler = new DataSourceHandler();
-                dbState.done(true, null);
-            } else {
-                dbState.done(false, null);
-            }*/
-            dsHandler = new DataSourceHandler();
-            dbState.done(true, null);
-        }
-    }
-
-
-    //TODO: Load using loader-utils (luck)
-    //  see https://github.com/lucko/LuckPerms/blob/master/common/loader-utils/src/main/java/me/lucko/luckperms/common/loader/JarInJarClassLoader.java
-    public boolean loadSQLiteDriver() {
-        final File driverPath = new File(getDataFolder() + File.separator + "lib" + File.separator
-                + "sqlite_driver.jar");
-        new File(getDataFolder() + File.separator + "lib").mkdir();
-
-        // Download the driver if it doesn't exist
-        if (!new File(getDataFolder() + File.separator + "lib" + File.separator + "sqlite_driver.jar").exists()) {
-            getLogger().info("The SQLLite driver was not found. It is being downloaded, please wait ...");
-
-            final String driverUrl = "https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.34.0/sqlite-jdbc-3.34.0.jar";
-            try (FileOutputStream fos = new FileOutputStream(driverPath)){
-                final ReadableByteChannel rbc = Channels.newChannel(new URL(driverUrl).openStream());
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            } catch (final IOException e) {
-                getLogger()
-                        .severe("An error occured during the downloading of the SQLite driver. Please report this error : ");
-                e.printStackTrace();
-                return false;
+            } catch (final SQLException handledByDatasourceHandler) {
             }
-            getLogger().info("The driver has been successfully downloaded.");
-        }
+            getLogger().severe("The connection pool (database connection)"
+                    + " wasn't able to be launched !");
+            dbState.done(false, null);
+        });
 
-        // Load the driver
-        try {
-            URLClassLoader systemClassLoader;
-            URL u;
-            Class<URLClassLoader> sysclass;
-            u = driverPath.toURI().toURL();
-            systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            sysclass = URLClassLoader.class;
-            final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-            method.setAccessible(true);
-            method.invoke(systemClassLoader, u);
-
-            Class.forName("org.sqlite.JDBC");
-            return true;
-        } catch (final Throwable t) {
-            getLogger().severe("The sqlite driver cannot be loaded. Please report this error : ");
-            t.printStackTrace();
-            return false;
-        }
     }
 
     public static BungeeAdminToolsPlugin getInstance() {

@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 
 public class MojangAPIProvider {
-  private static Gson gson = new Gson();
+  private static final Gson gson = new Gson();
   
   private static final String uuidRetrievalUrl = "https://api.mojang.com/users/profiles/minecraft/";
   private static final String nameHistoryUrl = "";
@@ -33,7 +33,7 @@ public class MojangAPIProvider {
       
       reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
       StringBuilder content = new StringBuilder();
-      String line = "";
+      String line;
       while((line = reader.readLine()) != null){
         content.append(line);
       }
@@ -69,14 +69,14 @@ public class MojangAPIProvider {
           final URL mojangURL = new URL("https://api.mojang.com/user/profiles/" + Core.getUUID(pName) + "/names");
           final URLConnection conn = mojangURL.openConnection();
           reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-          String content = "";
+          StringBuilder content = new StringBuilder();
           String line;
           while((line = reader.readLine()) != null){
-              content += line;
+              content.append(line);
           }
           final List<String> names = Lists.newArrayList();
           for(final Map<String, Object> entry : 
-                  (Set<Map<String, Object>>) gson.fromJson(content, new TypeToken<Set<Map<String, Object>>>() {}.getType())){
+                  (Set<Map<String, Object>>) gson.fromJson(content.toString(), new TypeToken<Set<Map<String, Object>>>() {}.getType())){
               names.add((String)entry.get("name"));
           }
           return names;

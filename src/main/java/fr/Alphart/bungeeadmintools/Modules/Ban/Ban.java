@@ -1,6 +1,6 @@
 package fr.alphart.bungeeadmintools.modules.ban;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColor;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 
 import co.aikar.commands.BaseCommand;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.modules.ModuleConfiguration;
 import fr.alphart.bungeeadmintools.modules.core.Core;
 import net.md_5.bungee.api.ProxyServer;
@@ -77,13 +77,7 @@ public class Ban implements IModule, Listener {
         // Init table
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             final Statement statement = conn.createStatement();
-            if (DataSourceHandler.isSQLite()) {
-                for (final String query : SQLQueries.Ban.SQLite.createTable) {
-                    statement.executeUpdate(query);
-                }
-            } else {
-                statement.executeUpdate(SQLQueries.Ban.createTable);
-            }
+            statement.executeUpdate(SQLQueries.Ban.createTable);
             statement.close();
         } catch (final SQLException e) {
             DataSourceHandler.handleException(e);
@@ -139,9 +133,7 @@ public class Ban implements IModule, Listener {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-            statement = conn.prepareStatement(DataSourceHandler.isSQLite()
-                    ? SQLQueries.Ban.SQLite.getBanMessage
-                    : SQLQueries.Ban.getBanMessage);
+            statement = conn.prepareStatement(SQLQueries.Ban.getBanMessage);
             try {
                 final UUID pUUID;
                 if (pConn.getUniqueId() != null) {
@@ -159,14 +151,10 @@ public class Ban implements IModule, Listener {
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                if (DataSourceHandler.isSQLite()) {
-                    begin = new Timestamp(resultSet.getLong("strftime('%s',ban_begin)") * 1000);
-                    String endStr = resultSet.getString("ban_end"); // SQLite see this row as null but it doesn't seem to make the same with ban message though it's almost the same code ...
-                    expiration = (endStr == null) ? null : new Timestamp(Long.parseLong(endStr));
-                } else {
-                    begin = resultSet.getTimestamp("ban_begin");
-                    expiration = resultSet.getTimestamp("ban_end");
-                }
+
+                begin = resultSet.getTimestamp("ban_begin");
+                expiration = resultSet.getTimestamp("ban_end");
+
                 reason = (resultSet.getString("ban_reason") != null) ? resultSet.getString("ban_reason") : IModule.NO_REASON;
                 staff = resultSet.getString("ban_staff");
             } else {
@@ -255,11 +243,11 @@ public class Ban implements IModule, Listener {
     /**
      * Ban this entity (player or ip) <br>
      *
-     * @param bannedEntity | can be an ip or a player name
-     * @param server       ; set to "(global)", to global ban
+     * @param bannedEntity        | can be an ip or a player name
+     * @param server              ; set to "(global)", to global ban
      * @param staff
-     * @param duration     ; set to 0 for ban def
-     * @param reason       | optional
+     * @param expirationTimestamp ; set to 0 for ban def
+     * @param reason              | optional
      * @return
      */
     public String ban(final String bannedEntity, final String server, final String staff,
@@ -335,14 +323,13 @@ public class Ban implements IModule, Listener {
      * @param expirationTimestamp duration
      *                            ; set to 0 for ban def
      * @param reason              | optional
-     * @param ip
+     * @param player
      */
     public String banIP(final ProxiedPlayer player, final String server, final String staff,
                         final long expirationTimestamp, final String reason) {
         ban(Utils.getPlayerIP(player), server, staff, expirationTimestamp, reason);
         return I18n.formatWithColor("banBroadcast", new String[]{player.getName() + "'s IP", staff, server, reason});
     }
-
 
 
     /**
@@ -353,7 +340,6 @@ public class Ban implements IModule, Listener {
      *                     (global), remove global ban
      * @param staff
      * @param reason
-     * @param unBanIP
      */
     public String unBan(final String bannedEntity, final String server, final String staff, final String reason) {
         PreparedStatement statement = null;
@@ -361,15 +347,13 @@ public class Ban implements IModule, Listener {
             // If the bannedEntity is an ip
             if (Utils.validIP(bannedEntity)) {
                 if (ANY_SERVER.equals(server)) {
-                    statement = (DataSourceHandler.isSQLite()) ? conn.prepareStatement(SQLQueries.Ban.SQLite.unBanIP)
-                            : conn.prepareStatement(SQLQueries.Ban.unBanIP);
+                    statement = (conn.prepareStatement(SQLQueries.Ban.unBanIP));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
                     statement.setString(3, bannedEntity);
                 } else {
-                    statement = (DataSourceHandler.isSQLite()) ? conn
-                            .prepareStatement(SQLQueries.Ban.SQLite.unBanIPServer) : conn
-                            .prepareStatement(SQLQueries.Ban.unBanIPServer);
+                    statement = (conn
+                            .prepareStatement(SQLQueries.Ban.unBanIPServer));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
                     statement.setString(3, bannedEntity);
@@ -382,15 +366,12 @@ public class Ban implements IModule, Listener {
             else {
                 final String UUID = Core.getUUID(bannedEntity);
                 if (ANY_SERVER.equals(server)) {
-                    statement = (DataSourceHandler.isSQLite()) ? conn.prepareStatement(SQLQueries.Ban.SQLite.unBan)
-                            : conn.prepareStatement(SQLQueries.Ban.unBan);
+                    statement = (conn.prepareStatement(SQLQueries.Ban.unBan));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
                     statement.setString(3, UUID);
                 } else {
-                    statement = (DataSourceHandler.isSQLite()) ? conn
-                            .prepareStatement(SQLQueries.Ban.SQLite.unBanServer) : conn
-                            .prepareStatement(SQLQueries.Ban.unBanServer);
+                    statement = (conn.prepareStatement(SQLQueries.Ban.unBanServer));
                     statement.setString(1, reason);
                     statement.setString(2, staff);
                     statement.setString(3, UUID);
@@ -412,11 +393,10 @@ public class Ban implements IModule, Listener {
      * Unban the ip of this entity
      *
      * @param entity
-     * @param server   | if equals to (any), unban from all servers | if equals to
-     *                 (global), remove global ban
+     * @param server | if equals to (any), unban from all servers | if equals to
+     *               (global), remove global ban
      * @param staff
-     * @param reason   | optional
-     * @param duration ; set to 0 for ban def
+     * @param reason | optional
      */
     public String unBanIP(final String entity, final String server, final String staff, final String reason) {
         if (Utils.validIP(entity)) {
@@ -441,17 +421,13 @@ public class Ban implements IModule, Listener {
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             // If the entity is an ip
             if (Utils.validIP(entity)) {
-                statement = conn.prepareStatement((DataSourceHandler.isSQLite())
-                        ? SQLQueries.Ban.SQLite.getBanIP
-                        : SQLQueries.Ban.getBanIP);
+                statement = conn.prepareStatement(SQLQueries.Ban.getBanIP);
                 statement.setString(1, entity);
                 resultSet = statement.executeQuery();
             }
             // Otherwise if it's a player
             else {
-                statement = conn.prepareStatement((DataSourceHandler.isSQLite())
-                        ? SQLQueries.Ban.SQLite.getBan
-                        : SQLQueries.Ban.getBan);
+                statement = conn.prepareStatement(SQLQueries.Ban.getBan);
                 statement.setString(1, Core.getUUID(entity));
                 resultSet = statement.executeQuery();
             }
@@ -460,17 +436,10 @@ public class Ban implements IModule, Listener {
                 final Timestamp beginDate;
                 final Timestamp endDate;
                 final Timestamp unbanDate;
-                if (DataSourceHandler.isSQLite()) {
-                    beginDate = new Timestamp(resultSet.getLong("strftime('%s',ban_begin)") * 1000);
-                    String endStr = resultSet.getString("ban_end");
-                    endDate = (endStr == null) ? null : new Timestamp(Long.parseLong(endStr));
-                    long unbanLong = resultSet.getLong("strftime('%s',ban_unbandate)") * 1000;
-                    unbanDate = (unbanLong == 0) ? null : new Timestamp(unbanLong);
-                } else {
-                    beginDate = resultSet.getTimestamp("ban_begin");
-                    endDate = resultSet.getTimestamp("ban_end");
-                    unbanDate = resultSet.getTimestamp("ban_unbandate");
-                }
+
+                beginDate = resultSet.getTimestamp("ban_begin");
+                endDate = resultSet.getTimestamp("ban_end");
+                unbanDate = resultSet.getTimestamp("ban_unbandate");
 
 
                 // Make it compatible with sqlite (date: get an int with the sfrt and then construct a tiemstamp)
@@ -501,9 +470,7 @@ public class Ban implements IModule, Listener {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-            statement = conn.prepareStatement((DataSourceHandler.isSQLite())
-                    ? SQLQueries.Ban.SQLite.getManagedBan
-                    : SQLQueries.Ban.getManagedBan);
+            statement = conn.prepareStatement(SQLQueries.Ban.getManagedBan);
             statement.setString(1, staff);
             statement.setString(2, staff);
             resultSet = statement.executeQuery();
@@ -512,17 +479,10 @@ public class Ban implements IModule, Listener {
                 final Timestamp beginDate;
                 final Timestamp endDate;
                 final Timestamp unbanDate;
-                if (DataSourceHandler.isSQLite()) {
-                    beginDate = new Timestamp(resultSet.getLong("strftime('%s',ban_begin)") * 1000);
-                    String endStr = resultSet.getString("ban_end");
-                    endDate = (endStr == null) ? null : new Timestamp(Long.parseLong(endStr));
-                    long unbanLong = resultSet.getLong("strftime('%s',ban_unbandate)") * 1000;
-                    unbanDate = (unbanLong == 0) ? null : new Timestamp(unbanLong);
-                } else {
-                    beginDate = resultSet.getTimestamp("ban_begin");
-                    endDate = resultSet.getTimestamp("ban_end");
-                    unbanDate = resultSet.getTimestamp("ban_unbandate");
-                }
+
+                beginDate = resultSet.getTimestamp("ban_begin");
+                endDate = resultSet.getTimestamp("ban_end");
+                unbanDate = resultSet.getTimestamp("ban_unbandate");
 
 
                 // Make it compatible with sqlite (date: get an int with the sfrt and then construct a tiemstamp)
@@ -591,7 +551,7 @@ public class Ban implements IModule, Listener {
 
             PreparedStatement statement = null;
             ResultSet resultSet = null;
-            UUID uuid = null;
+            UUID uuid;
             try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
                 statement = conn.prepareStatement("SELECT ban_id FROM `BAT_ban` WHERE ban_state = 1 AND UUID = ? AND ban_server = '" + GLOBAL_SERVER + "';");
                 // If this is an online mode server, the uuid will be already set

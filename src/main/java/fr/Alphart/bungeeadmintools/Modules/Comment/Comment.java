@@ -17,7 +17,7 @@ import java.util.logging.Level;
 
 import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -69,13 +69,8 @@ public class Comment implements IModule {
         Statement statement = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
             statement = conn.createStatement();
-            if (DataSourceHandler.isSQLite()) {
-                for (final String commentsQuery : SQLQueries.Comments.SQLite.createTable) {
-                    statement.executeUpdate(commentsQuery);
-                }
-            } else {
-                statement.executeUpdate(SQLQueries.Comments.createTable);
-            }
+            statement.executeUpdate(SQLQueries.Comments.createTable);
+
             statement.close();
         } catch (final SQLException e) {
             DataSourceHandler.handleException(e);
@@ -160,9 +155,7 @@ public class Comment implements IModule {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-            statement = conn.prepareStatement(DataSourceHandler.isSQLite()
-                    ? SQLQueries.Comments.SQLite.getEntries
-                    : SQLQueries.Comments.getEntries);
+            statement = conn.prepareStatement(SQLQueries.Comments.getEntries);
             if (Utils.validIP(entity)) {
                 statement.setString(1, entity);
             } else {
@@ -171,11 +164,7 @@ public class Comment implements IModule {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 final long date;
-                if (DataSourceHandler.isSQLite()) {
-                    date = resultSet.getLong("strftime('%s',date)") * 1000;
-                } else {
-                    date = resultSet.getTimestamp("date").getTime();
-                }
+                date = resultSet.getTimestamp("date").getTime();
                 notes.add(new CommentEntry(resultSet.getInt("id"), entity, resultSet.getString("note"),
                         resultSet.getString("staff"), CommentEntry.Type.valueOf(resultSet.getString("type")),
                         date));
@@ -193,19 +182,13 @@ public class Comment implements IModule {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-            statement = conn.prepareStatement(DataSourceHandler.isSQLite()
-                    ? SQLQueries.Comments.SQLite.getManagedEntries
-                    : SQLQueries.Comments.getManagedEntries);
+            statement = conn.prepareStatement(SQLQueries.Comments.getManagedEntries);
             statement.setString(1, staff);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 final long date;
-                if (DataSourceHandler.isSQLite()) {
-                    date = resultSet.getLong("strftime('%s',date)") * 1000;
-                } else {
-                    date = resultSet.getTimestamp("date").getTime();
-                }
+                date = resultSet.getTimestamp("date").getTime();
                 String entity = Core.getPlayerName(resultSet.getString("entity"));
                 if (entity == null) {
                     entity = "UUID:" + resultSet.getString("entity");
@@ -311,7 +294,7 @@ public class Comment implements IModule {
             statement.setString(1, (Utils.validIP(entity)) ? entity : Core.getUUID(entity));
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                return new Date(result.getTimestamp("date").getTime()).before(new Date(System.currentTimeMillis() - getConfig().getCooldown() * 1000));
+                return new Date(result.getTimestamp("date").getTime()).before(new Date(System.currentTimeMillis() - getConfig().getCooldown() * 1000L));
             }
             return true;
         } catch (final SQLException e) {

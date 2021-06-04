@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
 import fr.alphart.bungeeadmintools.modules.ban.BanEntry;
@@ -25,17 +24,16 @@ import fr.alphart.bungeeadmintools.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColor;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColorAndAddPrefix;
 
 
 public class LookupFormatter {
-    private ModulesManager modules;
+    private final ModulesManager modules;
     private static final int entriesPerPage = 15;
     private final String lookupHeader;
     private final String lookupFooter;
@@ -154,7 +152,7 @@ public class LookupFormatter {
         int commentsNumber = pDetails.getComments().size();
         StringBuilder last_comments = new StringBuilder();
         // We need to parse the number of last comments from the lookup pattern
-        final Pattern lastCommentsPattern = Pattern.compile("(?:.|\n)*?\\{last_comments:(\\d*)\\}(?:.|\n)*?");
+        final Pattern lastCommentsPattern = Pattern.compile("(?:.|\n)*?\\{last_comments:(\\d*)}(?:.|\n)*?");
         final Matcher matcher = lastCommentsPattern.matcher(lookupPattern);
         try{
             if(!matcher.matches()){
@@ -189,7 +187,7 @@ public class LookupFormatter {
                 .replace("{first_login}", first_login).replace("{last_login}", last_login).replace("{last_ip}", last_ip)
                 .replace("{bans_number}", String.valueOf(bansNumber)).replace("{mutes_number}", String.valueOf(mutesNumber))
                 .replace("{kicks_number}", String.valueOf(kicksNumber)).replace("{comments_number}", String.valueOf(commentsNumber))
-                .replace("{name_history_list}", name_history_list).replaceAll("\\{last_comments:\\d\\}", last_comments.toString())
+                .replace("{name_history_list}", name_history_list).replaceAll("\\{last_comments:\\d}", last_comments.toString())
                 .replace("{player}", pName).replace("{uuid}", Core.getUUID(pName))
                 // '¤' is used as a space character, so we replace it with space and display correctly the escaped one
                 .replace("¤", " ").replace("\\¤", "¤")
@@ -350,6 +348,7 @@ public class LookupFormatter {
         for (final BanEntry banEntry : bans) {
             if (banEntry.active()) {
                 isBan = true;
+                break;
             }
         }
 

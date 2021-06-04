@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import co.aikar.commands.BaseCommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import fr.alphart.bungeeadmintools.database.SQLQueries;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -62,13 +62,7 @@ public class Kick implements IModule {
 		Statement statement = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
-			if (DataSourceHandler.isSQLite()) {
-				for (final String query : SQLQueries.Kick.SQLite.createTable) {
-					statement.executeUpdate(query);
-				}
-			} else {
-				statement.executeUpdate(SQLQueries.Kick.createTable);
-			}
+			statement.executeUpdate(SQLQueries.Kick.createTable);
 			statement.close();
 		} catch (final SQLException e) {
 			DataSourceHandler.handleException(e);
@@ -111,11 +105,7 @@ public class Kick implements IModule {
 	public String kickSQL(final UUID pUUID, final String server, final String staff, final String reason) {
 		PreparedStatement statement = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-			if (DataSourceHandler.isSQLite()) {
-				statement = conn.prepareStatement(SQLQueries.Kick.SQLite.kickPlayer);
-			} else {
-				statement = conn.prepareStatement(SQLQueries.Kick.kickPlayer);
-			}
+			statement = conn.prepareStatement(SQLQueries.Kick.kickPlayer);
 			statement.setString(1, pUUID.toString().replace("-", ""));
 			statement.setString(2, staff);
 			statement.setString(3, reason);
@@ -145,11 +135,7 @@ public class Kick implements IModule {
 	public String gKickSQL(final UUID pUUID, final String staff, final String reason) {
 		PreparedStatement statement = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-			if (DataSourceHandler.isSQLite()) {
-				statement = conn.prepareStatement(SQLQueries.Kick.SQLite.kickPlayer);
-			} else {
-				statement = conn.prepareStatement(SQLQueries.Kick.kickPlayer);
-			}
+			statement = conn.prepareStatement(SQLQueries.Kick.kickPlayer);
 			statement.setString(1, pUUID.toString().replace("-", ""));
 			statement.setString(2, staff);
 			statement.setString(3, reason);
@@ -177,9 +163,7 @@ public class Kick implements IModule {
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
-					? SQLQueries.Kick.SQLite.getKick
-					: SQLQueries.Kick.getKick);
+			statement = conn.prepareStatement(SQLQueries.Kick.getKick);
 			statement.setString(1, Core.getUUID(pName));
 			resultSet = statement.executeQuery();
 
@@ -191,11 +175,7 @@ public class Kick implements IModule {
 				}
 				final String staff = resultSet.getString("kick_staff");
 				final Timestamp date;
-				if(DataSourceHandler.isSQLite()){
-					date = new Timestamp(resultSet.getLong("strftime('%s',kick_date)") * 1000);
-				}else{
-					date = resultSet.getTimestamp("kick_date");
-				}
+				date = resultSet.getTimestamp("kick_date");
 				kickList.add(new KickEntry(pName, server, reason, staff, date));
 			}
 		} catch (final SQLException e) {
@@ -211,9 +191,7 @@ public class Kick implements IModule {
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-			statement = conn.prepareStatement(DataSourceHandler.isSQLite()
-					? SQLQueries.Kick.SQLite.getManagedKick
-					: SQLQueries.Kick.getManagedKick);
+			statement = conn.prepareStatement(SQLQueries.Kick.getManagedKick);
 			statement.setString(1, staff);
 			resultSet = statement.executeQuery();
 
@@ -228,11 +206,7 @@ public class Kick implements IModule {
 					pName = "UUID:" + resultSet.getString("UUID");
 				}
 				final Timestamp date;
-				if(DataSourceHandler.isSQLite()){
-					date = new Timestamp(resultSet.getLong("strftime('%s',kick_date)") * 1000);
-				}else{
-					date = resultSet.getTimestamp("kick_date");
-				}
+				date = resultSet.getTimestamp("kick_date");
 				kickList.add(new fr.alphart.bungeeadmintools.modules.kick.KickEntry(pName, server, reason, staff, date));
 			}
 		} catch (final SQLException e) {

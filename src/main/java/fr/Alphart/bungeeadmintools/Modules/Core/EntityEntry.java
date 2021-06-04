@@ -58,21 +58,17 @@ public class EntityEntry {
 			PreparedStatement statement = null;
 			ResultSet resultSet = null;
 			try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
-				statement = (DataSourceHandler.isSQLite()) ? conn
-						.prepareStatement(SQLQueries.Core.SQLite.getPlayerData) : conn
-						.prepareStatement(SQLQueries.Core.getPlayerData);
+				statement = (conn
+						.prepareStatement(SQLQueries.Core.getPlayerData));
 						statement.setString(1, Core.getUUID(entity));
 
 						resultSet = statement.executeQuery();
 
 						if (resultSet.next()) {
-							if (DataSourceHandler.isSQLite()) {
-								firstLogin = new Timestamp(resultSet.getLong("strftime('%s',firstlogin)") * 1000);
-								lastLogin = new Timestamp(resultSet.getLong("strftime('%s',lastlogin)") * 1000);
-							} else {
+
 								firstLogin = resultSet.getTimestamp("firstlogin");
 								lastLogin = resultSet.getTimestamp("lastlogin");
-							}
+
 							final ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entity);
 							if (player != null) {
 								lastIP = Utils.getPlayerIP(player);

@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import net.md_5.bungee.api.CommandSender;
@@ -17,14 +17,14 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColor;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColorAndAddPrefix;
 
 
 @CommandAlias("comment|note")
 @CommandPermission(Permissions.COMMENT)
 public class CommentCommand extends BaseCommand {
-    private Comment comment;
+    private final Comment comment;
 
     public CommentCommand(final Comment comment) {
         this.comment = comment;

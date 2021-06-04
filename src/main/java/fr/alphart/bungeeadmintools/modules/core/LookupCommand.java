@@ -19,7 +19,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColorAndAddPrefix;
 
 
 public class LookupCommand extends BaseCommand {

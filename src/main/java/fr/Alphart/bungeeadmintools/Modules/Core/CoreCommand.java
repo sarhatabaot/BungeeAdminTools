@@ -7,12 +7,12 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.Permissions;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.CommandSender;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColorAndAddPrefix;
 
 @CommandAlias("bat")
 public class CoreCommand extends BaseCommand {

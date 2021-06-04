@@ -14,7 +14,7 @@ import net.md_5.bungee.api.CommandSender;
 
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColor;
 
 public class MuteCommand extends BaseCommand {
     private final Mute mute;

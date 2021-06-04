@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import com.google.common.base.Preconditions;
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
-import fr.alphart.bungeeadmintools.I18n.I18n;
+import fr.alphart.bungeeadmintools.i18n.I18n;
 import fr.alphart.bungeeadmintools.Permissions;
 import fr.alphart.bungeeadmintools.modules.core.PermissionManager;
 import net.md_5.bungee.api.CommandSender;

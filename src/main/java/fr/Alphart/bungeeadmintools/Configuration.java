@@ -27,25 +27,25 @@ public class Configuration extends YamlConfig {
 		}
 	}
 
-	private String language = "en";
-	private String prefix = "&6[&4BAT&6]&e ";
+	private final String language = "en";
+	private final String prefix = "&6[&4BAT&6]&e ";
 	
     @Comment("Force players to give reason when /ban /unban /kick /mute /unmute etc.")
-	private boolean mustGiveReason= false;
+	private final boolean mustGiveReason= false;
 	@Comment("Enable /bat confirm, to confirm command such as action on unknown player.")
-	private boolean confirmCommand = true;
+	private final boolean confirmCommand = true;
 	@Comment("Enable or disable simple aliases to bypass the /bat prefix for core commands")
-	private Map<String, Boolean> simpleAliasesCommands = Maps.newHashMap();
+	private final Map<String, Boolean> simpleAliasesCommands = Maps.newHashMap();
 	@Comment("Make the date more readable."
 			+ "If the date correspond to today, tmw or yda, it will replace the date by the corresponding word")
-	private boolean litteralDate = true;
+	private final boolean litteralDate = true;
 	@Comment("Enable BETA (experimental) Redis support, requires RedisBungee")
-	private boolean redisSupport = false;
+	private final boolean redisSupport = false;
 	@Comment("The debug mode enables verbose logging. All the logged message will be in the debug.log file in BAT folder")
-	private boolean debugMode = false;
+	private final boolean debugMode = false;
 
 	@Comment("Whitelist of ips not to ip ban. Usually put your server ip here.")
-	private List<String> whitelistedIp = new ArrayList<>();
+	private final List<String> whitelistedIp = new ArrayList<>();
 	
 	
 	@Comment("Set to true to use MySQL. Otherwise SQL Lite will be used")
@@ -53,16 +53,16 @@ public class Configuration extends YamlConfig {
     @Path(value = "mysql.enabled")
 	private boolean mysql_enabled = true;
     @Path(value = "mysql.user")
-	private String mysql_user = "user";
+	private final String mysql_user = "user";
     @Path(value = "mysql.password")
-	private String mysql_password = "password";
+	private final String mysql_password = "password";
     @Path(value = "mysql.database")
-	private String mysql_database = "database";
+	private final String mysql_database = "database";
     @Path(value = "mysql.host")
-	private String mysql_host = "localhost";
+	private final String mysql_host = "localhost";
 	@Comment("If you don't know it, just leave it like this (3306 = default mysql port)")
     @Path(value = "mysql.port")
-	private String mysql_port = "3306";
+	private final String mysql_port = "3306";
 	public Locale getLocale() {
 		if (language.length() != 2) {
 			BungeeAdminToolsPlugin.getInstance().getLogger().severe("Incorrect language set ... The language was set to english.");

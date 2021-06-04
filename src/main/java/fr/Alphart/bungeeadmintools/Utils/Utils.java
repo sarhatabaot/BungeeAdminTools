@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    private static Gson gson = new Gson();
-	private static StringBuilder sb = new StringBuilder();
-	private static Pattern ipPattern = Pattern
+    private static final Gson gson = new Gson();
+	private static final StringBuilder sb = new StringBuilder();
+	private static final Pattern ipPattern = Pattern
 			.compile("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
 	private final static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?"
 			+ "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?"

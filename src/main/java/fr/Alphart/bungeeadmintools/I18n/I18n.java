@@ -1,8 +1,9 @@
-package fr.alphart.bungeeadmintools.I18n;
+package fr.alphart.bungeeadmintools.i18n;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,23 +19,24 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class I18n {
-	private static Map<String, String> argsReplacer = new HashMap<String, String>(){
+	private static final Map<String, String> argsReplacer = new HashMap<>(){
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String put(final String key, final String value) {
 			return super.put(key, ChatColor.translateAlternateColorCodes('&', value));
-		};
+		}
 	};
-	private ResourceBundle enBundle;
+	private final ResourceBundle enBundle;
 	private ResourceBundle localeBundle;
 	private ResourceBundle customBundle;
 
 	private I18n() {
 		final Locale locale = BungeeAdminToolsPlugin.getInstance().getConfiguration().getLocale();
-		enBundle = ResourceBundle.getBundle("messages", new Locale("en"), new fr.alphart.bungeeadmintools.I18n.UTF8_Control());
+		enBundle = ResourceBundle.getBundle("messages", new Locale("en"), new fr.alphart.bungeeadmintools.i18n.UTF8_Control());
 		try {
-			localeBundle = ResourceBundle.getBundle("messages", locale, new fr.alphart.bungeeadmintools.I18n.UTF8_Control());
+			localeBundle = ResourceBundle.getBundle("messages", locale, new fr.alphart.bungeeadmintools.i18n.UTF8_Control());
 		} catch (final MissingResourceException e) {
 			BungeeAdminToolsPlugin.getInstance()
 			.getLogger()

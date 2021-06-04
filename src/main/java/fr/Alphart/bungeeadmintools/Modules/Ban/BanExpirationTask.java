@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,11 +30,7 @@ public class BanExpirationTask implements Runnable {
 		Statement statement = null;
 		try (Connection conn = BungeeAdminToolsPlugin.getConnection()) {
 			statement = conn.createStatement();
-			if (DataSourceHandler.isSQLite()) {
-				statement.executeUpdate(SQLQueries.Ban.SQLite.updateExpiredBan);
-			} else {
-				statement.executeUpdate(SQLQueries.Ban.updateExpiredBan);
-			}
+			statement.executeUpdate(SQLQueries.Ban.updateExpiredBan);
 			statement.close();
 		} catch (final SQLException e) {
 			DataSourceHandler.handleException(e);
@@ -47,7 +44,7 @@ public class BanExpirationTask implements Runnable {
 			if(player.getServer() != null){
 			    serversToCheck = Arrays.asList(player.getServer().getInfo().getName(), IModule.GLOBAL_SERVER);
 			}else{
-			    serversToCheck = Arrays.asList(IModule.GLOBAL_SERVER);
+			    serversToCheck = Collections.singletonList(IModule.GLOBAL_SERVER);
 			}
 			for(final String server : serversToCheck){
 				if(ban.isBan(player, server)){

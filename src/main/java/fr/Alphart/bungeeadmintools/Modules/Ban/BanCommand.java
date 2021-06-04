@@ -13,7 +13,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
+import static fr.alphart.bungeeadmintools.i18n.I18n.formatWithColor;
 
 
 public class BanCommand extends BaseCommand {

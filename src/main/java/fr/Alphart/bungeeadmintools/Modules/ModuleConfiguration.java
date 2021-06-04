@@ -14,7 +14,7 @@ import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import net.cubespace.Yamler.Config.YamlConfig;
 
 public abstract class ModuleConfiguration extends YamlConfig {
-	@Getter
+	@Getter//TODO
 	private final boolean enabled = true;
 
 	// We must use an init method because if we use the super constructor, it doesn't work properly (field of children class are overwritten)

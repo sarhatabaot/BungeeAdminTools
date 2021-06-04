@@ -1,4 +1,4 @@
-package fr.alphart.bungeeadmintools.I18n;
+package fr.alphart.bungeeadmintools.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;

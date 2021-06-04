@@ -18,10 +18,10 @@ import net.md_5.bungee.api.plugin.PluginManager;
 @NoArgsConstructor
 public class Trigger extends YamlConfig {
 	@Getter
-	private int triggerNumber = 3;
+	private final int triggerNumber = 3;
 	@Getter
-	private List<String> pattern = Collections.singletonList("");
-	private List<String> commands = Arrays.asList("alert {player} sparks a trigger. Reason: {reason}","gtempmute {player} 30m");
+	private final List<String> pattern = Collections.singletonList("");
+	private final List<String> commands = Arrays.asList("alert {player} sparks a trigger. Reason: {reason}","gtempmute {player} 30m");
 	
 	public void onTrigger(final String pName, final String reason){
 		final PluginManager pm = ProxyServer.getInstance().getPluginManager();
