@@ -1,5 +1,5 @@
 name: BungeeAdminTools
-authors: [Alphart, sarhatabaot]
+author: sarhatabaot
 version: ${project.version}
 main: fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin
 depends: ['Yamler']
