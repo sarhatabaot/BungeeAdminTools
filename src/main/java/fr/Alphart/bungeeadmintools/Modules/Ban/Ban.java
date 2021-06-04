@@ -33,7 +33,6 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
 
 import com.google.common.base.Charsets;
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 import fr.alphart.bungeeadmintools.BungeeAdminToolsPlugin;
 import fr.alphart.bungeeadmintools.modules.IModule;
@@ -294,12 +293,6 @@ public class Ban implements IModule, Listener {
         if (player != null
                 && (server.equals(GLOBAL_SERVER) || player.getServer().getInfo().getName().equalsIgnoreCase(server))) {
             BungeeAdminToolsPlugin.kick(player, I18n.formatWithColor("wasBannedNotif", new String[]{reason}));
-        } else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-            UUID pUUID = RedisBungee.getApi().getUuidFromName(bannedEntity);
-            if (RedisBungee.getApi().isPlayerOnline(pUUID)
-                    && ((server.equals(GLOBAL_SERVER) || RedisBungee.getApi().getServerFor(pUUID).getName().equalsIgnoreCase(server)))) {
-                BungeeAdminToolsPlugin.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[]{reason}));
-            }
         }
 
         if (expirationTimestamp > 0) {
@@ -326,13 +319,6 @@ public class Ban implements IModule, Listener {
             }
         }
 
-        if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-            for (final UUID pUUID : RedisBungee.getApi().getPlayersOnline()) {
-                if (RedisBungee.getApi().getPlayerIp(pUUID).equals(bannedEntity) && (GLOBAL_SERVER.equals(server) || server.equalsIgnoreCase(RedisBungee.getApi().getServerFor(pUUID).getName()))) {
-                    BungeeAdminToolsPlugin.getInstance().getRedis().sendGKickPlayer(pUUID, I18n.formatWithColor("wasBannedNotif", new String[]{reason}));
-                }
-            }
-        }
 
         if (expirationTimestamp > 0) {
             return I18n.formatWithColor("banTempBroadcast", new String[]{bannedEntity, FormatUtils.getDuration(expirationTimestamp),
@@ -358,16 +344,6 @@ public class Ban implements IModule, Listener {
     }
 
 
-    public String banRedisIP(final UUID pUUID, final String server, final String staff,
-                             final long expirationTimestamp, final String reason) {
-        if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled() && RedisBungee.getApi().isPlayerOnline(pUUID)) {
-            ban(RedisBungee.getApi().getPlayerIp(pUUID).getHostAddress(), server, staff, expirationTimestamp, reason);
-            return I18n.formatWithColor("banBroadcast", new String[]{RedisBungee.getApi().getNameFromUuid(pUUID) + "'s IP", staff, server, reason});
-        } else {
-            return null;
-        }
-
-    }
 
     /**
      * Unban an entity (player or ip)

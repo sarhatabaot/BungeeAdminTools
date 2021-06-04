@@ -44,7 +44,6 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 /**
  * This module handles all the mute.<br>
@@ -309,21 +308,7 @@ public class Mute implements IModule, Listener {
 				statement.executeUpdate();
 				statement.close();
 
-				if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-				    	for (UUID pUUID : RedisBungee.getApi().getPlayersOnline()) {
-				    	    	if (RedisBungee.getApi().getPlayerIp(pUUID).equals(mutedEntity)) {
-				    	    	    	// The mute task timer will add the player to the bungeecord instance's cache if needed.
-				    	    	    	if(server.equals(GLOBAL_SERVER) || RedisBungee.getApi().getServerFor(pUUID).getName().equalsIgnoreCase(server)) {
-				    	    	    	    	ProxiedPlayer player = ProxyServer.getInstance().getPlayer(pUUID);
-				    	    	    	    	if (player != null) {
-				    	    	    	    	    	player.sendMessage(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason }));
-				    	    	    	    	} else {
-					    	    	    	    	BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
-				    	    	    	    	}
-				    	    	    	}
-				    	    	}
-				    	}
-				} else {
+
 				    	for (final ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
 						if (Utils.getPlayerIP(player).equals(mutedEntity)) {
 							if (server.equals(GLOBAL_SERVER)) {
@@ -336,7 +321,7 @@ public class Mute implements IModule, Listener {
 							}
 						}
 					}
-				}
+
 
 				if (expirationTimestamp > 0) {
 					return I18n.formatWithColor("muteTempBroadcast", new String[] {mutedEntity, FormatUtils.getDuration(expirationTimestamp),
@@ -363,11 +348,6 @@ public class Mute implements IModule, Listener {
 						if(server.equals(GLOBAL_SERVER) || player.getServer().getInfo().getName().equalsIgnoreCase(server)){
 							player.sendMessage(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason }));
 						}
-					} else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-						//Need to implement a function to get an UUID object instead of a string one.
-						final UUID pUUID = Core.getUUIDfromString(Core.getUUID(mutedEntity));
-						BungeeAdminToolsPlugin.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
-				    	BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasMutedNotif", new String[] { reason })));
 					}
 			    	if (expirationTimestamp > 0) {
 						return I18n.formatWithColor("muteTempBroadcast", new String[] {mutedEntity, FormatUtils.getDuration(expirationTimestamp),
@@ -466,13 +446,6 @@ public class Mute implements IModule, Listener {
 					if(ANY_SERVER.equals(server) || GLOBAL_SERVER.equals(server) || player.getServer().getInfo().getName().equalsIgnoreCase(server)){
 						player.sendMessage(I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[] { reason }));
 					}
-				} else if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-						final UUID pUUID = Core.getUUIDfromString(Core.getUUID(mutedEntity));
-				    	ServerInfo pServer = RedisBungee.getApi().getServerFor(pUUID);
-				    	if (ANY_SERVER.equals(server) || GLOBAL_SERVER.equals(server) || (pServer != null && pServer.getName().equalsIgnoreCase(server))){
-				    		BungeeAdminToolsPlugin.getInstance().getRedis().sendMuteUpdatePlayer(pUUID, server);
-				    		BungeeAdminToolsPlugin.getInstance().getRedis().sendMessagePlayer(pUUID, TextComponent.toLegacyText(I18n.formatWithColorAndAddPrefix("wasUnmutedNotif", new String[] { reason })));
-				    	}
 				}
 
 				return I18n.formatWithColor("unmuteBroadcast", new String[] {mutedEntity, staff, server, reason });

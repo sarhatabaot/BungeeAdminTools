@@ -29,7 +29,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColor;
 import static fr.alphart.bungeeadmintools.I18n.I18n.formatWithColorAndAddPrefix;
@@ -103,15 +102,7 @@ public class LookupFormatter {
         
         // Initialize all the strings to prepare the big replace
         String connection_state;
-        if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-                UUID pUUID = RedisBungee.getApi().getUuidFromName(pName, true);
-                if(pUUID != null && RedisBungee.getApi().isPlayerOnline(pUUID)){
-                    ServerInfo si = RedisBungee.getApi().getServerFor(pUUID);
-                    connection_state = formatWithColor("connectionStateOnline").replace("{server}", si != null ? si.getName() : "unknown state");
-                }else{
-                    connection_state = formatWithColor("connectionStateOffline");
-                }
-        } else {
+
             if(ProxyServer.getInstance().getPlayer(pName) != null){
                 connection_state = formatWithColor("connectionStateOnline")
                         .replace("{server}", ProxyServer.getInstance().getPlayer(pName).getServer().getInfo().getName());
@@ -119,7 +110,7 @@ public class LookupFormatter {
                 connection_state = formatWithColor("connectionStateOffline");
             }
 
-        }
+
         
         final String joinChar = "&f, &3";
         final String ban_servers = !banServers.isEmpty()

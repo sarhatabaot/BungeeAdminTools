@@ -19,20 +19,11 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import co.aikar.commands.BungeeCommandManager;
-import fr.alphart.bungeeadmintools.modules.InvalidModuleException;
 import fr.alphart.bungeeadmintools.modules.ModulesManager;
-import fr.alphart.bungeeadmintools.modules.ban.BanCommand;
 import fr.alphart.bungeeadmintools.modules.core.Core;
-import fr.alphart.bungeeadmintools.modules.core.CoreCommand;
-import fr.alphart.bungeeadmintools.modules.core.LookupCommand;
-import fr.alphart.bungeeadmintools.modules.kick.KickCommand;
-import fr.alphart.bungeeadmintools.modules.mute.MuteCommand;
 import fr.alphart.bungeeadmintools.utils.CallbackUtils;
-import fr.alphart.bungeeadmintools.utils.RedisUtils;
 import fr.alphart.bungeeadmintools.database.DataSourceHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -41,7 +32,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 
@@ -61,7 +51,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
     private static String prefix;
     private ModulesManager modules;
     private BungeeCommandManager commandManager;
-    private RedisUtils redis;
 
     @Override
     public void onEnable() {
@@ -112,7 +101,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
             if (dbState) {
                 getLogger().config("Connection to the database established");
                 // Try enabling redis support.
-                redis = new RedisUtils(config.isRedisSupport());
                 modules = new ModulesManager();
                 modules.loadModules();
             } else {
@@ -127,9 +115,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
 
     @Override
     public void onDisable() {
-        if (redis != null) {
-            getRedis().destroy();
-        }
         modules.unloadModules();
         instance = null;
     }
@@ -240,9 +225,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
      */
     public static void broadcast(final String message, final String perm) {
         noRedisBroadcast(message, perm);
-        if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-            BungeeAdminToolsPlugin.getInstance().getRedis().sendBroadcast(perm, message);
-        }
     }
 
     public static void noRedisBroadcast(final String message, final String perm) {
@@ -280,9 +262,6 @@ public class BungeeAdminToolsPlugin extends Plugin {
         return dsHandler;
     }
 
-    public RedisUtils getRedis() {
-        return redis;
-    }
 
     /**
      * Kick a player from the proxy for a specified reason

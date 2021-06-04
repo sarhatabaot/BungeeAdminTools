@@ -25,7 +25,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 
 public class Kick implements IModule {
 	private final String name = "kick";
@@ -157,12 +156,7 @@ public class Kick implements IModule {
 			statement.setString(4, GLOBAL_SERVER);
 			statement.executeUpdate();
 			statement.close();
-
-			if (BungeeAdminToolsPlugin.getInstance().getRedis().isRedisEnabled()) {
-			    	return I18n.formatWithColor("gKickBroadcast", new String[] { RedisBungee.getApi().getNameFromUuid(pUUID), staff, reason });
-			} else {
-				return I18n.formatWithColor("gKickBroadcast", new String[] { BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
-			}
+			return I18n.formatWithColor("gKickBroadcast", new String[] { BungeeAdminToolsPlugin.getInstance().getProxy().getPlayer(pUUID).getName(), staff, reason });
 		} catch (final SQLException e) {
 			return DataSourceHandler.handleException(e);
 		} finally {
